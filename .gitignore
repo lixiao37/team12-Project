@@ -1,0 +1,11 @@
+#ignore the compiled python files
+*.pyc
+
+#ignore the cached files
+*~
+
+#ignore the compiled project files
+target
+
+#ignore the local coverage files
+.coverage
