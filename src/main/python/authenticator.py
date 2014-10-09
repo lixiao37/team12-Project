@@ -1,4 +1,4 @@
-# Open source module: Athentication system 
+# Open source module: Authentication system 
 # from http://tools.cherrypy.org/wiki/AuthenticationAndAccessRestrictions
 # Source Author: Arnar Birgisson
 # Customized by Chun and Zhen
@@ -29,8 +29,10 @@ def check_auth(*args, **kwargs):
             for condition in conditions:
                 # A condition is just a callable that returns true or false
                 if not condition():
+                    # If the user is logged in but does not fufill the conditions, bring them to login
                     raise cherrypy.HTTPRedirect("/auth/login")
         else:
+            # If the user has is not logged in, brings them to the login page for the first time
             raise cherrypy.HTTPRedirect("/auth/login")
     
 cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
@@ -99,13 +101,13 @@ class AuthController(object):
         # 2 lines of code to prevent XSS vulnerability
         username = escape(username, True)
         from_page = escape(from_page, True)
-        return """<html><body bgcolor="#E0FFFF"><center>
+        return """<html><body bgcolor="pink"><center>
             <h1 style="color:#0033CC">Login Screen</h1>
             <form method="post" action="/auth/login">
             <input type="hidden" name="from_page" value="%(from_page)s" />
-            %(msg)s<br />
-            Username: <input type="text" name="username" value="%(username)s" /><br />
-            Password: <input type="password" name="password" /><br />
+            %(msg)s<br/>
+            Username: <input type="text" name="username" value="%(username)s" /><br/>
+            Password: <input type="password" name="password" /><br/>
             <input type="submit" value="Log in" />
         </center></body></html>""" % locals()
 
