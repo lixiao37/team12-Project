@@ -29,8 +29,13 @@ class Root:
     @cherrypy.expose
     @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
-        return """<center><h1 style="color:#0033CC">Home Screen</h1>
-        This page only requires a valid login.</center>"""
+        #return """<center><h1 style="color:#0033CC">Home Screen</h1>
+        #This page only requires a valid login.</center>"""
+        return """"<html><body bgcolor="pink"><center>
+                    <h1 style="color:#0033CC">Logout Screen</h1>
+                    <form method="post" action="/auth/logout">
+                    <input type="submit" value="Log out" />
+                </center></body></html>""" % locals()
     
     @cherrypy.expose
     def open(self): # This page is http://127.0.0.1:8080/open
