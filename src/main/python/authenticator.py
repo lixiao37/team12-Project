@@ -33,7 +33,7 @@ def check_auth(*args, **kwargs):
                     raise cherrypy.HTTPRedirect("/auth/login")
         else:
             # If the user has is not logged in, brings them to the login page for the first time
-            raise cherrypy.HTTPRedirect("/auth/login")
+            raise cherrypy.HTTPRedirect("/home")
     
 cherrypy.tools.auth = cherrypy.Tool('before_handler', check_auth)
 
@@ -109,6 +109,7 @@ class AuthController(object):
             Username: <input type="text" name="username" value="%(username)s" /><br/>
             Password: <input type="password" name="password" /><br/>
             <input type="submit" value="Log in" />
+            <input type="button" value="Back" onClick="location='/home'"/>
         </center></body></html>""" % locals()
 
     @cherrypy.expose

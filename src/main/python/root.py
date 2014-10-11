@@ -38,8 +38,13 @@ class Root:
                 </center></body></html>""" % locals()
     
     @cherrypy.expose
-    def open(self): # This page is http://127.0.0.1:8080/open
-        return """This page is open to everyone including people who hasn't logged in"""
+    def home(self): # This page is http://127.0.0.1:8080/home
+        return """<html><body bgcolor="pink"><center>
+        <h5> This page is open to everyone including people who hasn't logged in</h5>
+            <h1 style="color:#0033CC">Main Screen</h1>
+            I want to log in the system!
+            <input type="button" value="Log in" onClick="location='/auth/login'"/>
+        </center></body></html>""" % locals()
     
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
