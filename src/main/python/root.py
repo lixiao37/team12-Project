@@ -27,24 +27,24 @@ class Root:
     restricted = RestrictedArea()
     
     @cherrypy.expose
-    @require()
-    def index(self):
+    @require() # requires logged in status to view page
+    def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
         return """<center><h1 style="color:#0033CC">Home Screen</h1>
         This page only requires a valid login.</center>"""
     
     @cherrypy.expose
-    def open(self):
+    def open(self): # This page is http://127.0.0.1:8080/open
         return """This page is open to everyone including people who hasn't logged in"""
     
     @cherrypy.expose
-    @require(name_is("chun"))
+    @require(name_is("chun")) # requires the logged in user to be chun
     def only_for_chun(self):
         return """Hello Chun - this page is available to you only"""
 
     # This is only available if the user name is chun and he's in group admin
     @cherrypy.expose
-    @require(name_is("chun"))
-    @require(member_of("admin"))
+    @require(name_is("chun")) # requires the logged in user to be chun
+    @require(member_of("admin")) # requires the logged in user to be a member of the admin group
     def only_for_chun_admin(self):
         return """Hello Chun, the Admin - this page is available to you only and because you are admin"""
 
