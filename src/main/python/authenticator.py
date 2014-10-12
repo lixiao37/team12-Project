@@ -4,15 +4,38 @@
 # Customized by Chun and Zhen
 
 import cherrypy
+import hashlib
 from cgi import escape
+from mongoengine import *
 
 SESSION_KEY = '_cp_username'
+
+# connects to the database
+connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
+
+# defining the User document's schema
+class User(Document):
+    name = StringField(required=True, unique=True)
+    password = StringField(required=True)
+
+# Might be userful for later - Chun
+# def createUserInDB(username, password):
+#     p = hashlib.md5()
+#     p.update('coffeecoders')
+    
+#     newUser = User(name=username)
+#     newUser.password = p.hexdigest()
+#     newUser.save()
 
 def check_credentials(username, password):
     """Verifies username and password.
     Returns None on success or a string describing the error on failure"""
-    # Add database part to get list of users and password to their username - chun
-    if username in ('zhen', 'chun') and password == 'coffeecoders':
+    # Converts the password to hash md5
+    p = hashlib.md5()
+    p.update(password)
+
+    # See if the username is in the database, also if the password is correct
+    if User.objects(Q(name=username) & Q(password=p.hexdigest())):
         return None
     else:
         return u"Username or password is incorrect or not found in database."
