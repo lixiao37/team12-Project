@@ -7,16 +7,12 @@ import cherrypy
 import hashlib
 from cgi import escape
 from mongoengine import *
+from schema import User
 
 SESSION_KEY = '_cp_username'
 
 # connects to the database
 connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
-
-# defining the User document's schema
-class User(Document):
-    name = StringField(required=True, unique=True)
-    password = StringField(required=True)
 
 # Might be userful for later - Chun
 # def createUserInDB(username, password):
