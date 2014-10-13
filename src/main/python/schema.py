@@ -1,16 +1,16 @@
 from mongoengine import *
 
-class Website(Document): 
+class Website(Document):
 	pass
-	
+
 class Article(Document):
 	title = StringField()
 	author = StringField()
 	last_modified_date = DateTimeField()
 	html = BinaryField()
-	text = StringField()
-	website = ReferenceField(Website, reverse_delete_rule=CASCADE)
 	url = URLField()
+	website = ReferenceField(Website, reverse_delete_rule=CASCADE)
+	text = StringField()
 	citations = ListField()
 	quotes = ListField()
 
