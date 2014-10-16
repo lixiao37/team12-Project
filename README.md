@@ -10,7 +10,7 @@
 Most of the dependencies are python modules, therefore you can install them
 locally by running "pip install {module_name}".
 
-We are using pybuilder, a automated python builder.
+We are using pybuilder, an automated python builder.
 The source files are located under src/main/python/*.
 The unittest files are located under src/unittest/python/*.
 
@@ -22,10 +22,18 @@ called "target". Then you can look at the distribution files under,
 
 ### Summary of source files:
 
-###### schema.py
-	- This python file contains all the database schema. It contains all the
-	collections of the database required to store the artcles, website(data),
-	and users(data).
+###### user.py
+	- This python file contains the schema for the User collection
+
+###### article.py
+	- This python file contains the schema for the Article collection. This collection
+	will store all meta data associated with each articles.
+
+###### citation.py
+	- This python file contains the schema for the Citation collection. 
+	
+###### website.py
+	- This python file contains the schema for the Website collection.
 
 ###### root.py
 	- This file contains the User Interface for our system.
