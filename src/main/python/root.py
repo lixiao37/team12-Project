@@ -77,6 +77,7 @@ class Root:
                     <input type="button" value="Back" onClick="location='/'"/>
                 </center></body></html>""" % locals()
 
+    @require()
     @cherrypy.expose
     def display(self): # This page is http://127.0.0.1:8080/display
         article_template = Template(filename='articles.html')
