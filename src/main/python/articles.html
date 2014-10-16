@@ -1,0 +1,17 @@
+<html>
+	<body bgcolor="pink">
+		<center>
+			<h5> This page is for demo, to show that all the parsed articles from the database.</h5>
+	    	<h1 style="color:#0033CC">Article List</h1>
+	    	<form method="post" action="#Add show_article action here!#">
+	    		<input type="submit" value="Show articles"/>
+	    	</form>
+	    	<input type="button" value="Back" onClick="location='/'"/>
+		</center>
+		<ul>
+	   	% for a in articles:
+	    	<li><a href=${a.url}>${a.title}</li>
+	    % endfor
+	  </ul>
+	</body>
+</html>

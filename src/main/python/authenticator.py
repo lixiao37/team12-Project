@@ -7,7 +7,7 @@ import cherrypy
 import hashlib
 from cgi import escape
 from mongoengine import *
-from schema import User
+from user import User
 
 SESSION_KEY = '_cp_username'
 
@@ -129,6 +129,7 @@ class AuthController(object):
             Password: <input type="password" name="password" /><br/>
             <input type="submit" value="Log in" />
             <input type="button" value="Back" onClick="location='/home'"/>
+            </form>
         </center></body></html>""" % locals()
 
     @cherrypy.expose
