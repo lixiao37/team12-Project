@@ -22,7 +22,10 @@ class Citation(Document):
 	author = StringField()
 	article = ReferenceField(Article, reverse_delete_rule=CASCADE)
 
-# defining the User document's schema
+# Defining the User document's schema
 class User(Document):
     name = StringField(required=True, unique=True)
     password = StringField(required=True)
+    group = StringField()
+    sources = ListField()
+    targets = ListField()
