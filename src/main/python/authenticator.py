@@ -7,7 +7,7 @@ import cherrypy
 import hashlib
 from cgi import escape
 from mongoengine import *
-from schema import User
+from user import User
 
 SESSION_KEY = '_cp_username'
 

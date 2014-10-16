@@ -1,6 +1,8 @@
 import cherrypy
 from mako.template import Template
-from schema import *
+from article import Article
+from website import Website
+from mongoengine import *
 from authenticator import AuthController, require, member_of, name_is
 
 connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
