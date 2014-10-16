@@ -28,16 +28,16 @@ class Parser(object):
 		else:
 			return False
 
-	def add_to_database(self, kwargs):
+	def add_to_database(self, article_meta=None, website_meta=None,
+						citation_meta=None):
 		'''API function to add parsed data into the database'''
-		if not self.isConnect():
-			self.connect()
-
-		art = Article(	title=kwargs.get("title"),
-						author=kwargs.get("author"),
-						last_modified_date=kwargs.get("last_modified_date"),
-						html=kwargs.get("html"),
-						url=kwargs.get("url")
+		art = Article(
+				title=article_meta.get("title"),
+				author=article_meta.get("author"),
+				last_modified_date=article_meta.get("last_modified_date"),
+				html=article_meta.get("html"),
+				url=article_meta.get("url"),
+				website=self.db_website_object
 					)
 		status = art.save()
 		if status:

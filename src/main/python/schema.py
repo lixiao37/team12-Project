@@ -1,17 +1,16 @@
 from mongoengine import *
 
 class Website(Document):
-	name = StringField()
+	name = StringField(required=True, unique=True)
 	homepage_url = StringField()
 	country = StringField()
-	search_url = StringField()
 
 class Article(Document):
-	title = StringField()
+	title = StringField(required=True)
 	author = StringField()
 	last_modified_date = DateTimeField()
 	html = StringField()
-	url = URLField()
+	url = URLField(required=True, unique=True)
 	website = ReferenceField(Website, reverse_delete_rule=CASCADE)
 	text = StringField()
 	citations = ListField()

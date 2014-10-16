@@ -12,3 +12,6 @@ target
 
 #ignore the swp files
 *.swp
+
+#ignore mac finder tmp files
+*.DS_Store

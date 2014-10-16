@@ -5,11 +5,34 @@ from parser import *
 class AlJazeeraParser(Parser):
 
     session = None
+    base_url = "http://www.aljazeera.com"
     search_url = "/Services/Search/?q={}&r={}"
+    name = "AlJazeera"
+    country = "Qatar"
+    db_website_object = None
 
     def __init__ (self):
         #create a connection to the website
-        self.session = dryscrape.Session(base_url="http://www.aljazeera.com")
+        self.session = dryscrape.Session(base_url=self.base_url)
+
+        #connect to the database
+        if not self.isConnect():
+            self.connect()
+
+        #add website meta data into the database
+        web = Website.objects(
+                    name=self.name,
+                    homepage_url=self.base_url,
+                    country=self.country
+                    ).first()
+        if not web:
+            web = Website(
+                    name=self.name,
+                    homepage_url=self.base_url,
+                    country=self.country
+                    )
+            status = web.save()
+        self.db_website_object = web
 
     def search(self, q, limit=100):
         '''
@@ -52,7 +75,7 @@ class AlJazeeraParser(Parser):
 
 if __name__ == '__main__':
     p = AlJazeeraParser()
-    all_list = p.search('haaretz')
+    all_list = p.search('haaretz', limit=15)
     for a in all_list:
         meta = p.get_meta_data(a)
         p.add_to_database(meta)
