@@ -9,3 +9,6 @@ target
 
 #ignore the local coverage files
 .coverage
+
+#ignore the swp files
+*.swp
