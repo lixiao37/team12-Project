@@ -1,17 +1,24 @@
 <html>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	function show_articles(){
+		$.get("/display_show_articles",
+			function( data ) {
+			e = document.getElementById('articlelist');
+                        e.innerHTML = data;
+			}
+		);
+	}
+</script>
 	<body bgcolor="pink">
 		<center>
-			<h5> This page is for demo, to show that all the parsed articles from the database.</h5>
+		<h5> This page is for demo, to show that all the parsed articles from the database.</h5>
 	    	<h1 style="color:#0033CC">Article List</h1>
-	    	<form method="post" action="#Add show_article action here!#">
-	    		<input type="submit" value="Show articles"/>
-	    	</form>
-	    	<input type="button" value="Back" onClick="location='/'"/>
+		<button onclick="show_articles()">Show Articles</button>
+		<ul style="list-style-type:decimal;text-align:left;margin-left:38%;">
+		<div id="articlelist"></div>
+		</ul>
+		<input type="button" value="Back" onClick="location='/'"/>
 		</center>
-		<ul>
-	   	% for a in articles:
-	    	<li><a href=${a.url}>${a.title}</li>
-	    % endfor
-	  </ul>
 	</body>
 </html>
