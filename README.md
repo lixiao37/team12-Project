@@ -1,5 +1,11 @@
 # Team-12(CoffeeCoders):
 
+### Branches
+	- master (stable, for releases)
+	- develop (unstable, for development)
+
+**Note to TA: Please checkout the master branch for the latest/final release.**
+
 ### Dependencies:
 	- pybuilder
 	- cherrypy
