@@ -1,0 +1,64 @@
+<html>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	function measure_sources(){
+		$.get("/track_sources",
+			function( data ) {
+			e = document.getElementById('sourcelist');
+                        e.innerHTML = data;
+			}
+		);
+	}
+	function measure_targets(){
+		$.get("/track_targets",
+			function( data ) {
+			e = document.getElementById('targetlist');
+                        e.innerHTML = data;
+			}
+		);
+	}
+</script>
+	<body bgcolor="pink">
+		<center>
+		<h1 style="color:#0033CC">This is for tracking!</h1>
+		Add the website sources below. <br/>
+		<!--I don't know how to do the following thing:
+		~Click add button, it will add that target website to the database.
+		~And that add button can also perform ajax methods such as 
+		displaying the list of target website below without refreshing 
+		the website.
+		~So as the delete button.
+		
+		<form method="post" action="" id="form1">
+		<input type="text" id="sources"/>
+		<input type="button" value="Add source" type="submit" 
+		onclick="form1.action='#Add add_action here!#';form1.submit();">
+		<input type="button" value="Delete source" type="submit" 
+		onclick="form1.action='#Add delete_action here!#';form1.submit();">
+		</form>
+		-->
+		<input type="text" id="sources"/><br/>
+		<button onclick="measure_sources()">Add Sources</button>
+		<button onclick="measure_sources()">Delete Sources</button>
+		<br/>
+		<div id="sourcelist"></div>
+		<br/>
+		Add the website targets below. <br/>
+		<!--
+		<form method="post" action="" id="form2">
+		<input type="text" id="targets"/>
+		<input type="button" value="Add target" type="submit" 
+		onclick="form2.action='#Add add_action here!#';form2.submit();"/>
+		<input type="button" value="Delete target" type="submit" 
+		onclick="form2.action='#Add delete_action here!#';form2.submit();"/>
+		</form>
+		-->
+		<input type="text" id="targets"/><br/>
+		<button onclick="measure_targets()">Add Targets</button>
+		<button onclick="measure_targets()">Delete Targets</button>
+		<br/>
+		<div id="targetlist"></div>
+		<br/>
+		<input type="button" value="Back" onClick="location='/'"/>
+                </center></body>
+</html>
