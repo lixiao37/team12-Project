@@ -59,18 +59,21 @@ class Root:
   
     @cherrypy.expose
     def track_sources(self):
-        sources = User.Objects().sources
-        return """% for a in sources:
-                <li>a</li>
-                % endfor"""
+        if cherrypy.session["user"]:
+            user = User.objects(Q(name=cherrypy.session["user"]))
+            show_sources_template = Template(filename='show sources.html')
+            sources = user.sources
+            return show_sources_template.render(sources=sources)
     
     @cherrypy.expose
     def track_targets(self):
-        targets = User.Objects().targets
-        return """% for a in targets:
-                <li>a</li>
-                % endfor"""        
-
+        if cherrypy.session["user"]:
+            user = User.objects(Q(name=cherrypy.session["user"]))
+            show_targets_template = Template(filename='show targets.html')
+            targets = user.targets
+            return show_targets_template.render(targets=targets)
+    
+    @require()
     @cherrypy.expose
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
         track_template = Template(filename='track.html')
@@ -81,7 +84,8 @@ class Root:
         show_article_template = Template(filename='show articles.html')
         articles = Article.objects()
         return show_article_template.render(articles=articles)
-
+    
+    @require()
     @cherrypy.expose
     def display(self): # This page is http://127.0.0.1:8080/display
         article_template = Template(filename='articles.html')

@@ -112,9 +112,11 @@ class AuthController(object):
     
     def on_login(self, username):
         """Called on successful login"""
+        cherrypy.session["user"] = username
     
     def on_logout(self, username):
         """Called on logout"""
+        cherrypy.session.pop("user", None)
     
     def get_loginform(self, username, msg="Enter login information", from_page="/"):
         # 2 lines of code to prevent XSS vulnerability
