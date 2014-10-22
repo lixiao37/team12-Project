@@ -1,0 +1,6 @@
+pybuilder
+cherrypy
+mongoengine
+beautifulsoup4
+mako
+
