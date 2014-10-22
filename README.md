@@ -12,6 +12,7 @@
 	- mongoengine
 	- beautifulsoup4
 	- mako
+	- dryscrape
 
 Most of the dependencies are python modules, therefore you can install them
 locally by running "pip install {module_name}".
