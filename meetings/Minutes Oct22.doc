@@ -1,0 +1,28 @@
+Minutes: Oct 22
+-Paco's notes: need to fix release plan:
+			need different columns for iterations(?)
+			release plan subset is of iteration plan(?)
+			 need to split release plan to iterations and not just release dates
+			release plan more in-depth as in contains programming tasks
+		put user stories to 'done' section when done
+		need to fix classes in accordance to CRC models
+		need to mention in CRC model that documents come from mongo
+		install script:
+			include dependencies 
+			must have txt file of pip install commands
+		more detail for burndown chart:
+			include project velocity
+			include log of events
+			include units of measurement on the chart 
+		put cost, in weeks, in trello board
+		need consistent commits from all group members:
+			try for daily commits
+
+-implementation and iteration:
+	 include snapshot feature(?)
+	parser link to websites
+	need to do something about cherrypy being in root.py
+	try to make some test cases:
+		need test cases for cherrypy
+	
+	
