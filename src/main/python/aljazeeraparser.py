@@ -1,4 +1,6 @@
 import dryscrape
+import requests
+import re
 from bs4 import BeautifulSoup
 from parser import *
 
@@ -73,10 +75,41 @@ class AlJazeeraParser(Parser):
 
         return dictionary
 
+    def extract_citation(self, soup):
+        cited = []
+        key_href_list = soup.find_all(href=re.compile("haaretz.com"))
+        for a in key_href_list:
+            cited.append(a.parent)
+
+        key_text_list = soup.find_all(text=re.compile("Haaretz"))
+        for t in key_text_list:
+            # if t.parent.name == 'a':
+            #     continue
+            if t.parent.name == 'em':
+                cited.append(t.parent.parent)
+            else:
+                if t.parent not in cited:
+                    cited.append(t.parent)
+            # else:
+            #     print t
+                # cited.append(t.parent.parent)
+            # elif t.parent.name != 'p' or t.parent.name != 'a':
+            #     cited.append(t.parent.parent)
+            # else:
+                # cited.append(t.parent)
+
+        return list(set(cited))
+
 if __name__ == '__main__':
     p = AlJazeeraParser()
     all_list = p.search('haaretz', limit=15)
     for a in all_list:
-        meta = p.get_meta_data(a)
-        p.add_to_database(meta)
+        r = requests.get(a)
+        for x in  p.extract_citation(BeautifulSoup(r.content)):
+            print x
+        print "DONE"
+
+        # meta = p.get_meta_data(a)
+        # p.add_to_database(meta)
+
 
