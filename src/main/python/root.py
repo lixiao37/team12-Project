@@ -35,8 +35,6 @@ class Root:
     @cherrypy.expose
     @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
-        #return """<center><h1 style="color:#0033CC">Home Screen</h1>
-        #This page only requires a valid login.</center>"""
         return '''<html><body bgcolor="pink"><center>
                     <h1 style="color:#0033CC">Welcome to menu!</h1>
                     <input type="button" value="Tracking sources and targets" onclick="location='/tracking_list'">
@@ -56,22 +54,68 @@ class Root:
             I want to log in the system!
             <input type="button" value="Log in" onClick="location='/auth/login'"/>
         </center></body></html>""" % locals()
-  
+    
+    @cherrypy.expose
+    def add_sources(self, sources=None):
+        user = User.objects(name=cherrypy.session["user"]).first()
+        if sources == "":
+            return "2"
+        elif sources in user.sources:
+            return "0"
+        else:
+            user.sources.append(sources)
+            user.save()
+            return "1"
+    
+    @cherrypy.expose
+    def delete_sources(self, sources=None):
+        user = User.objects(name=cherrypy.session["user"]).first()
+        if sources == "":
+            return "2"
+        elif sources in user.sources:
+            user.sources.remove(sources)
+            user.save()
+            return "1"
+        else:
+            return "0"
+            
+    @cherrypy.expose
+    def add_targets(self, targets=None):
+        user = User.objects(name=cherrypy.session["user"]).first()
+        if targets == "":
+            return "2"
+        elif targets in user.targets:
+            return "0"
+        else:
+            user.targets.append(targets)
+            user.save()
+            return "1"
+                            
+    @cherrypy.expose
+    def delete_targets(self, targets=None):
+        user = User.objects(name=cherrypy.session["user"]).first()
+        if targets == "":
+            return "2"
+        elif targets in user.targets:
+            user.targets.remove(targets)
+            user.save()
+            return "1"
+        else:
+            return "0"                
+        
     @cherrypy.expose
     def track_sources(self):
-        if cherrypy.session["user"]:
-            user = User.objects(Q(name=cherrypy.session["user"]))
-            show_sources_template = Template(filename='show sources.html')
-            sources = user.sources
-            return show_sources_template.render(sources=sources)
+        user = User.objects(name=cherrypy.session["user"]).first()
+        show_sources_template = Template(filename='show_sources.html')
+        sources = user.sources
+        return show_sources_template.render(sources=sources)
     
     @cherrypy.expose
     def track_targets(self):
-        if cherrypy.session["user"]:
-            user = User.objects(Q(name=cherrypy.session["user"]))
-            show_targets_template = Template(filename='show targets.html')
-            targets = user.targets
-            return show_targets_template.render(targets=targets)
+        user = User.objects(name=cherrypy.session["user"]).first()
+        show_targets_template = Template(filename='show_targets.html')
+        targets = user.targets
+        return show_targets_template.render(targets=targets)
     
     @require()
     @cherrypy.expose
@@ -81,7 +125,7 @@ class Root:
     
     @cherrypy.expose
     def display_show_articles(self):
-        show_article_template = Template(filename='show articles.html')
+        show_article_template = Template(filename='show_articles.html')
         articles = Article.objects()
         return show_article_template.render(articles=articles)
     
