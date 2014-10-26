@@ -2,18 +2,22 @@
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
-		$.get("/track_sources",
-			function( data ) {
-			e = document.getElementById('sourcelist');
-			e.innerHTML = data;
-			}
-		);
-		$.get("/track_targets",
-			function( data ) {
-			e = document.getElementById('targetlist');
-			e.innerHTML = data;
-			}
-		);
+		/**
+		 * gets data from a page, then displays the data to a 
+		 * area(the div id) located in the web page 
+		 */
+		function display_data(page, area) {
+			$.get(page, function(data) {
+				e = document.getElementById(area);
+				e.innerHTML = data;
+			});
+		}
+
+		// when page starts up, display the sources and targets lists
+		display_data('/track_sources', 'sourcelist');
+		display_data('/track_targets', 'targetlist');
+
+		// function for add source button
 		$("#add_sources").click(function(){
 			$.post("/add_sources",
 				{sources:$("#sources")[0].value},
@@ -26,13 +30,11 @@
 						alert("Fail: The text box is empty.");}
 				}
 			);
-			$.get("/track_sources",
-				function( data ) {
-				e = document.getElementById('sourcelist');
-				e.innerHTML = data;
-				}
-			);
+			// displays the updated list from the database
+			display_data('/track_sources', 'sourcelist');
 		});
+
+		// function for delete source button
 		$("#delete_sources").click(function(){
 			$.post("/delete_sources",
 				{sources:$("#sources")[0].value},
@@ -45,13 +47,11 @@
 						alert("Fail: The text box is empty.");}
 				}
 			);
-			$.get("/track_sources",
-				function( data ) {
-				e = document.getElementById('sourcelist');
-				e.innerHTML = data;
-				}
-			);
+			// displays the updated list from the database
+			display_data('/track_sources', 'sourcelist');
 		});
+
+		// function for add targets button
 		$("#add_targets").click(function(){
 			$.post("/add_targets",
 				{targets:$("#targets")[0].value},
@@ -64,13 +64,11 @@
 						alert("Fail: The text box is empty.");}
 				}
 			);
-			$.get("/track_targets",
-				function( data ) {
-				e = document.getElementById('targetlist');
-				e.innerHTML = data;
-				}
-			);
+			// displays the updated list from the database
+			display_data('/track_targets', 'targetlist');
 		});
+
+		// function for delete source button
 		$("#delete_targets").click(function(){
 			$.post("/delete_targets",
 				{targets:$("#targets")[0].value},
@@ -83,12 +81,8 @@
 						alert("Fail: The text box is empty.");}
 				}
 			);
-			$.get("/track_targets",
-				function( data ) {
-				e = document.getElementById('targetlist');
-				e.innerHTML = data;
-				}
-			);
+			// displays the updated list from the database
+			display_data('/track_targets', 'targetlist');
 		});
 	});
 </script>
