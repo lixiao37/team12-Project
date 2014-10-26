@@ -36,7 +36,7 @@ class Root:
     @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
         return '''<html><body bgcolor="pink"><center>
-                    <h1 style="color:#0033CC">Welcome to menu!</h1>
+                    <h1 style="color:#0033CC">Welcome to Menu!</h1>
                     <input type="button" value="Tracking sources and targets" onclick="location='/tracking_list'">
                     <input type="button" value="Display articles" onclick="location='/display'">
                     <br/>
@@ -49,10 +49,12 @@ class Root:
     @cherrypy.expose
     def home(self): # This page is http://127.0.0.1:8080/home
         return """<html><body bgcolor="pink"><center>
-        <h5> This page is open to everyone including people who hasn't logged in</h5>
-            <h1 style="color:#0033CC">Main Screen</h1>
-            I want to log in the system!
-            <input type="button" value="Log in" onClick="location='/auth/login'"/>
+            <h1 style="color:#0033CC">Welcome to the Home Page!</h1>
+            <input type="button" value="Log in" 
+            style="height:50px; width:100px" onClick="location='/auth/login'"/>
+            <br>
+            <br>
+            To continue and use the system, you must login to your account.
         </center></body></html>""" % locals()
     
     @cherrypy.expose
@@ -131,7 +133,7 @@ class Root:
         elif 'twitter_target_list' == list_type:
             list_name = user.twitter_targets
         return show_list_template.render(list_name=list_name)
-            
+
     @require()
     @cherrypy.expose
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
