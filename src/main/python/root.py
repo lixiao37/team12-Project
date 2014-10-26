@@ -56,53 +56,40 @@ class Root:
         </center></body></html>""" % locals()
     
     @cherrypy.expose
-    def add_sources(self, sources=None):
+    def modify_data(self, value=None, list_type=None, mod_type=None):
         user = User.objects(name=cherrypy.session["user"]).first()
-        if sources == "":
-            return "2"
-        elif sources in user.sources:
-            return "0"
-        else:
-            user.sources.append(sources)
-            user.save()
-            return "1"
+        # checks to see if the textbox is empty
+        if value == "":
+            return "Fail: The text box is empty."
+        if mod_type == "add":
+            if list_type == "#sources":
+                if value in user.sources:
+                    return "Fail: This website is already in the source list."
+                else:
+                    user.sources.append(value)
+                    user.save()
+            elif list_type == "#targets":
+                if value in user.targets:
+                    return "Fail: This website is already in the target list."
+                else:
+                    user.targets.append(value)
+                    user.save()
+        elif mod_type == "delete":
+            if list_type == "#sources":
+                if value in user.sources:
+                    user.sources.remove(value)
+                    user.save()
+                else:
+                    return "Fail: This website is not in the source list"
+            elif list_type == "#targets":
+                if value in user.targets:
+                    user.targets.remove(value)
+                    user.save()
+                else:
+                    return "Fail: This website is not in the target list"
+        return "Success!"              
     
-    @cherrypy.expose
-    def delete_sources(self, sources=None):
-        user = User.objects(name=cherrypy.session["user"]).first()
-        if sources == "":
-            return "2"
-        elif sources in user.sources:
-            user.sources.remove(sources)
-            user.save()
-            return "1"
-        else:
-            return "0"
-            
-    @cherrypy.expose
-    def add_targets(self, targets=None):
-        user = User.objects(name=cherrypy.session["user"]).first()
-        if targets == "":
-            return "2"
-        elif targets in user.targets:
-            return "0"
-        else:
-            user.targets.append(targets)
-            user.save()
-            return "1"
-                            
-    @cherrypy.expose
-    def delete_targets(self, targets=None):
-        user = User.objects(name=cherrypy.session["user"]).first()
-        if targets == "":
-            return "2"
-        elif targets in user.targets:
-            user.targets.remove(targets)
-            user.save()
-            return "1"
-        else:
-            return "0"                
-        
+    # gets the user's list of sources and returns it to the tracking page    
     @cherrypy.expose
     def track_sources(self):
         user = User.objects(name=cherrypy.session["user"]).first()
@@ -110,6 +97,7 @@ class Root:
         sources = user.sources
         return show_sources_template.render(sources=sources)
     
+    # gets the user's list of targets and returns it to the tracking page
     @cherrypy.expose
     def track_targets(self):
         user = User.objects(name=cherrypy.session["user"]).first()
