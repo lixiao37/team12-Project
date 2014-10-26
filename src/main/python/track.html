@@ -8,7 +8,7 @@
 		 * area(the div id) located in the web page
 		 */
 		function display_data(page, area) {
-			$.get(page, 
+			$.get(page, {list_type:area}, 
 				function(data) {
 					e = document.getElementById(area);
 					e.innerHTML = data;
@@ -30,60 +30,103 @@
 				}
 			);
 			// displays the updated list from the database to the page
-			if (textbox_name == "#sources") {
-				display_data('/track_sources', 'sourcelist');}
-			else if (textbox_name == "#targets") {
-				display_data('/track_targets', 'targetlist');}
+			if (textbox_name == "#news_source") {
+				display_data('/get_list', 'news_source_list');}
+			else if (textbox_name == "#news_target") {
+				display_data('/get_list', 'news_target_list');}
+			else if (textbox_name == "#twitter_source") {
+				display_data('/get_list', 'twitter_source_list');}
+			else if (textbox_name == "#twitter_target") {
+				display_data('/get_list', 'twitter_target_list');}
 		}
 		// --------general function declarations end----------
 
 
 		// ---------button click function declarations--------
-		$("#add_sources").click(function(){
-			modify_data("/modify_data", "#sources", "add");
+		$("#add_news_source").click(function(){
+			modify_data("/modify_data", "#news_source", "add");
 		});
 
-		$("#delete_sources").click(function(){
-			modify_data("/modify_data", "#sources", "delete");
+		$("#delete_news_source").click(function(){
+			modify_data("/modify_data", "#news_source", "delete");
 		});
 
-		$("#add_targets").click(function(){
-			modify_data("/modify_data", "#targets", "add");
+		$("#add_news_target").click(function(){
+			modify_data("/modify_data", "#news_target", "add");
 		});
 
-		$("#delete_targets").click(function(){
-			modify_data("/modify_data", "#targets", "delete");
+		$("#delete_news_target").click(function(){
+			modify_data("/modify_data", "#news_target", "delete");
 		});
+
+		$("#add_twitter_source").click(function(){
+			modify_data("/modify_data", "#twitter_source", "add");
+		});
+
+		$("#delete_twitter_source").click(function(){
+			modify_data("/modify_data", "#twitter_source", "delete");
+		});
+
+		$("#add_twitter_target").click(function(){
+			modify_data("/modify_data", "#twitter_target", "add");
+		});
+
+		$("#delete_twitter_target").click(function(){
+			modify_data("/modify_data", "#twitter_target", "delete");
+		});
+
 		// ------button click function declarations end--------
 
 
 		// when page starts up, display the sources and targets lists
-		display_data('/track_sources', 'sourcelist');
-		display_data('/track_targets', 'targetlist');
+		display_data('/get_list', 'news_source_list')
+		display_data('/get_list', 'news_target_list')
+		display_data('/get_list', 'twitter_source_list')
+		display_data('/get_list', 'twitter_target_list')
 
 	});
 </script>
-	<body bgcolor="pink">
-		<center>
-		<h1 style="color:#0033CC">This is for tracking!</h1>
+<body bgcolor="pink">
+	<center>
+	<h1 style="color:#0033CC">News Section</h1>
 		Add the website sources below. <br/>
-		<input type="text" id="sources"/><br/>
-		<button id="add_sources">Add Sources</button>
-		<button id="delete_sources">Delete Sources</button>
+		<input type="text" id="news_source"/><br/>
+		<button id="add_news_source">Add Source</button>
+		<button id="delete_news_source">Delete Source</button>
 		<br/>
 		<ul style="list-style-type:decimal;text-align:left;margin-left:44%;">
-		<div id="sourcelist"></div>
+		<div id="news_source_list"></div>
 		</ul>
 		<br/>
 		Add the website targets below. <br/>
-		<input type="text" id="targets"/><br/>
-		<button id="add_targets">Add Targets</button>
-		<button id="delete_targets">Delete Targets</button>
+		<input type="text" id="news_target"/><br/>
+		<button id="add_news_target">Add Target</button>
+		<button id="delete_news_target">Delete Target</button>
 		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:47%;">
-		<div id="targetlist"></div>
+		<ul style="list-style-type:decimal;text-align:left;margin-left:44%;">
+		<div id="news_target_list"></div>
 		</ul>
 		<br/>
-		<input type="button" value="Back" onClick="location='/'"/>
-                </center></body>
+	<h1 style="color:#0033CC">Twitter Section</h1>
+		Add the twitter sources below. <br/>
+		<input type="text" id="twitter_source"/><br/>
+		<button id="add_twitter_source">Add Source</button>
+		<button id="delete_twitter_source">Delete Source</button>
+		<br/>
+		<ul style="list-style-type:decimal;text-align:left;margin-left:44%;">
+		<div id="twitter_source_list"></div>
+		</ul>
+		<br/>
+		Add the twitter targets below. <br/>
+		<input type="text" id="twitter_target"/><br/>
+		<button id="add_twitter_target">Add Target</button>
+		<button id="delete_twitter_target">Delete Target</button>
+		<br/>
+		<ul style="list-style-type:decimal;text-align:left;margin-left:44%;">
+		<div id="twitter_target_list"></div>
+		</ul>
+		<br/>
+	<input type="button" value="Back" onClick="location='/'"/>
+	</center>
+</body>
 </html>
