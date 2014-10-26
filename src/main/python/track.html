@@ -2,88 +2,65 @@
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
+		// ----------general function declarations-----------
 		/**
 		 * gets data from a page, then displays the data to a 
-		 * area(the div id) located in the web page 
+		 * area(the div id) located in the web page
 		 */
 		function display_data(page, area) {
-			$.get(page, function(data) {
-				e = document.getElementById(area);
-				e.innerHTML = data;
-			});
+			$.get(page, 
+				function(data) {
+					e = document.getElementById(area);
+					e.innerHTML = data;
+				}
+			);
 		}
+
+		/**
+		 * sends the string in the textbox to a page which
+		 * will then modify the data depending on mod_type
+		 */
+		function modify_data(page, textbox_name, mod_type) {
+			// modifies the user's source/target list
+			$.post(page, {value:$(textbox_name)[0].value, 
+				list_type:textbox_name, mod_type:mod_type}, 
+				function(status_message){
+					// alerts the status
+					alert(status_message);
+				}
+			);
+			// displays the updated list from the database to the page
+			if (textbox_name == "#sources") {
+				display_data('/track_sources', 'sourcelist');}
+			else if (textbox_name == "#targets") {
+				display_data('/track_targets', 'targetlist');}
+		}
+		// --------general function declarations end----------
+
+
+		// ---------button click function declarations--------
+		$("#add_sources").click(function(){
+			modify_data("/modify_data", "#sources", "add");
+		});
+
+		$("#delete_sources").click(function(){
+			modify_data("/modify_data", "#sources", "delete");
+		});
+
+		$("#add_targets").click(function(){
+			modify_data("/modify_data", "#targets", "add");
+		});
+
+		$("#delete_targets").click(function(){
+			modify_data("/modify_data", "#targets", "delete");
+		});
+		// ------button click function declarations end--------
+
 
 		// when page starts up, display the sources and targets lists
 		display_data('/track_sources', 'sourcelist');
 		display_data('/track_targets', 'targetlist');
 
-		// function for add source button
-		$("#add_sources").click(function(){
-			$.post("/add_sources",
-				{sources:$("#sources")[0].value},
-				function(status){
-					if (status=="1"){
-						alert("Success!");}
-					else if (status=="0"){
-						alert("Fail: This website is already in the source list.");}
-					else{
-						alert("Fail: The text box is empty.");}
-				}
-			);
-			// displays the updated list from the database
-			display_data('/track_sources', 'sourcelist');
-		});
-
-		// function for delete source button
-		$("#delete_sources").click(function(){
-			$.post("/delete_sources",
-				{sources:$("#sources")[0].value},
-				function(status){
-					if (status=="1"){
-						alert("Success!");}
-					else if (status == "0"){
-						alert("Fail: This website is not in the source list");}
-					else{
-						alert("Fail: The text box is empty.");}
-				}
-			);
-			// displays the updated list from the database
-			display_data('/track_sources', 'sourcelist');
-		});
-
-		// function for add targets button
-		$("#add_targets").click(function(){
-			$.post("/add_targets",
-				{targets:$("#targets")[0].value},
-				function(status){
-					if (status=="1"){
-						alert("Success!");}
-					else if (status=="0"){
-						alert("Fail: This website is already in the target list.");}
-					else{
-						alert("Fail: The text box is empty.");}
-				}
-			);
-			// displays the updated list from the database
-			display_data('/track_targets', 'targetlist');
-		});
-
-		// function for delete source button
-		$("#delete_targets").click(function(){
-			$.post("/delete_targets",
-				{targets:$("#targets")[0].value},
-				function(status){
-					if (status=="1"){
-						alert("Success!");}
-					else if (status == "0"){
-						alert("Fail: This website is not in the target list");}
-					else{
-						alert("Fail: The text box is empty.");}
-				}
-			);
-			// displays the updated list from the database
-			display_data('/track_targets', 'targetlist');
-		});
 	});
 </script>
 	<body bgcolor="pink">
