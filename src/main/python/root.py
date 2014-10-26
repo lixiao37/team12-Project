@@ -67,26 +67,26 @@ class Root:
             # adding news sources and targets
             if list_type == "#news_source":
                 if value in user.news_sources:
-                    return "Fail: This website is already in the source list."
+                    return "Fail: This news link is already in the source list."
                 else:
                     user.news_sources.append(value)
                     user.save()
             elif list_type == "#news_target":
                 if value in user.news_targets:
-                    return "Fail: This website is already in the target list."
+                    return "Fail: This news link is already in the target list."
                 else:
                     user.news_targets.append(value)
                     user.save()
             # adding twitter sources and targets
             elif list_type == "#twitter_source":
                 if value in user.twitter_sources:
-                    return "Fail: This website is already in the source list."
+                    return "Fail: This twitter link is already in the source list."
                 else:
                     user.twitter_sources.append(value)
                     user.save()
             elif list_type == "#twitter_target":
                 if value in user.twitter_targets:
-                    return "Fail: This website is already in the target list."
+                    return "Fail: This twitter link is already in the target list."
                 else:
                     user.twitter_targets.append(value)
                     user.save()
@@ -97,13 +97,13 @@ class Root:
                     user.news_sources.remove(value)
                     user.save()
                 else:
-                    return "Fail: This twitter link is not in the source list"
+                    return "Fail: This news link is not in the source list"
             elif list_type == "#news_target":
                 if value in user.news_targets:
                     user.news_targets.remove(value)
                     user.save()
                 else:
-                    return "Fail: This twitter link is not in the target list"
+                    return "Fail: This news link is not in the target list"
             # deleting twitter sources and targets
             elif list_type == "#twitter_source":
                 if value in user.twitter_sources:
