@@ -87,14 +87,21 @@
 	});
 </script>
 <body bgcolor="pink">
+	<div align = "right">
+		<input type="button" value="Menu Page" onClick="location='/'"/>
+		<input type="button" value="Logout" onClick="location='/auth/logout'"/>
+	</div>
 	<center>
-	<h1 style="color:#0033CC">News Section</h1>
+	<h1 style="color:#0033CC">Tracking Page</h1>
+	<hr>
+    <div style="float: left; width: 50%">
+	<h2 style="color:#0033CC">News Section</h2>
 		Add the website sources below. <br/>
 		<input type="text" id="news_source"/><br/>
 		<button id="add_news_source">Add Source</button>
 		<button id="delete_news_source">Delete Source</button>
 		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:44%;">
+		<ul style="list-style-type:decimal;text-align:left;margin-left:35%;">
 		<div id="news_source_list"></div>
 		</ul>
 		<br/>
@@ -103,17 +110,19 @@
 		<button id="add_news_target">Add Target</button>
 		<button id="delete_news_target">Delete Target</button>
 		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:44%;">
+		<ul style="list-style-type:decimal;text-align:left;margin-left:35%;">
 		<div id="news_target_list"></div>
 		</ul>
 		<br/>
-	<h1 style="color:#0033CC">Twitter Section</h1>
+	</div>
+	<div style="float: right; width: 50%">
+	<h2 style="color:#0033CC">Twitter Section</h2>
 		Add the twitter sources below. <br/>
 		<input type="text" id="twitter_source"/><br/>
 		<button id="add_twitter_source">Add Source</button>
 		<button id="delete_twitter_source">Delete Source</button>
 		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:44%;">
+		<ul style="list-style-type:decimal;text-align:left;margin-left:35%;">
 		<div id="twitter_source_list"></div>
 		</ul>
 		<br/>
@@ -122,11 +131,11 @@
 		<button id="add_twitter_target">Add Target</button>
 		<button id="delete_twitter_target">Delete Target</button>
 		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:44%;">
+		<ul style="list-style-type:decimal;text-align:left;margin-left:35%;">
 		<div id="twitter_target_list"></div>
 		</ul>
 		<br/>
-	<input type="button" value="Back" onClick="location='/'"/>
+	</div>
 	</center>
 </body>
 </html>
