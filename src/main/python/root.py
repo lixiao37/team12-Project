@@ -62,49 +62,76 @@ class Root:
         if value == "":
             return "Fail: The text box is empty."
         if mod_type == "add":
-            if list_type == "#sources":
-                if value in user.sources:
+            # adding news sources and targets
+            if list_type == "#news_source":
+                if value in user.news_sources:
                     return "Fail: This website is already in the source list."
                 else:
-                    user.sources.append(value)
+                    user.news_sources.append(value)
                     user.save()
-            elif list_type == "#targets":
-                if value in user.targets:
+            elif list_type == "#news_target":
+                if value in user.news_targets:
                     return "Fail: This website is already in the target list."
                 else:
-                    user.targets.append(value)
+                    user.news_targets.append(value)
+                    user.save()
+            # adding twitter sources and targets
+            elif list_type == "#twitter_source":
+                if value in user.twitter_sources:
+                    return "Fail: This website is already in the source list."
+                else:
+                    user.twitter_sources.append(value)
+                    user.save()
+            elif list_type == "#twitter_target":
+                if value in user.twitter_targets:
+                    return "Fail: This website is already in the target list."
+                else:
+                    user.twitter_targets.append(value)
                     user.save()
         elif mod_type == "delete":
-            if list_type == "#sources":
-                if value in user.sources:
-                    user.sources.remove(value)
+            # deleting news sources and targets
+            if list_type == "#news_source":
+                if value in user.news_sources:
+                    user.news_sources.remove(value)
                     user.save()
                 else:
-                    return "Fail: This website is not in the source list"
-            elif list_type == "#targets":
-                if value in user.targets:
-                    user.targets.remove(value)
+                    return "Fail: This twitter link is not in the source list"
+            elif list_type == "#news_target":
+                if value in user.news_targets:
+                    user.news_targets.remove(value)
                     user.save()
                 else:
-                    return "Fail: This website is not in the target list"
-        return "Success!"              
-    
-    # gets the user's list of sources and returns it to the tracking page    
+                    return "Fail: This twitter link is not in the target list"
+            # deleting twitter sources and targets
+            elif list_type == "#twitter_source":
+                if value in user.twitter_sources:
+                    user.twitter_sources.remove(value)
+                    user.save()
+                else:
+                    return "Fail: This twitter link is not in the source list"
+            elif list_type == "#twitter_target":
+                if value in user.twitter_targets:
+                    user.twitter_targets.remove(value)
+                    user.save()
+                else:
+                    return "Fail: This twitter link is not in the target list"
+        return "Success!"
+
+    # gets the user's list accordingly and returns it to the tracking page    
     @cherrypy.expose
-    def track_sources(self):
+    def get_list(self, list_type = None):
         user = User.objects(name=cherrypy.session["user"]).first()
-        show_sources_template = Template(filename='show_sources.html')
-        sources = user.sources
-        return show_sources_template.render(sources=sources)
-    
-    # gets the user's list of targets and returns it to the tracking page
-    @cherrypy.expose
-    def track_targets(self):
-        user = User.objects(name=cherrypy.session["user"]).first()
-        show_targets_template = Template(filename='show_targets.html')
-        targets = user.targets
-        return show_targets_template.render(targets=targets)
-    
+        show_list_template = Template(filename='show_list.html')
+        if 'news_source_list' == list_type:
+            list_name = user.news_sources
+        elif 'news_target_list' == list_type:
+            list_name = user.news_targets
+        elif 'twitter_source_list' == list_type:
+            list_name = user.twitter_sources
+        elif 'twitter_target_list' == list_type:
+            list_name = user.twitter_targets
+        return show_list_template.render(list_name=list_name)
+            
     @require()
     @cherrypy.expose
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
