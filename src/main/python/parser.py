@@ -13,6 +13,7 @@ class Parser(object):
     host = "ds035260.mongolab.com:35260"
     dbName = "userinterface"
     base_url = "http://www.google.ca"
+    #{0}:keyword, {1}:website, {2}:sort by month or year or day
     search_meta = "/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
     username = "admin"
     password = "admin"
@@ -37,7 +38,7 @@ class Parser(object):
     def searchArticle(self, q, site, since="y"):
         articles = []
 
-        #How old data do we need to search for? E.g. qdr:y, means 
+        #How old data do we need to search for? E.g. qdr:y, means
         #search articles upto one year old
         self.session.visit(self.search_meta.format(q, site, since))
         body = self.session.driver.body()
@@ -49,9 +50,9 @@ class Parser(object):
         resultsPage = [a.get("href") for a in soup.find_all("a", "fl")]
 
         for page in resultsPage:
-            self.session.visit(self.search_meta.format(q, site, since))
+            self.session.visit(page)
             body = self.session.driver.body()
-            soup = BeautifulSoup(body)    
+            soup = BeautifulSoup(body)
             for a in soup.find_all("a"):
                 if a.parent.name == "h3":
                     articles.append(a)
@@ -75,9 +76,11 @@ class Parser(object):
         else:
             print "ERROR: Article did not save successfully ...!"
 
+    def extract_citation(self, )
+
 if __name__ == '__main__':
     p = Parser()
-    articles = p.searchArticle("pakistan", "www.aljazeera.com", since="d")
+    articles = p.searchArticle("haaretz", "www.aljazeera.com")
     for a in articles:
         print a.text
     print len(articles)
