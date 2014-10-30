@@ -14,4 +14,9 @@ for link in soup.find_all('p'):
         for inlink in link.find_all('a'):
             if target in str(inlink):
                 extern = inlink.get('href')
+    elif target in str(link.find_all('a')):
+        for inlink in link.find_all('a'):
+            if target in str(inlink):
+                extern = inlink.get('href') 
+        
 print(extern)
