@@ -38,10 +38,13 @@ class Root:
         return '''<html><body bgcolor="pink"><center>
                     <h1 style="color:#0033CC">Welcome to Menu!</h1>
                     <input type="button" value="Tracking sources and targets" onclick="location='/tracking_list'">
+                    <br/>
                     <input type="button" value="Display articles" onclick="location='/display'">
                     <br/>
-                    <form method="post" action="/auth/logout">
+                    <input type="button" value="Generate Graph" onclick="location='/generate_graph'">
                     <br/>
+                    <br/>
+                    <form method="post" action="/auth/logout">
                     <input type="submit" value="Log out" />
                     </form>
                 </center></body></html>''' % locals()
@@ -151,6 +154,12 @@ class Root:
     def display(self): # This page is http://127.0.0.1:8080/display
         article_template = Template(filename='articles.html')
         return article_template.render()
+    
+    @require()
+    @cherrypy.expose
+    def generate_graph(self): # This page is http://127.0.0.1:8080/generate_graph
+        graph_template = Template(filename='graph.html')
+        return graph_template.render()
 
 
     @cherrypy.expose
