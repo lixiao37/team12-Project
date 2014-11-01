@@ -161,6 +161,15 @@ class Root:
         graph_template = Template(filename='graph.html')
         return graph_template.render()
 
+    # @require()
+    # @cherrypy.expose
+    # def get_graphs(self):
+    #     #total_graphs = ''
+    #     # for loop over sources to get website
+    #         # count how many citations there are for each target for that source
+    #         # total_graphs += show_graphs_template.render(source=source, targets=targets, target_count=targetcount)
+    #     show_graphs_template = Template(filename='show_graphs.html')
+    #     return show_graphs_template.render(source=source, targets=targets, target_count=targetcount)
 
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
