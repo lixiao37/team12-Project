@@ -12,4 +12,4 @@ class Article(Document):
 	website = ReferenceField(Website, reverse_delete_rule=CASCADE)
 	text = StringField()
 	citations = ListField()
-	quotes = ListField()
+	screenshot = BinaryField()
