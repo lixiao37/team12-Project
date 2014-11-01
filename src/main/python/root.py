@@ -160,6 +160,32 @@ class Root:
     def generate_graph(self): # This page is http://127.0.0.1:8080/generate_graph
         graph_template = Template(filename='graph.html')
         return graph_template.render()
+    
+    @cherrypy.expose
+    def get_graphs(self):
+        # Get the user who is logging in
+        user = User.objects(name=cherrypy.session["user"]).first()
+        news_sources = user.news_sources
+        news_targets = user.news_targets
+        
+        # Create an empty list with a specific size which describe the number 
+        # of target referenced by each source
+        target_count = [0] * len(news_targets)
+        total_graphs = ""
+        for source in news_sources:
+            # Find the articles which have a specific source website url
+            articles = Article.objects(website=Website.objects(homepage_url=source)[0])
+            for article in articles:
+                # Count the times that each target in the news_targets is in the
+                # citation list for each article and put it in the target_count
+                for citation in article.citations:
+                    i = 0
+                    while i < len(news_targets):
+                        if citation.target_article.website.homepage_url == news_targets[i]:
+                            target_count[i] += 1
+                        i += 1
+            #total_graphs += Template(filename='show_graphs.html').render(source=source, targets=news_targets, target_count=targetcount)
+        return str(target_count)
 
     # @require()
     # @cherrypy.expose
