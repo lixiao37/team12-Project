@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from article import *
 from website import *
 from user import *
+import re
 import urllib2
 import dryscrape
 
@@ -36,7 +37,12 @@ class Parser(object):
             return False
 
     def searchArticle(self, q, site, since="y"):
+        '''
+        Search for a keyword on Google and return the list of urls.
+        q=keyword, site=website_url, since=sort_by_last_modified
+        '''
         articles = []
+        m = re.compile(".*"+site+".*")
 
         #How old data do we need to search for? E.g. qdr:y, means
         #search articles upto one year old
@@ -45,7 +51,11 @@ class Parser(object):
         soup = BeautifulSoup(body)
         for a in soup.find_all("a"):
                 if a.parent.name == "h3":
-                    articles.append(a)
+                    url = a.get("href")
+                    complete_url = self.base_url + url
+                    if not m.match(complete_url):
+                        continue
+                    articles.append(complete_url)
 
         resultsPage = [a.get("href") for a in soup.find_all("a", "fl")]
 
@@ -55,7 +65,11 @@ class Parser(object):
             soup = BeautifulSoup(body)
             for a in soup.find_all("a"):
                 if a.parent.name == "h3":
-                    articles.append(a)
+                    url = a.get("href")
+                    complete_url = self.base_url + url
+                    if not m.match(complete_url):
+                        continue
+                    articles.append(complete_url)
 
         return list(set(articles))
 
@@ -76,12 +90,11 @@ class Parser(object):
         else:
             print "ERROR: Article did not save successfully ...!"
 
-    def extract_citation(self, )
 
 if __name__ == '__main__':
     p = Parser()
-    articles = p.searchArticle("haaretz", "www.aljazeera.com")
+    articles = p.searchArticle("haaretz", "www.bbc.com")
     for a in articles:
-        print a.text
+        print a
     print len(articles)
 
