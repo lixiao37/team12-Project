@@ -32,31 +32,18 @@ class Root:
     @cherrypy.expose
     @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
-        return '''<html><body bgcolor="pink"><center>
-                    <h1 style="color:#0033CC">Welcome to Menu!</h1>
-                    <input type="button" value="Tracking sources and targets" onclick="location='/tracking_list'">
-                    <br/>
-                    <input type="button" value="Display articles" onclick="location='/display'">
-                    <br/>
-                    <input type="button" value="Generate Graph" onclick="location='/generate_graphs'">
-                    <br/>
-                    <br/>
-                    <form method="post" action="/auth/logout">
-                    <input type="submit" value="Log out" />
-                    </form>
-                </center></body></html>''' % locals()
-
+        index_page_template = Template(filename='index.html')
+        return index_page_template.render()
+        
     @cherrypy.expose
     def home(self): # This page is http://127.0.0.1:8080/home
-        return """<html><body bgcolor="pink"><center>
-            <h1 style="color:#0033CC">Welcome to the Home Page!</h1>
-            <input type="button" value="Log in" 
-            style="height:50px; width:100px" onClick="location='/auth/login'"/>
-            <br>
-            <br>
-            To continue and use the system, you must login to your account.
-        </center></body></html>""" % locals()
+        home_page_template = Template(filename='home.html')
+        return home_page_template.render()
     
+    @cherrypy.expose
+    def example(self):
+        return """ hi"""
+
     @cherrypy.expose
     def modify_data(self, value=None, list_type=None, mod_type=None):
         user = User.objects(name=cherrypy.session["user"]).first()
