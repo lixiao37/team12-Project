@@ -150,28 +150,35 @@ class Root:
         page_header += graph_generator_template.render(name=cherrypy.session["user"])
 
         # generate a relation list, described in more depth at the fnc
-        relation_list = self.generate_relation_list()
+        relation_dict = self.generate_relation_dict()
 
         # generate basic bar graphs and add them to total_graphs
-        total_graphs += self.generate_basic_graphs(relation_list)
+        total_graphs += self.generate_basic_graphs(relation_dict)
 
         # generate a combined detailed graph and add it to total_graphs
+        total_graphs += self.generate_detailed_graph(relation_dict)
 
         return page_header + total_graphs
     
-    # generate basic bar graphs from the relation_list
-    def generate_detail_graph(self, relation_list):
-        pass
+    # generate a detail bar graph from the relation_dict
+    def generate_detailed_graph(self, relation_dict):
+        user = User.objects(name=cherrypy.session["user"]).first()
+        news_targets = user.news_targets
+        news_targets_str = str(news_targets).replace("u'","'")
+        graph_generator_template = Template(filename='detailed_graph_generator.html')
+        #return str(relation_dict.keys()) + " " + str(relation_dict.values())
+        return graph_generator_template.render(targets=news_targets_str, sources=relation_dict.keys(), target_counts=relation_dict.values())
 
-    # generate basic bar graphs from the relation_list
-    def generate_basic_graphs(self, relation_list):
+    # generate basic bar graphs from the relation_dict
+    def generate_basic_graphs(self, relation_dict):
+        user = User.objects(name=cherrypy.session["user"]).first()
+        news_targets = user.news_targets
         total_basic_graphs = ""
         graph_generator_template = Template(filename='basic_graph_generator.html')
-        for relation in relation_list:
-            news_targets_str = str(relation[1]).replace("u'","'")
-            source_name = relation[0].replace("http://","")
-            total_basic_graphs += graph_generator_template.render(source=relation[0], 
-                targets=news_targets_str, target_count=relation[2])
+        for source, target_count in relation_dict.iteritems():
+            news_targets_str = str(news_targets).replace("u'","'")
+            total_basic_graphs += graph_generator_template.render(source=source, 
+                targets=news_targets_str, target_count=target_count)
         return total_basic_graphs
 
     '''generates a list of string/string lists in the format
@@ -180,8 +187,8 @@ class Root:
         [s2, [t1, t2 ... tn], [tc1, tc2, ... tcn]], ...
         [sn, [t1, t2 ... tn], [tc1, tc2, ... tcn]]
         where sn is the source, tn is the target, tcn is the citation count of tn'''
-    def generate_relation_list(self):
-        relation_list = []
+    def generate_relation_dict(self):
+        relation_dict = {}
         # get the current user's sources and targets
         user = User.objects(name=cherrypy.session["user"]).first()
         news_sources = user.news_sources
@@ -202,8 +209,8 @@ class Root:
                         if citation.target_article.website.homepage_url == news_targets[i]:
                             target_count[i] += 1
                         i += 1
-            relation_list.append([source, news_targets, target_count])
-        return relation_list
+            relation_dict[source] = target_count
+        return relation_dict
 
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
