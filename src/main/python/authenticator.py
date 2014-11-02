@@ -125,7 +125,9 @@ class AuthController(object):
         return """
             <link rel="stylesheet" type="text/css" href="/static/css/general.css"/>
             <html><body><center>
+            <br><br>
             <h1>Login Screen</h1>
+            <hr>
             <form method="post" action="/auth/login">
             <input type="hidden" name="from_page" value="%(from_page)s" />
             %(msg)s<br/>

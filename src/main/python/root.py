@@ -125,7 +125,7 @@ class Root:
     @cherrypy.expose
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
         track_template = Template(filename='track.html')
-        return track_template.render()
+        return track_template.render(name=cherrypy.session["user"])
     
     @cherrypy.expose
     def display_show_articles(self):
@@ -137,7 +137,7 @@ class Root:
     @cherrypy.expose
     def display(self): # This page is http://127.0.0.1:8080/display
         article_template = Template(filename='articles.html')
-        return article_template.render()
+        return article_template.render(name=cherrypy.session["user"])
     
     @require()
     @cherrypy.expose
@@ -146,7 +146,7 @@ class Root:
         
         # Page header section o
         graph_generator_template = Template(filename='graph_page_header.html')
-        html_src += graph_generator_template.render()
+        html_src += graph_generator_template.render(name=cherrypy.session["user"])
 
         # Get the user who is logging in
         user = User.objects(name=cherrypy.session["user"]).first()

@@ -13,13 +13,19 @@
 </script>
 	<body>
 		<center>
-		<h5> This page is for demo, to show that all the parsed articles from the database.</h5>
-	    	<h1>Article List</h1>
+		<div align = "right">
+			Current User: ${name}<br>
+			<input type="button" value="Menu Page" onClick="location='/'"/>
+			<input type="button" value="Logout" onClick="location='/auth/logout'"/>
+			</div>
+			<center>
+			<h1>Article List</h1>
+		<hr>
+    	<h5> This page is for demo, to show that all the parsed articles from the database.</h5>
 		<button onclick="show_articles()">Show Articles</button>
 		<ul style="list-style-type:decimal;text-align:left;margin-left:38%;">
 		<div id="articlelist"></div>
 		</ul>
-		<input type="button" value="Back" onClick="location='/'"/>
 		</center>
 	</body>
 </html>

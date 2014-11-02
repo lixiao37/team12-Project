@@ -12,7 +12,6 @@ Targets Count = ${target_count} </br>
 	<canvas id="${source}" height="450" width="600"></canvas>
 </div>
 </br>
-<div id="${source}myBar"></div>
 <script>
 	var barChartData = {
 		labels : ${targets},
@@ -31,5 +30,4 @@ Targets Count = ${target_count} </br>
 	var myBar = new Chart(ctx).Bar(barChartData, {
 		responsive : true
 	});
-	document.getElementById('${source}myBar').innerHTML = myBar.generateLegend();
 </script>
