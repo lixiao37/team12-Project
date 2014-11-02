@@ -33,7 +33,7 @@ class Root:
     @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
         index_page_template = Template(filename='index.html')
-        return index_page_template.render()
+        return index_page_template.render(name=cherrypy.session["user"])
         
     @cherrypy.expose
     def home(self): # This page is http://127.0.0.1:8080/home
@@ -125,7 +125,7 @@ class Root:
     @cherrypy.expose
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
         track_template = Template(filename='track.html')
-        return track_template.render()
+        return track_template.render(name=cherrypy.session["user"])
     
     @cherrypy.expose
     def display_show_articles(self):
@@ -137,25 +137,58 @@ class Root:
     @cherrypy.expose
     def display(self): # This page is http://127.0.0.1:8080/display
         article_template = Template(filename='articles.html')
-        return article_template.render()
+        return article_template.render(name=cherrypy.session["user"])
     
     @require()
     @cherrypy.expose
     def generate_graphs(self):
-        html_src = ""
-        
-        # Page header section o
-        graph_generator_template = Template(filename='graph_page_header.html')
-        html_src += graph_generator_template.render()
+        page_header = ""
+        total_graphs = ""
 
-        # Get the user who is logging in
+        # get the page header section
+        graph_generator_template = Template(filename='graph_page_header.html')
+        page_header += graph_generator_template.render(name=cherrypy.session["user"])
+
+        # generate a relation list, described in more depth at the fnc
+        relation_list = self.generate_relation_list()
+
+        # generate basic bar graphs and add them to total_graphs
+        total_graphs += self.generate_basic_graphs(relation_list)
+
+        # generate a combined detailed graph and add it to total_graphs
+
+        return page_header + total_graphs
+    
+    # generate basic bar graphs from the relation_list
+    def generate_detail_graph(self, relation_list):
+        pass
+
+    # generate basic bar graphs from the relation_list
+    def generate_basic_graphs(self, relation_list):
+        total_basic_graphs = ""
+        graph_generator_template = Template(filename='basic_graph_generator.html')
+        for relation in relation_list:
+            news_targets_str = str(relation[1]).replace("u'","'")
+            source_name = relation[0].replace("http://","")
+            total_basic_graphs += graph_generator_template.render(source=relation[0], 
+                targets=news_targets_str, target_count=relation[2])
+        return total_basic_graphs
+
+    '''generates a list of string/string lists in the format
+        [source, news_targets, target_count]
+        ie. [[s1, [t1, t2 ... tn], [tc1, tc2, ... tcn]], 
+        [s2, [t1, t2 ... tn], [tc1, tc2, ... tcn]], ...
+        [sn, [t1, t2 ... tn], [tc1, tc2, ... tcn]]
+        where sn is the source, tn is the target, tcn is the citation count of tn'''
+    def generate_relation_list(self):
+        relation_list = []
+        # get the current user's sources and targets
         user = User.objects(name=cherrypy.session["user"]).first()
         news_sources = user.news_sources
         news_targets = user.news_targets
-        total_graphs = ""
-        graph_generator_template = Template(filename='graph_generator.html')
+
         for source in news_sources:
-            # Create an empty list with a specific size which describe the number 
+            # create an empty list with a specific size which describe the number 
             # of target referenced by each source            
             target_count = [0] * len(news_targets)
             # Find the articles which have a specific source website url
@@ -169,11 +202,9 @@ class Root:
                         if citation.target_article.website.homepage_url == news_targets[i]:
                             target_count[i] += 1
                         i += 1
-            news_targets_str = str(news_targets).replace("u'","'")
-            source_name = source.replace("http://","")
-            total_graphs += graph_generator_template.render(source=source, targets=news_targets_str, target_count=target_count)
-        return html_src + total_graphs
-    
+            relation_list.append([source, news_targets, target_count])
+        return relation_list
+
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
     def only_for_chun(self):

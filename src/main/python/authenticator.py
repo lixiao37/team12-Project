@@ -122,8 +122,12 @@ class AuthController(object):
         # 2 lines of code to prevent XSS vulnerability
         username = escape(username, True)
         from_page = escape(from_page, True)
-        return """<html><body bgcolor="pink"><center>
-            <h1 style="color:#0033CC">Login Screen</h1>
+        return """
+            <link rel="stylesheet" type="text/css" href="/static/css/general.css"/>
+            <html><body><center>
+            <br><br>
+            <h1>Login Screen</h1>
+            <hr>
             <form method="post" action="/auth/login">
             <input type="hidden" name="from_page" value="%(from_page)s" />
             %(msg)s<br/>

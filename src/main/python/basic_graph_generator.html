@@ -1,23 +1,29 @@
-<!--source=source, targets=targets, target_count=targetcount
-targets = ["dogs", "cats"]
-target_count = [10, 20]
--->
+<!--Parameters being passed from python:
+	source - string
+	targets - list of str
+	target_count - list of int-->
 <head>
-<script src="static/javascript/Chart.js"></script>
+<script src="http://www.chartjs.org/assets/Chart.js"></script>
 </head>
+
 Chart for source ${source}: </br>
 Targets = ${targets} </br>
 Targets Count = ${target_count} </br>
+
+<!--area to display the graph-->
 <div style="width: 50%">
 	<canvas id="${source}" height="450" width="600"></canvas>
 </div>
 </br>
 
+<!--script to produce the graph according to 
+	the parameters passed in from python-->
 <script>
 	var barChartData = {
 		labels : ${targets},
 		datasets : [
 			{
+				// colours for the graph
 				fillColor : "rgba(151,187,205,0.5)",
 				strokeColor : "rgba(151,187,205,0.8)",
 				highlightFill : "rgba(151,187,205,0.75)",
@@ -26,9 +32,8 @@ Targets Count = ${target_count} </br>
 			},
 		]
 	}
-	
 	var ctx = document.getElementById("${source}").getContext("2d");
-	window.myBar = new Chart(ctx).Bar(barChartData, {
+	var myBar = new Chart(ctx).Bar(barChartData, {
 		responsive : true
 	});
 </script>
