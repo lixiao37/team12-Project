@@ -3,6 +3,8 @@ from mako.template import Template
 from mongoengine import *
 from user import User
 from article import Article
+from website import Website
+from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
 connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
@@ -168,11 +170,11 @@ class Root:
         news_sources = user.news_sources
         news_targets = user.news_targets
         
-        # Create an empty list with a specific size which describe the number 
-        # of target referenced by each source
-        target_count = [0] * len(news_targets)
         total_graphs = ""
         for source in news_sources:
+            # Create an empty list with a specific size which describe the number 
+            # of target referenced by each source            
+            target_count = [0] * len(news_targets)
             # Find the articles which have a specific source website url
             articles = Article.objects(website=Website.objects(homepage_url=source)[0])
             for article in articles:
@@ -184,19 +186,10 @@ class Root:
                         if citation.target_article.website.homepage_url == news_targets[i]:
                             target_count[i] += 1
                         i += 1
-            #total_graphs += Template(filename='show_graphs.html').render(source=source, targets=news_targets, target_count=targetcount)
-        return str(target_count)
-
-    # @require()
-    # @cherrypy.expose
-    # def get_graphs(self):
-    #     #total_graphs = ''
-    #     # for loop over sources to get website
-    #         # count how many citations there are for each target for that source
-    #         # total_graphs += show_graphs_template.render(source=source, targets=targets, target_count=targetcount)
-    #     show_graphs_template = Template(filename='show_graphs.html')
-    #     return show_graphs_template.render(source=source, targets=targets, target_count=targetcount)
-
+            show_graph_template = Template(filename='show_graphs.html')
+            total_graphs += show_graph_template.render(source=source, targets=news_targets, target_count=target_count)
+        return total_graphs
+    
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
     def only_for_chun(self):
