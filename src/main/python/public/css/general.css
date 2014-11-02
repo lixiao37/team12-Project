@@ -1,0 +1,54 @@
+body {
+    background: -webkit-linear-gradient(MISTYROSE, white); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(MISTYROSE, white); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(MISTYROSE, white); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(MISTYROSE, white); /* Standard syntax */
+}
+
+h1 {
+    color: MAROON;
+}
+
+h2 {
+    color: SADDLEBROWN;
+}
+/************** might use for later - chun
+#canvas-holder{
+    width:240px;
+}
+
+.doughnut-legend li span {
+    display: block;
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    float: left;
+    margin-top: 4px;
+    margin-right: 8px;
+}
+
+.doughnut-legend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    margin-top : 20px;
+}
+
+.doughnut-legend li {
+    margin-bottom : 4px;
+}
+
+.doughnut-legend li:first-letter {
+    text-transform: capitalize;
+}
+
+.comm-how {
+    display: inline-block;
+    float : left;
+    color : #979797;
+    width : 25px;
+    text-align: right;
+    margin-right : 10px;
+}
+************************/

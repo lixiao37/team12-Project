@@ -33,7 +33,7 @@ class Root:
     @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
         index_page_template = Template(filename='index.html')
-        return index_page_template.render()
+        return index_page_template.render(name=cherrypy.session["user"])
         
     @cherrypy.expose
     def home(self): # This page is http://127.0.0.1:8080/home
@@ -154,6 +154,7 @@ class Root:
         news_targets = user.news_targets
         total_graphs = ""
         graph_generator_template = Template(filename='graph_generator.html')
+        # basic bar graphs
         for source in news_sources:
             # Create an empty list with a specific size which describe the number 
             # of target referenced by each source            
@@ -172,6 +173,8 @@ class Root:
             news_targets_str = str(news_targets).replace("u'","'")
             source_name = source.replace("http://","")
             total_graphs += graph_generator_template.render(source=source, targets=news_targets_str, target_count=target_count)
+        # add condensed graph
+        #
         return html_src + total_graphs
     
     @cherrypy.expose

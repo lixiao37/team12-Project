@@ -3,7 +3,7 @@ targets = ["dogs", "cats"]
 target_count = [10, 20]
 -->
 <head>
-<script src="static/javascript/Chart.js"></script>
+<script src="http://www.chartjs.org/assets/Chart.js"></script>
 </head>
 Chart for source ${source}: </br>
 Targets = ${targets} </br>
@@ -12,7 +12,7 @@ Targets Count = ${target_count} </br>
 	<canvas id="${source}" height="450" width="600"></canvas>
 </div>
 </br>
-
+<div id="${source}myBar"></div>
 <script>
 	var barChartData = {
 		labels : ${targets},
@@ -26,9 +26,10 @@ Targets Count = ${target_count} </br>
 			},
 		]
 	}
-	
+
 	var ctx = document.getElementById("${source}").getContext("2d");
-	window.myBar = new Chart(ctx).Bar(barChartData, {
+	var myBar = new Chart(ctx).Bar(barChartData, {
 		responsive : true
 	});
+	document.getElementById('${source}myBar').innerHTML = myBar.generateLegend();
 </script>
