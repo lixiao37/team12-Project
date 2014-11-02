@@ -1,3 +1,4 @@
+import os, os.path
 import cherrypy
 from mako.template import Template
 from mongoengine import *
@@ -24,12 +25,6 @@ class RestrictedArea:
 
 
 class Root:
-
-    _cp_config = {
-        'tools.sessions.on': True,
-        'tools.auth.on': True
-    }
-
     auth = AuthController()
 
     restricted = RestrictedArea()
@@ -204,4 +199,15 @@ class Root:
 
 
 if __name__ == '__main__':
-    cherrypy.quickstart(Root())
+    _cp_config = {
+        '/': {
+            'tools.sessions.on': True,
+            'tools.auth.on': True,
+            'tools.staticdir.root': os.path.abspath(os.getcwd())
+        },
+        '/static': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': './public'
+        }
+    }
+    cherrypy.quickstart(Root(), '/', _cp_config)
