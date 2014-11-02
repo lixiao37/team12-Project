@@ -22,8 +22,8 @@ class Parser(object):
     username = "admin"
     password = "admin"
     #different names for author's meta data
-    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate"]
-    title_names = ['Headline', 'title', 'title']
+    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate", 'datePublished']
+    title_names = ['Headline', 'title', 'title', 'og:title']
 
     def __init__(self):
         self.session = dryscrape.Session(base_url=self.base_url)
@@ -82,21 +82,91 @@ class Parser(object):
 
         return list(set(articles))
 
-    def extract_citation(self, soup, target_url, target_name):
+    def add_article(self, article_meta, website):
+        #check if the article is already in the database
+        art = Article.objects(
+                    title=article_meta.get("title"),
+                    url=article_meta.get('url'),
+                    last_modified_date=article_meta.get('last_modified_date'),
+                    website=website
+                    ).first()
+        if art:
+            print "Article already exists and has not been updated"
+            return article
+        art = Article(
+                title=article_meta.get("title"),
+                author=article_meta.get("author"),
+                last_modified_date=article_meta.get("last_modified_date"),
+                html=article_meta.get("html"),
+                url=article_meta.get("url"),
+                website=website
+                    )
+        status = art.save()
+        if status:
+            return art
+        else:
+            return 0
+
+    def add_website(self, website_meta):
+        web = Website.objects(
+                    name=website_meta.get("name"),
+                    homepage_url=website_meta.get("homepage_url")
+                ).first()
+        #check if the website is already in the database
+        if web:
+            return web
+        web = Website(
+                name=website_meta.get("name"),
+                homepage_url=website_meta.get("homepage_url")
+                )
+        status = web.save()
+        if status:
+            return web
+        else:
+            return 0
+
+    def add_citation(self, citation_meta):
+        cite = Citation.objects(
+                    text=citation_meta.get('text'),
+                    article=citation_meta.get('article')
+                ).first()
+        if cite:
+            return 0
+        cite = Citation(
+                    text=citation_meta.get('text'),
+                    article=citation_meta.get('article'),
+                    target_article=citation_meta.get('target_article')
+                )
+        status = cite.save()
+        if status:
+            return cite
+        else:
+            return 0
+
+    def extract_citation(self, soup, target_url, target_name, article):
         '''
         Return the list of citations, where
         soup: html
         target_url: url of the target, e.g. bbc.com
         target_name: name of the target, e.g. Haaretz
         '''
-        cited = []
+        cited = {}
         text = ""
+        website = self.add_website( \
+                               {"name": target_name, "homepage_url": target_url}
+                                    )
         key_href_list = soup.find_all(href=re.compile(target_url))
         for a in key_href_list:
             for parent in a.parents:
                 if parent.name == 'p' or parent.name == 'div' \
                                                        or parent.name == 'span':
-                        cited.append(parent)
+                        article_meta = self.get_meta_data(a.get('href').strip())
+                        target_article = self.add_article(article_meta, website)
+                        cite = self.add_citation({"text":parent.text,
+                                           "article": article,
+                                           "target_article": target_article})
+                        article.citations.append(cite)
+                        article.save()
                         break
 
         key_text_list = soup.find_all(text=re.compile(target_name))
@@ -104,24 +174,11 @@ class Parser(object):
             for parent in t.parents:
                     if parent.name == 'p' or parent.name == 'div' \
                             or parent.name == 'span' or parent.name == 'h1' \
-                                or parent.name == 'h2' or parent.name == 'h3':
-                        cited.append(parent.text)
+                                or parent.name == 'h2' or parent.name == 'h3' \
+                                    or parent.name == 'h4':
+                        cite = self.add_citation({"text":parent.text,
+                                           "article": article})
                         break
-            # if t.parent.name == 'strong':
-            #     if t.parent.parent.name == 'em':
-            #         cited.append(t.parent.parent)
-            #     else:
-            #         cited.append(t.parent.parent)
-            # elif t.parent.name == 'em' or t.parent.name == 'a':
-            #     if t.parent.parent.name == 'p':
-            #         cited.append(t.parent.parent)
-            #     else:
-            #         cited.append(t.parent.parent.parent)
-            # else:
-            #     if t.parent not in cited:
-            #         cited.append(t.parent)
-
-        return list(set(cited))
 
     def get_meta_data(self, url):
         '''
@@ -142,71 +199,25 @@ class Parser(object):
         meta['html'] = soup
         meta['url'] = r.url
 
-        for anchor in soup.find_all('meta'):
-            anchor_name = anchor.get('name')
-            if anchor_name in self.title_names:
+        for m in soup.find_all('meta'):
+            anchor_name = m.get('name')
+            Property = m.get('property')
+            item_prop = m.get('itemprop')
+            if anchor_name in self.title_names or Property in self.title_names:
                 #get the title of the article
-                content = anchor.get('content').encode('utf-8')
+                content = m.get('content').encode('utf-8')
                 meta['title'] = content
-            if anchor_name in self.date_names:
-                content = anchor.get('content').encode('utf-8')
+            if anchor_name in self.date_names or item_prop in self.date_names:
+                content = m.get('content').encode('utf-8')
                 meta['last_modified_date'] = content
             if 'author' == anchor_name:
-                content = anchor.get('content').encode('utf-8')
+                content = m.get('content').encode('utf-8')
                 meta['author'] = content
 
+        if not meta.get('title'):
+            meta['title'] = 'Unknown'
+
         return meta
-
-    def add_to_database(self, article_meta=None, website_meta=None,
-                        citation_meta=None):
-        '''API function to add parsed data into the database'''
-        citations = []
-
-        web = Website.objects(
-                    name=website_meta.get("name"),
-                    homepage_url=website_meta.get("homepage_url")
-                    ).first()
-        #check if the website is already in the database
-        if not web:
-            web = Website(
-                    name=website_meta.get("name"),
-                    homepage_url=website_meta.get("homepage_url")
-                    ).save()
-
-        #check if the article is already in the database
-        art = Article.objects(
-                    title=article_meta.get("title"),
-                    url=article_meta.get('url'),
-                    last_modified_date=article_meta.get('last_modified_date'),
-                    website=web
-                    ).first()
-        if art:
-            print "Article already exists and has not been updated"
-            print article_meta.get("url")
-            return 0
-
-        art = Article(
-                title=article_meta.get("title"),
-                author=article_meta.get("author"),
-                last_modified_date=article_meta.get("last_modified_date"),
-                html=article_meta.get("html"),
-                url=article_meta.get("url"),
-                website=web
-                    )
-
-        status = art.save()
-        if status:
-            for c in citation_meta:
-                cit = Citation(text=c.encode('utf-8'),  article=art,    target_article=art)
-                citations.append(cit)
-                cit.save()
-
-            art.citations = citations
-            art.save()
-            return 0
-        else:
-            print "ERROR: Article did not save successfully ...!"
-            return 0
 
 
 if __name__ == '__main__':
@@ -217,16 +228,11 @@ if __name__ == '__main__':
     # targets = {'BBC':'www.bbc.com'}
     p = Parser()
     for s_name, s in sources.viewitems():
+        website = p.add_website({"name": s_name, "homepage_url": s})
         for t_name, t in targets.viewitems():
             articles = p.searchArticle(t_name, s)
             for a in articles:
-                article_data = p.get_meta_data(a)
+                article_meta = p.get_meta_data(a)
+                article = p.add_article(article_meta, website)
+                p.extract_citation(article_meta.get('html'), t, t_name, article)
 
-                web_data = { "name":s_name, "homepage_url":s }
-                cited_data = p.extract_citation(
-                                            article_data.get('html'), t, t_name)
-                p.add_to_database(
-                    article_meta=article_data,
-                    website_meta=web_data,
-                    citation_meta=cited_data
-                    )
