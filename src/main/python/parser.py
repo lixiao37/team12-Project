@@ -90,17 +90,36 @@ class Parser(object):
         target_name: name of the target, e.g. Haaretz
         '''
         cited = []
+        text = ""
         key_href_list = soup.find_all(href=re.compile(target_url))
         for a in key_href_list:
-            cited.append(a.parent)
+            for parent in a.parents:
+                if parent.name == 'p' or parent.name == 'div' \
+                                                       or parent.name == 'span':
+                        cited.append(parent)
+                        break
 
         key_text_list = soup.find_all(text=re.compile(target_name))
         for t in key_text_list:
-            if t.parent.name == 'em':
-                cited.append(t.parent.parent)
-            else:
-                if t.parent not in cited:
-                    cited.append(t.parent)
+            for parent in t.parents:
+                    if parent.name == 'p' or parent.name == 'div' \
+                            or parent.name == 'span' or parent.name == 'h1' \
+                                or parent.name == 'h2' or parent.name == 'h3':
+                        cited.append(parent.text)
+                        break
+            # if t.parent.name == 'strong':
+            #     if t.parent.parent.name == 'em':
+            #         cited.append(t.parent.parent)
+            #     else:
+            #         cited.append(t.parent.parent)
+            # elif t.parent.name == 'em' or t.parent.name == 'a':
+            #     if t.parent.parent.name == 'p':
+            #         cited.append(t.parent.parent)
+            #     else:
+            #         cited.append(t.parent.parent.parent)
+            # else:
+            #     if t.parent not in cited:
+            #         cited.append(t.parent)
 
         return list(set(cited))
 
@@ -114,13 +133,14 @@ class Parser(object):
             r = requests.get(url, timeout=60) #send http request
         except ConnectionError:
             #try again
-            r = requests.get(url, timeout=60) #send http request
+            return self.get_meta_data(url)
+            # r = requests.get(url, timeout=60) #send http request
         content = r.content #get the content
         soup = BeautifulSoup(content) #put it into beautifulsoup
 
         meta = {}
         meta['html'] = soup
-        meta['url'] = url
+        meta['url'] = r.url
 
         for anchor in soup.find_all('meta'):
             anchor_name = anchor.get('name')
@@ -134,7 +154,6 @@ class Parser(object):
             if 'author' == anchor_name:
                 content = anchor.get('content').encode('utf-8')
                 meta['author'] = content
-
 
         return meta
 
@@ -163,6 +182,7 @@ class Parser(object):
                     ).first()
         if art:
             print "Article already exists and has not been updated"
+            print article_meta.get("url")
             return 0
 
         art = Article(
@@ -177,7 +197,7 @@ class Parser(object):
         status = art.save()
         if status:
             for c in citation_meta:
-                cit = Citation(text=str(c),  article=art,    target_article=art)
+                cit = Citation(text=c.encode('utf-8'),  article=art,    target_article=art)
                 citations.append(cit)
                 cit.save()
 
@@ -190,8 +210,11 @@ class Parser(object):
 
 
 if __name__ == '__main__':
-    sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com" }
-    targets = { "haaretz":"www.haaretz.com" }
+    sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
+                    'CNN': 'www.cnn.com'}
+    targets = { "Haaretz":"www.haaretz.com" }
+    # sources = {'CNN': 'www.cnn.com'}
+    # targets = {'BBC':'www.bbc.com'}
     p = Parser()
     for s_name, s in sources.viewitems():
         for t_name, t in targets.viewitems():
