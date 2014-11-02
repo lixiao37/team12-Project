@@ -38,7 +38,7 @@ class Root:
                     <br/>
                     <input type="button" value="Display articles" onclick="location='/display'">
                     <br/>
-                    <input type="button" value="Generate Graph" onclick="location='/generate_graph'">
+                    <input type="button" value="Generate Graph" onclick="location='/generate_graphs'">
                     <br/>
                     <br/>
                     <form method="post" action="/auth/logout">
@@ -154,18 +154,19 @@ class Root:
     
     @require()
     @cherrypy.expose
-    def generate_graph(self): # This page is http://127.0.0.1:8080/generate_graph
-        graph_template = Template(filename='graph.html')
-        return graph_template.render()
-    
-    @cherrypy.expose
-    def get_graphs(self):
+    def generate_graphs(self):
+        html_src = ""
+        
+        # Page header section o
+        graph_generator_template = Template(filename='graph_page_header.html')
+        html_src += graph_generator_template.render()
+
         # Get the user who is logging in
         user = User.objects(name=cherrypy.session["user"]).first()
         news_sources = user.news_sources
         news_targets = user.news_targets
-        
         total_graphs = ""
+        graph_generator_template = Template(filename='graph_generator.html')
         for source in news_sources:
             # Create an empty list with a specific size which describe the number 
             # of target referenced by each source            
@@ -181,9 +182,10 @@ class Root:
                         if citation.target_article.website.homepage_url == news_targets[i]:
                             target_count[i] += 1
                         i += 1
-            show_graph_template = Template(filename='show_graphs.html')
-            total_graphs += show_graph_template.render(source=source, targets=news_targets, target_count=target_count)
-        return total_graphs
+            news_targets_str = str(news_targets).replace("u'","'")
+            source_name = source.replace("http://","")
+            total_graphs += graph_generator_template.render(source=source, targets=news_targets_str, target_count=target_count)
+        return html_src + total_graphs
     
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun

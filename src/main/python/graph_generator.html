@@ -1,0 +1,34 @@
+<!--source=source, targets=targets, target_count=targetcount
+targets = ["dogs", "cats"]
+target_count = [10, 20]
+-->
+<head>
+<script src="static/javascript/Chart.js"></script>
+</head>
+Chart for source ${source}: </br>
+Targets = ${targets} </br>
+Targets Count = ${target_count} </br>
+<div style="width: 50%">
+	<canvas id="${source}" height="450" width="600"></canvas>
+</div>
+</br>
+
+<script>
+	var barChartData = {
+		labels : ${targets},
+		datasets : [
+			{
+				fillColor : "rgba(151,187,205,0.5)",
+				strokeColor : "rgba(151,187,205,0.8)",
+				highlightFill : "rgba(151,187,205,0.75)",
+				highlightStroke : "rgba(151,187,205,1)",
+				data: ${target_count}
+			},
+		]
+	}
+	
+	var ctx = document.getElementById("${source}").getContext("2d");
+	window.myBar = new Chart(ctx).Bar(barChartData, {
+		responsive : true
+	});
+</script>
