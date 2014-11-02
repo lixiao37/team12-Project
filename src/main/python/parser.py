@@ -2,6 +2,9 @@ from bs4 import BeautifulSoup
 from article import *
 from website import *
 from user import *
+from citation import *
+from requests.exceptions import ConnectionError
+import requests
 import re
 import urllib2
 import dryscrape
@@ -11,13 +14,16 @@ class Parser(object):
 
     conn = None
     session = None
-    host = "ds035260.mongolab.com:35260"
-    dbName = "userinterface"
+    host = "ds039020.mongolab.com:39020"
+    dbName = "parser"
     base_url = "http://www.google.ca"
-    #{0}:keyword, {1}:website, {2}:sort by month or year or day
     search_meta = "/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
+        #{0}:keyword, {1}:website, {2}:sort by month or year or day
     username = "admin"
     password = "admin"
+    #different names for author's meta data
+    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate"]
+    title_names = ['Headline', 'title', 'title']
 
     def __init__(self):
         self.session = dryscrape.Session(base_url=self.base_url)
@@ -76,13 +82,19 @@ class Parser(object):
 
         return list(set(articles))
 
-    def extract_citation(self, soup):
+    def extract_citation(self, soup, target_url, target_name):
+        '''
+        Return the list of citations, where
+        soup: html
+        target_url: url of the target, e.g. bbc.com
+        target_name: name of the target, e.g. Haaretz
+        '''
         cited = []
-        key_href_list = soup.find_all(href=re.compile("haaretz.com"))
+        key_href_list = soup.find_all(href=re.compile(target_url))
         for a in key_href_list:
             cited.append(a.parent)
 
-        key_text_list = soup.find_all(text=re.compile("Haaretz"))
+        key_text_list = soup.find_all(text=re.compile(target_name))
         for t in key_text_list:
             if t.parent.name == 'em':
                 cited.append(t.parent.parent)
@@ -98,47 +110,100 @@ class Parser(object):
         E.g.
         {author: "", "url": "", title: "", last_modified_date: "", html: ""}
         '''
-        content = urllib2.urlopen(url).read()
-        soup = BeautifulSoup(content)
+        try:
+            r = requests.get(url, timeout=60) #send http request
+        except ConnectionError:
+            #try again
+            r = requests.get(url, timeout=60) #send http request
+        content = r.content #get the content
+        soup = BeautifulSoup(content) #put it into beautifulsoup
 
-        dictionary = {}
-        dictionary['html'] = soup
-        dictionary['url'] = url
+        meta = {}
+        meta['html'] = soup
+        meta['url'] = url
 
         for anchor in soup.find_all('meta'):
-            if 'title' in str(anchor):
-                dictionary['title'] = anchor.get('content').encode('utf-8')
+            anchor_name = anchor.get('name')
+            if anchor_name in self.title_names:
+                #get the title of the article
+                content = anchor.get('content').encode('utf-8')
+                meta['title'] = content
+            if anchor_name in self.date_names:
+                content = anchor.get('content').encode('utf-8')
+                meta['last_modified_date'] = content
+            if 'author' == anchor_name:
+                content = anchor.get('content').encode('utf-8')
+                meta['author'] = content
 
-            if 'author' in str(anchor):
-                dictionary['author'] = anchor.get('content').strip().encode('utf-8')
 
-            if 'LastModifiedDate' in str(anchor):
-                dictionary['last_modified_date'] = str(anchor.get('content'))
-
-        return dictionary
+        return meta
 
     def add_to_database(self, article_meta=None, website_meta=None,
                         citation_meta=None):
         '''API function to add parsed data into the database'''
+        citations = []
+
+        web = Website.objects(
+                    name=website_meta.get("name"),
+                    homepage_url=website_meta.get("homepage_url")
+                    ).first()
+        #check if the website is already in the database
+        if not web:
+            web = Website(
+                    name=website_meta.get("name"),
+                    homepage_url=website_meta.get("homepage_url")
+                    ).save()
+
+        #check if the article is already in the database
+        art = Article.objects(
+                    title=article_meta.get("title"),
+                    url=article_meta.get('url'),
+                    last_modified_date=article_meta.get('last_modified_date'),
+                    website=web
+                    ).first()
+        if art:
+            print "Article already exists and has not been updated"
+            return 0
+
         art = Article(
                 title=article_meta.get("title"),
                 author=article_meta.get("author"),
                 last_modified_date=article_meta.get("last_modified_date"),
-                # html=article_meta.get("html"),
-                url=article_meta.get("url")
+                html=article_meta.get("html"),
+                url=article_meta.get("url"),
+                website=web
                     )
+
         status = art.save()
         if status:
-            print "Article Saved Into Database"
+            for c in citation_meta:
+                cit = Citation(text=str(c),  article=art,    target_article=art)
+                citations.append(cit)
+                cit.save()
+
+            art.citations = citations
+            art.save()
+            return 0
         else:
             print "ERROR: Article did not save successfully ...!"
+            return 0
 
 
 if __name__ == '__main__':
+    sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com" }
+    targets = { "haaretz":"www.haaretz.com" }
     p = Parser()
-    articles = p.searchArticle("haaretz", "www.aljazeera.com")
-    for a in articles:
-        data = p.get_meta_data(a)
-        citations = p.extract_citation(data["html"])
-        print citations
+    for s_name, s in sources.viewitems():
+        for t_name, t in targets.viewitems():
+            articles = p.searchArticle(t_name, s)
+            for a in articles:
+                article_data = p.get_meta_data(a)
 
+                web_data = { "name":s_name, "homepage_url":s }
+                cited_data = p.extract_citation(
+                                            article_data.get('html'), t, t_name)
+                p.add_to_database(
+                    article_meta=article_data,
+                    website_meta=web_data,
+                    citation_meta=cited_data
+                    )
