@@ -157,13 +157,16 @@ class Root:
 
         # generate a combined detailed graph and add it to total_graphs
 
-
         return page_header + total_graphs
     
     # generate basic bar graphs from the relation_list
+    def generate_detail_graph(self, relation_list):
+        pass
+
+    # generate basic bar graphs from the relation_list
     def generate_basic_graphs(self, relation_list):
         total_basic_graphs = ""
-        graph_generator_template = Template(filename='graph_generator.html')
+        graph_generator_template = Template(filename='basic_graph_generator.html')
         for relation in relation_list:
             news_targets_str = str(relation[1]).replace("u'","'")
             source_name = relation[0].replace("http://","")
