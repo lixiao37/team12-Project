@@ -142,33 +142,41 @@ class Root:
     @require()
     @cherrypy.expose
     def generate_graphs(self):
-        html_src = ""
+        page_header = ""
         total_graphs = ""
 
-        # get the page header section which will turn the title at
-        # the top and also the buttons to login and go to the menu
+        # get the page header section
         graph_generator_template = Template(filename='graph_page_header.html')
-        html_src += graph_generator_template.render(name=cherrypy.session["user"])
+        page_header += graph_generator_template.render(name=cherrypy.session["user"])
 
+        # generate a relation list, described in more depth at the fnc
         relation_list = self.generate_relation_list()
 
-        # generate basic bar graphs
+        # generate basic bar graphs and add them to total_graphs
+        total_graphs += self.generate_basic_graphs(relation_list)
+
+        # generate a combined detailed graph and add it to total_graphs
+
+
+        return page_header + total_graphs
+    
+    # generate basic bar graphs from the relation_list
+    def generate_basic_graphs(self, relation_list):
+        total_basic_graphs = ""
         graph_generator_template = Template(filename='graph_generator.html')
         for relation in relation_list:
             news_targets_str = str(relation[1]).replace("u'","'")
             source_name = relation[0].replace("http://","")
-            total_graphs += graph_generator_template.render(source=relation[0], 
+            total_basic_graphs += graph_generator_template.render(source=relation[0], 
                 targets=news_targets_str, target_count=relation[2])
-        # generate a condensed/combined detailed graph of the basic bar graphs
-        return html_src + total_graphs
-    
+        return total_basic_graphs
+
     '''generates a list of string/string lists in the format
         [source, news_targets, target_count]
         ie. [[s1, [t1, t2 ... tn], [tc1, tc2, ... tcn]], 
         [s2, [t1, t2 ... tn], [tc1, tc2, ... tcn]], ...
         [sn, [t1, t2 ... tn], [tc1, tc2, ... tcn]]
         where sn is the source, tn is the target, tcn is the citation count of tn'''
-
     def generate_relation_list(self):
         relation_list = []
         # get the current user's sources and targets
