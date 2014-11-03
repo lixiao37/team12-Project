@@ -23,7 +23,7 @@ class Parser(object):
     password = "admin"
     #different names for author's meta data
     date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate", 'datePublished']
-    title_names = ['Headline', 'title', 'title', 'og:title']
+    title_names = ['Headline', 'title', 'og:title']
 
     def __init__(self):
         self.session = dryscrape.Session(base_url=self.base_url)
@@ -186,15 +186,9 @@ class Parser(object):
         E.g.
         {author: "", "url": "", title: "", last_modified_date: "", html: ""}
         '''
-        try:
-            r = requests.get(url, timeout=60) #send http request
-        except ConnectionError:
-            #try again
-            return self.get_meta_data(url)
-            # r = requests.get(url, timeout=60) #send http request
+        r = requests.get(url, timeout=60) #send http request
         content = r.content #get the content
         soup = BeautifulSoup(content) #put it into beautifulsoup
-
         meta = {}
         meta['html'] = soup
         meta['url'] = r.url
@@ -204,7 +198,6 @@ class Parser(object):
             Property = m.get('property')
             item_prop = m.get('itemprop')
             if anchor_name in self.title_names or Property in self.title_names:
-                #get the title of the article
                 content = m.get('content').encode('utf-8')
                 meta['title'] = content
             if anchor_name in self.date_names or item_prop in self.date_names:
@@ -215,7 +208,7 @@ class Parser(object):
                 meta['author'] = content
 
         if not meta.get('title'):
-            meta['title'] = 'Unknown'
+            meta['title'] = ''
 
         return meta
 
