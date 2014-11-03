@@ -12,7 +12,7 @@ from user import User
 SESSION_KEY = '_cp_username'
 
 # connects to the database
-connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
+connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
 
 # Might be userful for later - Chun
 # def createUserInDB(username, password):

@@ -8,7 +8,7 @@ from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
-connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
+connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
 
 class RestrictedArea:
 
@@ -166,8 +166,8 @@ class Root:
         news_targets = user.news_targets
         news_targets_str = str(news_targets).replace("u'","'")
         graph_generator_template = Template(filename='detailed_graph_generator.html')
-        #return str(relation_dict.keys()) + " " + str(relation_dict.values())
-        return graph_generator_template.render(targets=news_targets_str, sources=relation_dict.keys(), target_counts=relation_dict.values())
+        return graph_generator_template.render(targets=news_targets_str, 
+            sources=relation_dict.keys(), target_counts=relation_dict.values())
 
     # generate basic bar graphs from the relation_dict
     def generate_basic_graphs(self, relation_dict):
@@ -204,11 +204,13 @@ class Root:
                 # Count the times that each target in the news_targets is in the
                 # citation list for each article and put it in the target_count
                 for citation in article.citations:
-                    i = 0
-                    while i < len(news_targets):
-                        if citation.target_article.website.homepage_url == news_targets[i]:
-                            target_count[i] += 1
-                        i += 1
+                    if not isinstance( citation, int ):
+                        if citation.target_article:
+                            i = 0
+                            while i < len(news_targets):
+                                if citation.target_article.website.homepage_url == news_targets[i]:
+                                    target_count[i] += 1
+                                i += 1
             relation_dict[source] = target_count
         return relation_dict
 
