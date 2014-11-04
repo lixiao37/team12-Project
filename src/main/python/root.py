@@ -190,7 +190,7 @@ class Root:
     def generate_relation_dict(self):
         relation_dict = {}
         # get the current user's sources and targets
-        user = User.objects(name=cherrypy.session["user"]).first()
+        user = User.objects(name=cherrypy.session["user"]).only('news_sources', 'news_targets').first()
         news_sources = user.news_sources
         news_targets = user.news_targets
 
@@ -199,8 +199,9 @@ class Root:
             # of target referenced by each source            
             target_count = [0] * len(news_targets)
             # Find the articles which have a specific source website url
-            articles = Article.objects(website=Website.objects(homepage_url=source).
-                only('homepage_url').first()).only('citations')
+            articles = Article.objects(
+                Q(website=Website.objects(homepage_url=source).only('homepage_url').first()) & 
+                Q(citations__exists=True)).only('citations')
             for article in articles:
                 # Count the times that each target in the news_targets is in the
                 # citation list for each article and put it in the target_count
