@@ -199,7 +199,8 @@ class Root:
             # of target referenced by each source            
             target_count = [0] * len(news_targets)
             # Find the articles which have a specific source website url
-            articles = Article.objects(website=Website.objects(homepage_url=source).first())
+            articles = Article.objects(website=Website.objects(homepage_url=source).
+                only('homepage_url').first()).only('citations')
             for article in articles:
                 # Count the times that each target in the news_targets is in the
                 # citation list for each article and put it in the target_count
