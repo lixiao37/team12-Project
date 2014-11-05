@@ -6,7 +6,6 @@ from citation import *
 from requests.exceptions import ConnectionError
 import requests
 import re
-import urllib2
 import dryscrape
 
 class Parser(object):
