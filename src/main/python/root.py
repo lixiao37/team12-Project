@@ -159,15 +159,23 @@ class Root:
         total_graphs += self.generate_detailed_graph(relation_dict)
 
         return page_header + total_graphs
-    
+
     # generate a detail bar graph from the relation_dict
     def generate_detailed_graph(self, relation_dict):
         user = User.objects(name=cherrypy.session["user"]).first()
         news_targets = user.news_targets
         news_targets_str = str(news_targets).replace("u'","'")
+        total_bar = len(relation_dict.keys()) * len(news_targets_str.split(","))
+        # generate the whole graph dataset
+        data = ""
+        for source in relation_dict:
+            data+= '{fillColor : randomColor(),strokeColor : "rgba(151,187,205,0.8)",data: ' + str(relation_dict.get(source)) + ',label: "' + source + '"},'
+        data = data[0:-1]
         graph_generator_template = Template(filename='detailed_graph_generator.html')
-        return graph_generator_template.render(targets=news_targets_str, 
-            sources=relation_dict.keys(), target_counts=relation_dict.values())
+        return graph_generator_template.render(targets=news_targets_str,
+                sources=relation_dict.keys(), target_counts=relation_dict.values(),
+                value_space=600/(6+total_bar), dataset_space=((600/(6+total_bar))/5),
+                data=data)
 
     # generate basic bar graphs from the relation_dict
     def generate_basic_graphs(self, relation_dict):
