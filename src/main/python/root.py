@@ -7,7 +7,6 @@ from article import Article
 from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
-from parser import *
 
 connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
 
