@@ -157,8 +157,42 @@ class Root:
 
         # generate a combined detailed graph and add it to total_graphs
         total_graphs += self.generate_detailed_graph(relation_dict)
+        
+        # generate pie graphs and add it to total_graphs
+        total_graphs += self.generate_completed_pie_graphs(relation_dict)
 
-        return page_header + total_graphs
+        return page_header + total_graphs 
+    
+    def generate_pie_graph(self, relation_dict, index, target):
+        # generate the whole graph dataset
+        sources_counts = []
+        data = ""        
+        for source in relation_dict:
+            data+= '{value : ' + str(relation_dict.get(source)[index]) + ',color : randomColor(),label: "' + source + '"},'
+            sources_counts.append(relation_dict.get(source)[index])
+        data = data[0:-1]
+        # generate the pie graph only if at aleast one count in sources_counts
+        # is not 0
+        for count in sources_counts:
+            if count != 0:
+                graph_generator_template = Template(filename='pie_generator.html')
+                return graph_generator_template.render(target=target, data=data,
+                    sources_counts=sources_counts)
+        return "<h1>Pie Graph for target " + target + "</h1><br/>Sorry, we can't generate this pie, since the source count is " + str(sources_counts) + " for this target.<br>"
+    
+    def generate_completed_pie_graphs(self, relation_dict):
+        user = User.objects(name=cherrypy.session["user"]).first()
+        news_sources = user.news_sources
+        news_targets = user.news_targets
+        pie_graphs = ""
+        i = 0
+        # generate the pie graph only if traking more than two sources and more
+        # than one targets
+        if len(news_sources) >= 2 and news_targets:
+            for target in news_targets:
+                pie_graphs += self.generate_pie_graph(relation_dict, i, target)
+                i += 1
+        return pie_graphs
 
     # generate a detail bar graph from the relation_dict
     def generate_detailed_graph(self, relation_dict):

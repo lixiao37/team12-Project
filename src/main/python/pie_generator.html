@@ -1,0 +1,41 @@
+<!--Parameters being passed from python:
+	source - string
+	targets - list of str
+	target_count - list of int-->
+<head>
+<script src="http://www.chartjs.org/assets/Chart.js"></script>
+</head>
+<h1>Pie Graph for target ${target}:</h1>
+<!--area to display the graph-->
+<div style="width: 50%">
+	<canvas id="pie_graph" height="450" width="600"></canvas>
+</div>
+<div id="pie_legend"></div>
+</br>
+source count is ${sources_counts}<br>
+
+<!--script to produce the graph according to 
+	the parameters passed in from python-->
+<script>
+	<!--http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript-->
+	var randomColor = function getRandomColor() {
+				var letters = '0123456789ABCDEF'.split('');
+				var color = '#';
+				for (var i = 0; i < 6; i++ ) {
+					color += letters[Math.floor(Math.random() * 16)];
+				}
+				return color;}
+	var pieData = [
+		${data}
+	];
+	var ctx = document.getElementById("pie_graph").getContext("2d");
+	var myPie = new Chart(ctx).Pie(pieData, {
+		responsive : true
+	});
+	var pieLegend = "<ul style=\"list-style-type: none;\">";
+	for(var i = 0; i < pieData.length; i++){
+	pieLegend += "<li><div style=\"background-color:" + pieData[i]["color"] + "; height: 20px; width: 20px;\"></div>" + pieData[i]["label"] + "</li>"
+	}
+	pieLegend += "</ul>"
+	document.getElementById("pie_legend").innerHTML = pieLegend;
+</script>
