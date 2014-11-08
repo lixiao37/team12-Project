@@ -7,6 +7,8 @@ from requests.exceptions import ConnectionError
 import requests
 import re
 import dryscrape
+import tempfile
+import sys
 
 class Parser(object):
     """Generic Parser Class"""
@@ -211,8 +213,32 @@ class Parser(object):
 
         return meta
 
+    def get_screenshot_binary(self, url):
+        '''
+        Takes a screenshot of the article and return a binary representation of it.
+        '''
+        self.base_url = url
+        
+        # set up a web scraping session
+        self.session = dryscrape.Session(base_url = self.base_url)         
+        
+        # visit homepage and search for a term
+        self.session.visit('/')
+        
+        temp = tempfile.NamedTemporaryFile(mode='rb', suffix = '.jpg')
+        
+        # save a screenshot of the web page
+        self.session.render(temp.name)
 
+        binary = temp.read()
+        temp.close()
+        return binary
+        
+        
 if __name__ == '__main__':
+    p = Parser()
+    print p.get_screenshot_binary('http://www.aljazeera.com/')
+    '''
     sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
                     'CNN': 'www.cnn.com'}
     targets = { "Haaretz":"www.haaretz.com" }
@@ -227,4 +253,5 @@ if __name__ == '__main__':
                 article_meta = p.get_meta_data(a)
                 article = p.add_article(article_meta, website)
                 p.extract_citation(article_meta.get('html'), t, t_name, article)
+    '''
 
