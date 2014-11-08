@@ -7,7 +7,7 @@ from article import Article
 from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
-from paser import Parser
+from parser import *
 
 connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
 
@@ -236,7 +236,7 @@ class Root:
         news_targets_url = user.news_targets_url
         if not news_sources_name:
             return "Fail: Your news source section is not complete"
-        else if not news_targets_name:
+        elif not news_targets_name:
             return "Fail: Your news target section is not complete"
         else:
             # store the relationship between name and url in the two dictionaries
