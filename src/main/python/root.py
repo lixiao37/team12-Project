@@ -8,7 +8,7 @@ from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
-connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
+connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
 
 class RestrictedArea:
 
@@ -45,62 +45,71 @@ class Root:
         return """ hi"""
 
     @cherrypy.expose
-    def modify_data(self, value=None, list_type=None, mod_type=None):
+    def modify_data(self, value_name=None, 
+        value_url=None, list_type=None, mod_type=None):
         user = User.objects(name=cherrypy.session["user"]).first()
         # checks to see if the textbox is empty
-        if value == "":
-            return "Fail: The text box is empty."
+        if value_url == "" or value_name == "":
+            return "Fail: The name or url text box is empty."
         if mod_type == "add":
             # adding news sources and targets
-            if list_type == "#news_source":
-                if value in user.news_sources:
-                    return "Fail: This news link is already in the source list."
+            if list_type == "#news_source_name":
+                if value_name in user.news_sources.keys() \
+                or value_url in user.news_sources.values():
+                    return "Fail: This news name or link is already in the source list."
                 else:
-                    user.news_sources.append(value)
+                    user.news_sources[value_name] = value_url
                     user.save()
-            elif list_type == "#news_target":
-                if value in user.news_targets:
-                    return "Fail: This news link is already in the target list."
+            elif list_type == "#news_target_name":
+                if value_name in user.news_targets.keys() \
+                or value_url in user.news_targets.values():
+                    return "Fail: This news name or link is already in the target list."
                 else:
-                    user.news_targets.append(value)
+                    user.news_targets[value_name] = value_url
                     user.save()
             # adding twitter sources and targets
-            elif list_type == "#twitter_source":
-                if value in user.twitter_sources:
-                    return "Fail: This twitter link is already in the source list."
+            elif list_type == "#twitter_source_name":
+                if value_name in user.twitter_sources.keys() \
+                or value_url in user.twitter_sources.values():
+                    return "Fail: This twitter name or link is already in the source list."
                 else:
-                    user.twitter_sources.append(value)
+                    user.twitter_sources[value_name] = value_url
                     user.save()
-            elif list_type == "#twitter_target":
-                if value in user.twitter_targets:
-                    return "Fail: This twitter link is already in the target list."
+            elif list_type == "#twitter_target_name":
+                if value_name in user.twitter_targets.keys() \
+                or value_url in user.twitter_targets.values():
+                    return "Fail: This twitter name or link is already in the target list."
                 else:
-                    user.twitter_targets.append(value)
+                    user.twitter_targets[value_name] = value_url
                     user.save()
         elif mod_type == "delete":
             # deleting news sources and targets
-            if list_type == "#news_source":
-                if value in user.news_sources:
-                    user.news_sources.remove(value)
+            if list_type == "#news_source_name":
+                if value_name in user.news_sources.keys() \
+                and value_url in user.news_sources.values():
+                    del user.news_sources[value_name]
                     user.save()
                 else:
                     return "Fail: This news link is not in the source list"
-            elif list_type == "#news_target":
-                if value in user.news_targets:
-                    user.news_targets.remove(value)
+            elif list_type == "#news_target_name":
+                if value_name in user.news_targets.keys() \
+                and value_url in user.news_targets.values():
+                    del user.news_targets[value_name]
                     user.save()
                 else:
                     return "Fail: This news link is not in the target list"
             # deleting twitter sources and targets
-            elif list_type == "#twitter_source":
-                if value in user.twitter_sources:
-                    user.twitter_sources.remove(value)
+            elif list_type == "#twitter_source_name":
+                if value_name in user.twitter_sources.keys() \
+                and value_url in user.twitter_sources.values():
+                    del user.twitter_sources[value_name]
                     user.save()
                 else:
                     return "Fail: This twitter link is not in the source list"
-            elif list_type == "#twitter_target":
-                if value in user.twitter_targets:
-                    user.twitter_targets.remove(value)
+            elif list_type == "#twitter_target_name":
+                if value_name in user.twitter_targets.keys() \
+                and value_url in user.twitter_targets.values():
+                    del user.twitter_targets[value_name]
                     user.save()
                 else:
                     return "Fail: This twitter link is not in the target list"
