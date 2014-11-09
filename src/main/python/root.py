@@ -192,7 +192,7 @@ class Root:
     def generate_completed_pie_graphs(self, relation_dict):
         user = User.objects(name=cherrypy.session["user"]).first()
         news_sources = user.news_sources
-        news_targets = user.news_targets
+        news_targets = user.news_targets.values()
         pie_graphs = ""
         i = 0
         # generate the pie graph only if traking more than two sources and more
@@ -206,7 +206,7 @@ class Root:
     # generate a detail bar graph from the relation_dict
     def generate_detailed_graph(self, relation_dict):
         user = User.objects(name=cherrypy.session["user"]).first()
-        news_targets = user.news_targets
+        news_targets = user.news_targets.values()
         news_targets_str = str(news_targets).replace("u'","'")
         total_bar = len(relation_dict.keys()) * len(news_targets_str.split(","))
         # generate the whole graph dataset
@@ -223,7 +223,7 @@ class Root:
     # generate basic bar graphs from the relation_dict
     def generate_basic_graphs(self, relation_dict):
         user = User.objects(name=cherrypy.session["user"]).first()
-        news_targets = user.news_targets
+        news_targets = user.news_targets.values()
         total_basic_graphs = ""
         graph_generator_template = Template(filename='basic_graph_generator.html')
         for source, target_count in relation_dict.iteritems():
@@ -245,26 +245,25 @@ class Root:
         news_sources = user.news_sources
         news_targets = user.news_targets
 
-        for source in news_sources:
+        for source_name, source_url in news_sources.iteritems():
             # create an empty list with a specific size which describe the number 
             # of target referenced by each source            
             target_count = [0] * len(news_targets)
             # Find the articles which have a specific source website url
             articles = Article.objects(
-                Q(website=Website.objects(homepage_url=source).only('homepage_url').first()) & 
+                Q(website=Website.objects(homepage_url=source_url).only('homepage_url').first()) & 
                 Q(citations__exists=True)).only('citations')
             for article in articles:
                 # Count the times that each target in the news_targets is in the
                 # citation list for each article and put it in the target_count
                 for citation in article.citations:
-                    if not isinstance( citation, int ):
-                        if citation.target_article:
-                            i = 0
-                            while i < len(news_targets):
-                                if citation.target_article.website.homepage_url == news_targets[i]:
-                                    target_count[i] += 1
-                                i += 1
-            relation_dict[source] = target_count
+                    if (not isinstance( citation, int )) and (citation.target_article):
+                        i = 0
+                        while i < len(news_targets):
+                            if citation.target_article.website.homepage_url == news_targets.values()[i]:
+                                target_count[i] += 1
+                            i += 1
+            relation_dict[source_name] = target_count
         return relation_dict
     
     @cherrypy.expose
