@@ -124,7 +124,7 @@ class AuthController(object):
         from_page = escape(from_page, True)
         return """
             <link rel="stylesheet" type="text/css" href="/static/css/general.css"/>
-            <html><body><center>
+            <html><head><title>Login</title></head><body><center>
             <br><br>
             <h1>Login Screen</h1>
             <hr>

@@ -175,7 +175,7 @@ class Root:
     def generate_pie_graph(self, relation_dict, index, target):
         # generate the whole graph dataset
         sources_counts = []
-        data = ""        
+        data = ""
         for source in relation_dict:
             data+= '{value : ' + str(relation_dict.get(source)[index]) + ',color : randomColor(),label: "' + source + '"},'
             sources_counts.append(relation_dict.get(source)[index])

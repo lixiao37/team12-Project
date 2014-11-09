@@ -42,7 +42,6 @@ target count is ${target_counts}<br>
 	var ctx = document.getElementById("detailed_graph").getContext("2d");
 	var myBar = new Chart(ctx).Bar(barChartData, {
 		responsive : true,
-		scaleBeginAtZero : false,
 		barValueSpacing : ${value_space},
 		barDatasetSpacing : ${dataset_space}
 	});
