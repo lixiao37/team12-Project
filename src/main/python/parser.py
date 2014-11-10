@@ -136,7 +136,8 @@ class Parser(object):
         cite = Citation(
                     text=citation_meta.get('text'),
                     article=citation_meta.get('article'),
-                    target_article=citation_meta.get('target_article')
+                    target_article=citation_meta.get('target_article'),
+                    target_name=citation_meta.get('target_name')
                 )
         status = cite.save()
         if status:
@@ -165,7 +166,8 @@ class Parser(object):
                         target_article = self.add_article(article_meta, website)
                         cite = self.add_citation({"text":parent.text,
                                            "article": article,
-                                           "target_article": target_article})
+                                           "target_article": target_article,
+                                           "target_name": target_name})
                         article.citations.append(cite)
                         article.save()
                         break
@@ -178,7 +180,8 @@ class Parser(object):
                                 or parent.name == 'h2' or parent.name == 'h3' \
                                     or parent.name == 'h4':
                         cite = self.add_citation({"text":parent.text,
-                                           "article": article})
+                                           "article": article,
+                                           "target_name": target_name})
                         break
 
     def get_meta_data(self, url):
@@ -187,7 +190,10 @@ class Parser(object):
         E.g.
         {author: "", "url": "", title: "", last_modified_date: "", html: ""}
         '''
-        r = requests.get(url, timeout=60) #send http request
+        try:
+            r = requests.get(url, timeout=60) #send http request
+        except ConnectionError:
+            return self.get_meta_data(url)
         content = r.content #get the content
         soup = BeautifulSoup(content) #put it into beautifulsoup
         meta = {}
@@ -218,27 +224,27 @@ class Parser(object):
         Takes a screenshot of the article and return a binary representation of it.
         '''
         self.base_url = url
-        
+
         # set up a web scraping session
-        self.session = dryscrape.Session(base_url = self.base_url)         
-        
+        self.session = dryscrape.Session(base_url = self.base_url)
+
         # visit homepage and search for a term
         self.session.visit('/')
-        
+
         temp = tempfile.NamedTemporaryFile(mode='rb', suffix = '.jpg')
-        
+
         # save a screenshot of the web page
         self.session.render(temp.name)
 
         binary = temp.read()
         temp.close()
         return binary
-        
-        
+
+
 if __name__ == '__main__':
     #p = Parser()
     #print p.get_screenshot_binary('http://www.aljazeera.com/')
-    
+
     sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
                     'CNN': 'www.cnn.com'}
     targets = { "Haaretz":"www.haaretz.com" }
@@ -253,5 +259,5 @@ if __name__ == '__main__':
                 article_meta = p.get_meta_data(a)
                 article = p.add_article(article_meta, website)
                 p.extract_citation(article_meta.get('html'), t, t_name, article)
-    
+
 
