@@ -3,4 +3,5 @@ cherrypy
 mongoengine
 beautifulsoup4
 mako
+requests
 
