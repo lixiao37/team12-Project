@@ -93,7 +93,7 @@ class Parser(object):
                     ).first()
         if art:
             print "Article already exists and has not been updated"
-            return article
+            return art
         art = Article(
                 title=article_meta.get("title"),
                 author=article_meta.get("author"),
@@ -236,9 +236,9 @@ class Parser(object):
         
         
 if __name__ == '__main__':
-    p = Parser()
-    print p.get_screenshot_binary('http://www.aljazeera.com/')
-    '''
+    #p = Parser()
+    #print p.get_screenshot_binary('http://www.aljazeera.com/')
+    
     sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
                     'CNN': 'www.cnn.com'}
     targets = { "Haaretz":"www.haaretz.com" }
@@ -253,5 +253,5 @@ if __name__ == '__main__':
                 article_meta = p.get_meta_data(a)
                 article = p.add_article(article_meta, website)
                 p.extract_citation(article_meta.get('html'), t, t_name, article)
-    '''
+    
 

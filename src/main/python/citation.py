@@ -6,7 +6,7 @@ class Citation(Document):
 	text = StringField()
 	article = ReferenceField(Article, reverse_delete_rule=CASCADE)
 	target_article = ReferenceField(Article, reverse_delete_rule=CASCADE)
-    target_name = StringField()
+	target_name = StringField()
 
 if __name__ == '__main__':
     # connects to the database
