@@ -17,8 +17,9 @@ class Parser(object):
     session = None
     host = "ds039020.mongolab.com:39020"
     dbName = "parser"
-    base_url = "http://www.google.ca"
-    search_meta = "/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
+    # base_url = ""
+    google_url = "http://www.google.ca"
+    search_meta = "http://www.google.ca/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
         #{0}:keyword, {1}:website, {2}:sort by month or year or day
     username = "admin"
     password = "admin"
@@ -27,7 +28,7 @@ class Parser(object):
     title_names = ['Headline', 'title', 'og:title']
 
     def __init__(self):
-        self.session = dryscrape.Session(base_url=self.base_url)
+        self.session = dryscrape.Session()
 
         #Connect to the database
         self.connect()
@@ -62,7 +63,7 @@ class Parser(object):
         for a in soup.find_all("a"):
                 if a.parent.name == "h3":
                     url = a.get("href")
-                    complete_url = self.base_url + url
+                    complete_url = self.google_url + url
                     if not m.match(complete_url):
                         continue
                     articles.append(complete_url)
@@ -70,13 +71,13 @@ class Parser(object):
         resultsPage = [a.get("href") for a in soup.find_all("a", "fl")]
 
         for page in resultsPage:
-            self.session.visit(page)
+            self.session.visit(self.google_url + page)
             body = self.session.driver.body()
             soup = BeautifulSoup(body)
             for a in soup.find_all("a"):
                 if a.parent.name == "h3":
                     url = a.get("href")
-                    complete_url = self.base_url + url
+                    complete_url = self.google_url + url
                     if not m.match(complete_url):
                         continue
                     articles.append(complete_url)
@@ -93,6 +94,7 @@ class Parser(object):
                     ).first()
         if art:
             print "Article already exists and has not been updated"
+            print article_meta
             return art
         art = Article(
                 title=article_meta.get("title"),
@@ -223,13 +225,11 @@ class Parser(object):
         '''
         Takes a screenshot of the article and return a binary representation of it.
         '''
-        self.base_url = url
-
         # set up a web scraping session
-        self.session = dryscrape.Session(base_url = self.base_url)
+        # session = dryscrape.Session(base_url = url)
 
         # visit homepage and search for a term
-        self.session.visit('/')
+        self.session.visit(url)
 
         temp = tempfile.NamedTemporaryFile(mode='rb', suffix = '.jpg')
 
