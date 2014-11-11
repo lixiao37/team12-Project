@@ -1,10 +1,24 @@
 File Reviewed:
+File Timestamp:
 Sections Reviewed:
-Author:
-(a)
-(b)
-(c)
-(d)
+Code-Reviewer:
+Code-Author:
+(a) Correctness
+    -
+    -
+(b) Coding Style
+    -
+    -
+(c) Coding Guidelines
+    -
+    -
+(d) Quality of Documentation
+    -
+    -
+(e) Quality of Testing
+    -
+    -
 
 Summary:
+ -
 
