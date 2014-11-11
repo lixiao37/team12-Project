@@ -35,9 +35,3 @@ if __name__ == '__main__':
         homepage_url = homepage_url,
         website = website).save()
 
- #    article = article.object(title = title)
- #    target_title = raw_input("Enter target article title: ")
-    # target_article = article.object(title=title)
-
- #    citations = citation.objects()
-

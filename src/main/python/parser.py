@@ -305,4 +305,4 @@ if __name__ == '__main__':
                 article_meta = p.get_meta_data(a)
                 article = p.add_article(article_meta, website)
                 p.extract_citation(article_meta.get('html'), t, t_name, article)
-    
+

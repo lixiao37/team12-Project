@@ -326,4 +326,7 @@ if __name__ == '__main__':
             'tools.staticdir.dir': './public'
         }
     }
+    cherrypy.config.update({'server.socket_host': '0.0.0.0',
+                        'server.socket_port': 8080,
+                       })
     cherrypy.quickstart(Root(), '/', _cp_config)
