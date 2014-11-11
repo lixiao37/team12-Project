@@ -8,7 +8,7 @@ from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
-connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
+connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
 
 class RestrictedArea:
 
@@ -257,10 +257,10 @@ class Root:
                 # Count the times that each target in the news_targets is in the
                 # citation list for each article and put it in the target_count
                 for citation in article.citations:
-                    if (not isinstance( citation, int )) and (citation.target_article):
+                    if not isinstance( citation, int ):
                         i = 0
                         while i < len(news_targets):
-                            if citation.target_article.website.homepage_url == news_targets.values()[i]:
+                            if citation.target_name.lower() == news_targets.keys()[i].lower():
                                 target_count[i] += 1
                             i += 1
             relation_dict[source_name] = target_count

@@ -1,3 +1,8 @@
 % for a in articles:
-<li><a href=${a.url}>${a.title}</li>
+	<li><a href=${a.url}>
+	% if a.title != "":
+		${a.title}</li>
+	% else:
+		${a.url}</li>
+	% endif
 % endfor

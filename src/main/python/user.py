@@ -29,14 +29,14 @@ if __name__ == '__main__':
     twitter_sources = {}
     twitter_targets = {}
 
-    news_sources["aljazeera"] = "www.aljazeera.com"
-    news_sources["haaretz"] = "www.haaretz.com" 
-    news_targets["bbc"] = "www.bbc.com"
-    news_targets["cnn"] = "www.cnn.com"
-    twitter_sources["twitter 1"] = "www.t1.com"
-    twitter_sources["twitter 2"] = "www.t2.com"
-    twitter_targets["twitter 3"] = "www.t3.com"
-    twitter_targets["twitter 4"] = "www.t4.com"
+    # news_sources["aljazeera"] = "www.aljazeera.com"
+    # news_sources["haaretz"] = "www.haaretz.com" 
+    # news_targets["bbc"] = "www.bbc.com"
+    # news_targets["cnn"] = "www.cnn.com"
+    # twitter_sources["twitter 1"] = "www.t1.com"
+    # twitter_sources["twitter 2"] = "www.t2.com"
+    # twitter_targets["twitter 3"] = "www.t3.com"
+    # twitter_targets["twitter 4"] = "www.t4.com"
     p = hashlib.md5()
     p.update(password)
     User(name = name, 
