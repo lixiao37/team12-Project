@@ -19,8 +19,10 @@ class ParserTest (unittest.TestCase):
 		Citation.drop_collection()
 
 	def test_add_article(self):
-		website = Website(name="CNN", homepage_url="http://www.cnn.com", 
-						  country="USA")
+		'''
+		Test the add_article method, that adds article data into the database
+		'''
+		website = Website(name="CNN", homepage_url="http://www.cnn.com")
 		website.save()
 
 		article_meta = {}
@@ -36,10 +38,56 @@ class ParserTest (unittest.TestCase):
 		self.assertEqual(art.url, article_meta["url"])
 
 	def test_add_website(self):
-		pass
+		'''
+		Test the add_website method, that adds website data into the database
+		'''
+		website_meta = {}
+		website_meta["name"] = "CNN"
+		website_meta["homepage_url"] = "http://www.article-1.com"
+		
+		web = self.parse.add_website(website_meta)
+
+		self.assertEqual(web.name, website_meta["name"])
+		self.assertEqual(web.homepage_url, website_meta["homepage_url"])
 
 	def test_add_citation(self):
-		pass
+		'''
+		Test the add_citation method, that adds citation data into the database
+		'''
+		website = Website(name="CNN", homepage_url="http://www.cnn.com")
+		website.save()
+
+		target_website = Website(name="Haaretz", 
+								 homepage_url="http://www.haaretz.com")
+		target_website.save()
+
+		article_meta = {}
+		article_meta["title"] = "Article-1"
+		article_meta["author"] = "John Smith"
+		article_meta["url"] = "http://www.article-1.com"
+
+		art = self.parse.add_article(article_meta, website)
+
+		target_article_meta = {}
+		target_article_meta["title"] = "Article-2"
+		target_article_meta["author"] = "John Smith"
+		target_article_meta["url"] = "http://www.article-2.com"
+
+		target_art = self.parse.add_article(target_article_meta, target_website)
+
+		citation_meta = {}
+		citation_meta["text"] = "Haaretz said that people need to play football"
+		citation_meta["article"] = art
+		citation_meta["target_article"] = target_art
+		citation_meta["target_name"] = "Haaretz"
+
+		cite = self.parse.add_citation(citation_meta)
+
+		self.assertEqual(cite.text, citation_meta["text"])
+		self.assertEqual(cite.article, citation_meta["article"])
+		self.assertEqual(cite.target_article, citation_meta["target_article"])
+		self.assertEqual(cite.target_name, citation_meta["target_name"])
+
 
 if __name__ == '__main__':
 	unittest.main()
