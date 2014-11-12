@@ -12,16 +12,28 @@
 	- mongoengine
 	- beautifulsoup4
 	- mako
+	- dryscrape
 
 Most of the dependencies are python modules, therefore you can install them
 locally by running "pip install {module_name}".
 
-We are using pybuilder, an automated python builder.
+However, there is a textfile that lists all the dependencies required. And you can run "pip install -r requirements.txt", this will install all the required python dependencies.
+
+#### Installing Dependencies:
+Run the following commands:
+
+	- $ sudo pip install -r requirements.txt
+	- $ sudo sh dryscrape.sh
+
+The first script will install all python dependencies. And the second script will install **dryscrape**.
+
+### How to build:
+This project uses an automated python builder, called pybuilder.
+
 The source files are located under src/main/python/*.
 The unittest files are located under src/unittest/python/*.
 
-### How to build:
-Run "pyb" in the root directory(where build.py exists).
+Run **"pyb"** in the root directory(where build.py exists).
 This will build the entire project, and save the files into a separate folder,
 called "target". Then you can look at the distribution files under,
 **"target/dist/team12-Project1-1.0-SNAPSHOT"**
@@ -41,7 +53,7 @@ called "target". Then you can look at the distribution files under,
 ###### website.py
 	- This python file contains the schema for the Website collection.
 
-###### root.py
+###### userinterface.py
 	- This file contains the User Interface for our system.
     It works together with the authenticator.py, parser and the searcher
     to generate pages for the user to see.
@@ -55,8 +67,3 @@ called "target". Then you can look at the distribution files under,
 ###### parser.py
 	- This module is a generic class for all parsers. It contains methods like
 	"add to database", and "connect to the database" etc.
-
-###### aljazeeraparser.py
-	- This module is a child of the generic parser class, and it contains the
-	parsing utilities specific to aljazeera website.
-

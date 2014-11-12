@@ -1,0 +1,31 @@
+File Reviewed: parser.py
+File Timestamp: Nov. 11, 05:38 PM
+Sections Reviewed: get_citation and get_meta_data
+Code-Reviewer: Ali Mehdi(aka Muhammad Mehdi)
+Code-Author: Alan Chan
+
+(a) Correctness
+    - In get_meta_data, it needs more checks for meta data
+    - In extract_citation, the code needs to be broken further
+	-> for example, extract_citation should not depend on other functions 
+(b) Coding Style
+    - Too many indentations in extract_citations
+    - Code refactoration can be done in extract_citations 
+(c) Coding Guidelines
+    - Good use of naming convention, using pep8
+    - Very close to 80 character line limit
+(d) Quality of Documentation
+    - Need more documentation in extract_citations, what does it do?
+    - Same for get_meta_data, what does it return? Object type? 
+(e) Quality of Testing
+    - No test cases done.
+
+Summary:
+ - The overall correctness was correct. Except, the "extract_citation" needs 
+   to be split into smaller functions, so that testing is done more
+   more efficiently. The coding style was great, it was consistent with the
+   pep8 coding styles. The code however needs more documentation and comments.
+   There were no test-cases done, so the author needs to work more on that,
+   since testing is an essential part of the development.
+   File reviewed, parser.py. Timestamp, Nov. 11 05:38 PM.
+

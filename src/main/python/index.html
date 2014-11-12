@@ -1,0 +1,25 @@
+<link rel="stylesheet" type="text/css" href="static/css/general.css"/>
+<html>
+<body>
+        <head>
+		<title>Main Menu</title>
+	</head>
+	<center>
+    <div align = "right">
+        Current User: ${name}<br>
+        <input type="button" value="Logout" onClick="location='/auth/logout'"/>
+        </div>
+        <center>
+        <h1>Welcome to the Main Menu!</h1>
+    <hr>    
+    <input type="button" value="Tracking sources and targets" onclick="location='/tracking_list'">
+    <br/>
+    <input type="button" value="Display articles" onclick="location='/display'">
+    <br/>
+    <input type="button" value="Generate Graph" onclick="location='/generate_graphs'">
+    <br/>
+    <br/>
+    </form>
+    </center>
+</body>
+</html>

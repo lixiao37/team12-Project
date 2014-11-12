@@ -15,3 +15,6 @@ target
 
 #ignore mac finder tmp files
 *.DS_Store
+
+#ignore the IDE files
+*.idea

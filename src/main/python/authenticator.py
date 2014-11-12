@@ -12,7 +12,7 @@ from user import User
 SESSION_KEY = '_cp_username'
 
 # connects to the database
-connect("userinterface", host="ds035260.mongolab.com:35260", username="admin", password="admin")
+connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
 
 # Might be userful for later - Chun
 # def createUserInDB(username, password):
@@ -112,16 +112,22 @@ class AuthController(object):
     
     def on_login(self, username):
         """Called on successful login"""
+        cherrypy.session["user"] = username
     
     def on_logout(self, username):
         """Called on logout"""
+        cherrypy.session.pop("user", None)
     
     def get_loginform(self, username, msg="Enter login information", from_page="/"):
         # 2 lines of code to prevent XSS vulnerability
         username = escape(username, True)
         from_page = escape(from_page, True)
-        return """<html><body bgcolor="pink"><center>
-            <h1 style="color:#0033CC">Login Screen</h1>
+        return """
+            <link rel="stylesheet" type="text/css" href="/static/css/general.css"/>
+            <html><head><title>Login</title></head><body><center>
+            <br><br>
+            <h1>Login Screen</h1>
+            <hr>
             <form method="post" action="/auth/login">
             <input type="hidden" name="from_page" value="%(from_page)s" />
             %(msg)s<br/>
