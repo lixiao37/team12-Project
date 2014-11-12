@@ -24,8 +24,13 @@ Run the following commands:
 
 	- $ sudo pip install -r requirements.txt
 	- $ sudo sh dryscrape.sh
+The first script will install all python dependencies. 
+And the second script will install **dryscrape**, which is a python module for HTTP requests.
 
-The first script will install all python dependencies. And the second script will install **dryscrape**.
+***Note: The dryscrape module uses X11, if the build fails with the error "Cant Connect To X11", then you should run the build using the following command:***
+
+	- $ xvfb-run pyb
+***"xvfb"*** is an alternate to X11. You can install this easily using sudo apt-get install command.
 
 ### How to build:
 This project uses an automated python builder, called pybuilder.
@@ -34,11 +39,13 @@ The source files are located under src/main/python/*.
 The unittest files are located under src/unittest/python/*.
 
 Run **"pyb"** in the root directory(where build.py exists).
-This will build the entire project, and save the files into a separate folder,
-called "target". Then you can look at the distribution files under,
+This will build the entire project, and save the build files into a separate folder,
+called "target". The python builder will also run the unittests, which are located in src/main/python/*.
+
+The build files will be located under:
 **"target/dist/team12-Project1-1.0-SNAPSHOT"**
 
-### Summary of source files:
+### Critical source files:
 
 ###### user.py
 	- This python file contains the schema for the User collection
