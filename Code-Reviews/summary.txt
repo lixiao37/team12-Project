@@ -16,7 +16,7 @@ Code follows PEP8 coding conventions, minor format issues in get_screenshot.
 Code comments and docstring provide descriptive detail to function flow.
 No tests were available to test functions on.
 File Reviewed: parser.py [get_meta_data & get_screenshot]
-File Timestamp: 11/11/2014
+File Timestamp: 11/11/2014, 05:38 PM
 
 Zhen:
 - The correctness was great, the function could handle most of the unexpected 
@@ -26,7 +26,8 @@ Zhen:
   to follow. The only unexpected thing was the indentations which were too much 
   for the generate_relation_dict function.
 - The coding guideline was bad. 
-  Some lines are too long [line 215, 217, 254, 263], which confilts the pep8 and docstring is outside the   generate_relation_dict [line 235-240].
+  Some lines are too long [line 215, 217, 254, 263], which confilts the pep8 
+  and docstring is outside the   generate_relation_dict [line 235-240].
 - The quality of documentation was good. Commenting style is maintained and easy
   to follow. Complex algorithms are explained and justified but not in detail 
   which still confused me [line 257-258].
