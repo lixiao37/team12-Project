@@ -15,6 +15,7 @@ class Parser(object):
 
     conn = None
     session = None
+    verbose = True
     host = "ds039020.mongolab.com:39020"
     dbName = "parser"
     #base_url = ""
@@ -29,17 +30,22 @@ class Parser(object):
     date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate", 'datePublished']
     title_names = ['Headline', 'title', 'og:title']
 
-    def __init__(self):
+    def __init__(self, host=None, dbName=None, verbose=True):
         '''Initialize a session to connect to the database'''
         self.session = dryscrape.Session()
-        self.connect()
+        self.verbose = verbose
+        if host and dbName:
+            self.connect(host=host, dbName=dbName)
+        else:
+            self.connect(host=self.host, dbName=self.dbName)
 
-    def connect(self):
+    def connect(self, host=None, dbName=None):
         '''Connect to the database'''
-        self.conn = connect(self.dbName, host=self.host, username=self.username,
+        self.conn = connect(dbName, host=host, username=self.username,
                         password=self.password)
         if self.isConnect():
-            print "Connected to the Database"
+            if self.verbose:
+                print "Connected to the Database"
 
     def isConnect(self):
         '''Check if connection exists with the database'''
@@ -98,8 +104,8 @@ class Parser(object):
                     ).first()
         
         if art:
-            print "Article already exists and has not been updated"
-            print article_meta
+            if self.verbose:
+                print "Article already exists and has not been updated"
             return art
         
         #This article object is used to add to the database
