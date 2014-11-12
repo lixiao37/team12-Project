@@ -37,6 +37,27 @@ class ParserTest (unittest.TestCase):
 		self.assertEqual(art.author, article_meta["author"])
 		self.assertEqual(art.url, article_meta["url"])
 
+	def test_add_article_duplicate(self):
+		'''
+		Test the add_article method, by adding same article twice
+		'''
+		website = Website(name="CNN", homepage_url="http://www.cnn.com")
+		website.save()
+
+		article_meta = {}
+		article_meta["title"] = "Article-1"
+		article_meta["author"] = "John Smith"
+		article_meta["url"] = "http://www.article-1.com"
+
+		art = self.parse.add_article(article_meta, website)
+		art_two = self.parse.add_article(article_meta, website)
+
+		#check if both articles are the actually the same articles
+		self.assertEqual(art.title, art_two.title)
+		self.assertEqual(art.author, art_two.author)
+		self.assertEqual(art.url, art_two.url)
+		self.assertEqual(art.id, art_two.id)
+
 	def test_add_website(self):
 		'''
 		Test the add_website method, that adds website data into the database
@@ -49,6 +70,20 @@ class ParserTest (unittest.TestCase):
 
 		self.assertEqual(web.name, website_meta["name"])
 		self.assertEqual(web.homepage_url, website_meta["homepage_url"])
+
+	def test_add_website_duplicate(self):
+		'''
+		Test the add_website method, add duplicate websites
+		'''
+		website_meta = {}
+		website_meta["name"] = "CNN"
+		website_meta["homepage_url"] = "http://www.article-1.com"
+		
+		web = self.parse.add_website(website_meta)
+		web_two = self.parse.add_website(website_meta)
+
+		self.assertEqual(web.name, web_two.name)
+		self.assertEqual(web.homepage_url, web_two.homepage_url)
 
 	def test_add_citation(self):
 		'''
