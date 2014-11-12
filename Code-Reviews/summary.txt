@@ -6,6 +6,8 @@ documentation is decent and explains the purpose of a big chunk of code. All he
 needs to do is add few more lines of commenting and describe what happens when 
 the data is already in the database or when connection to the database fails. 
 Ali did not write any test cases.
+File Reviewed: parser.py [searchArticle, add_article, add_website & add_citation]
+File Timestamp: 11/11/2014 5:40 PM
 
 Alan:
 Code is present functions correctly and output was of expected format.
@@ -13,6 +15,8 @@ Code is easy for both other users to read and understand.
 Code follows PEP8 coding conventions, minor format issues in get_screenshot.
 Code comments and docstring provide descriptive detail to function flow.
 No tests were available to test functions on.
+File Reviewed: parser.py [get_meta_data & get_screenshot]
+File Timestamp: 11/11/2014
 
 Zhen:
 - The correctness was great, the function could handle most of the unexpected 
@@ -22,7 +26,7 @@ Zhen:
   to follow. The only unexpected thing was the indentations which were too much 
   for the generate_relation_dict function.
 - The coding guideline was bad. 
-  Some lines are too long [line 215, 217, 254, 263], which confilts the pep8 and docstring is outside the generate_relation_dict [line 235-240].
+  Some lines are too long [line 215, 217, 254, 263], which confilts the pep8 and docstring is outside the   generate_relation_dict [line 235-240].
 - The quality of documentation was good. Commenting style is maintained and easy
   to follow. Complex algorithms are explained and justified but not in detail 
   which still confused me [line 257-258].
@@ -41,6 +45,8 @@ Chun:
   they are reading the code
 - The functions needs doc strings to describe what parameters are being
   passed in, what the funciton does and what it returns
+- File Reviewed: userinterface.py [line 175-190 192-204]
+- File Timestamp: November 11, 2014
 
 Ali:
 - The overall correctness was correct. Except, the "extract_citation" needs 
