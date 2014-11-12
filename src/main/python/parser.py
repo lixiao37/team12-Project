@@ -206,18 +206,18 @@ if __name__ == '__main__':
     #{ source/target name: source/target url }
     # sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
                     # 'CNN': 'www.cnn.com' }
-    sources = {"Al Jazeera": "www.cnn.com"}
+    sources = {"CNN": "www.cnn.com"}
     targets = { "Haaretz": "www.haaretz.com" }
     data = Database()
     data.connect()
     parse = Parser()
     for s_name, s in sources.viewitems():
-        website = parse.add_website({"name": s_name, "homepage_url": s})
+        website = data.add_website({"name": s_name, "homepage_url": s})
         for t_name, t in targets.viewitems():
             articles = parse.searchArticle(t_name, s)
             for a in articles:
                 article_meta = parse.get_meta_data(a)
-                article = parse.add_article(article_meta, website)
+                article = data.add_article(article_meta, website)
                 citations = parse.get_citation(article_meta.get('html'), t, t_name)
                 parse.add_citations(citations, t, t_name, article)
 
