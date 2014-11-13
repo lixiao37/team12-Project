@@ -161,7 +161,7 @@ class Parser(object):
             anchor_name = m.get('name')
             Property = m.get('property')
             item_prop = m.get('itemprop')
-            if anchor_name in self.title_names or Property in self.title_names:
+            if anchor_name in self.title_names:
                 content = m.get('content').encode('utf-8')
                 meta['title'] = content
             if anchor_name in self.date_names or item_prop in self.date_names:
@@ -170,10 +170,12 @@ class Parser(object):
             if 'author' == anchor_name:
                 content = m.get('content').encode('utf-8')
                 meta['author'] = content
-
+        
         if not meta.get('title'):
-            meta['title'] = ''
-
+            #meta['title'] = ''
+            #soup.find(itemprop="headline").text.encode("utf-8").strip()
+            meta['title'] = soup.find(itemprop="headline").text.encode("utf-8").strip()
+        
         return meta
 
     def get_screenshot_binary(self, url):
