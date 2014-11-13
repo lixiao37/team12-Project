@@ -1,6 +1,7 @@
 import unittest
 
 from parser import *
+from database import *
 
 class TestGetMetaData(unittest.TestCase):
 	
@@ -9,7 +10,9 @@ class TestGetMetaData(unittest.TestCase):
 	dbName = "unittests"
 	
 	def setUp(self):
-		self.p = Parser(host=self.host, dbName=self.dbName, verbose=False)
+		self.p = Parser()
+		self.data = Database(host=self.host, dbName=self.dbName, verbose=False)
+		self.data.connect()
 		self.meta_data_one = {}
 		self.meta_data_one["author"] = 'Al Jazeera and agencies'
 		self.meta_data_one["url"] = 'http://www.aljazeera.com/news/middleeast/2014/11/syria-seriously-studying-un-truce-proposal-2014111118514613822.html'
@@ -17,6 +20,7 @@ class TestGetMetaData(unittest.TestCase):
 
 	def tearDown(self):
 		self.p = None
+		self.data = None
 		self.meta_data_one = None
 	
 	def test_exist_meta(self):
@@ -43,10 +47,13 @@ class TestSearchArticle(unittest.TestCase):
 	dbName = "unittests"
 	
 	def setUp(self):
-		self.p = Parser(host=self.host, dbName=self.dbName, verbose=False)
+		self.p = Parser()
+		self.data = Database(host=self.host, dbName=self.dbName, verbose=False)
+		self.data.connect()
 
 	def tearDown(self):
 		self.p = None
+		self.data = None
 		
 	def test_exist_article(self):
 		'''Check to ensure that there is at least one article'''
@@ -68,10 +75,13 @@ class ParserTest (unittest.TestCase):
 	dbName = "unittests"
 
 	def setUp(self):
-		self.parse = Parser(host=self.host, dbName=self.dbName, verbose=False)
+		self.parse = Parser()
+		self.data = Database(host=self.host, dbName=self.dbName, verbose=False)
+		self.data.connect()
 
 	def tearDown(self):
 		self.parse = None
+		self.data = None
 		#reset the database for each test-cases
 		Website.drop_collection()
 		Article.drop_collection()
@@ -89,7 +99,7 @@ class ParserTest (unittest.TestCase):
 		article_meta["author"] = "John Smith"
 		article_meta["url"] = "http://www.article-1.com"
 
-		art = self.parse.add_article(article_meta, website)
+		art = self.data.add_article(article_meta, website)
 
 		#check if the data was inputted correctly
 		self.assertEqual(art.title, article_meta["title"])
@@ -108,8 +118,8 @@ class ParserTest (unittest.TestCase):
 		article_meta["author"] = "John Smith"
 		article_meta["url"] = "http://www.article-1.com"
 
-		art = self.parse.add_article(article_meta, website)
-		art_two = self.parse.add_article(article_meta, website)
+		art = self.data.add_article(article_meta, website)
+		art_two = self.data.add_article(article_meta, website)
 
 		#check if both articles are the actually the same articles
 		self.assertEqual(art.title, art_two.title)
@@ -125,7 +135,7 @@ class ParserTest (unittest.TestCase):
 		website_meta["name"] = "CNN"
 		website_meta["homepage_url"] = "http://www.article-1.com"
 		
-		web = self.parse.add_website(website_meta)
+		web = self.data.add_website(website_meta)
 
 		self.assertEqual(web.name, website_meta["name"])
 		self.assertEqual(web.homepage_url, website_meta["homepage_url"])
@@ -138,8 +148,8 @@ class ParserTest (unittest.TestCase):
 		website_meta["name"] = "CNN"
 		website_meta["homepage_url"] = "http://www.article-1.com"
 		
-		web = self.parse.add_website(website_meta)
-		web_two = self.parse.add_website(website_meta)
+		web = self.data.add_website(website_meta)
+		web_two = self.data.add_website(website_meta)
 
 		self.assertEqual(web.name, web_two.name)
 		self.assertEqual(web.homepage_url, web_two.homepage_url)
@@ -160,14 +170,14 @@ class ParserTest (unittest.TestCase):
 		article_meta["author"] = "John Smith"
 		article_meta["url"] = "http://www.article-1.com"
 
-		art = self.parse.add_article(article_meta, website)
+		art = self.data.add_article(article_meta, website)
 
 		target_article_meta = {}
 		target_article_meta["title"] = "Article-2"
 		target_article_meta["author"] = "John Smith"
 		target_article_meta["url"] = "http://www.article-2.com"
 
-		target_art = self.parse.add_article(target_article_meta, target_website)
+		target_art = self.data.add_article(target_article_meta, target_website)
 
 		citation_meta = {}
 		citation_meta["text"] = "Haaretz said that people need to play football"
@@ -175,7 +185,7 @@ class ParserTest (unittest.TestCase):
 		citation_meta["target_article"] = target_art
 		citation_meta["target_name"] = "Haaretz"
 
-		cite = self.parse.add_citation(citation_meta)
+		cite = self.data.add_citation(citation_meta)
 
 		self.assertEqual(cite.text, citation_meta["text"])
 		self.assertEqual(cite.article, citation_meta["article"])

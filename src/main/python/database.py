@@ -14,7 +14,8 @@ class Database(object):
     username = "admin"
     password = "admin"
 
-    def __init__(self, host=None, dbName=None):
+    def __init__(self, host=None, dbName=None, verbose=True):
+        self.verbose = verbose
         if host:
             self.host = host
         if dbName:
