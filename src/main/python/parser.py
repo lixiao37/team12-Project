@@ -171,10 +171,11 @@ class Parser(object):
                 content = m.get('content').encode('utf-8')
                 meta['author'] = content
         
-        if not meta.get('title'):
-            #meta['title'] = ''
-            #soup.find(itemprop="headline").text.encode("utf-8").strip()
+        if soup.find(itemprop="headline"):
             meta['title'] = soup.find(itemprop="headline").text.encode("utf-8").strip()
+        
+        if not meta.get('title'):
+            meta["title"] = ""
         
         return meta
 
@@ -206,10 +207,10 @@ if __name__ == '__main__':
 
     #Both the sources and targets are dictionaries and the format is
     #{ source/target name: source/target url }
-    # sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
-                    # 'CNN': 'www.cnn.com' }
-    sources = {"CNN": "www.cnn.com"}
-    targets = { "Haaretz": "www.haaretz.com" }
+    sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
+                    'CNN': 'www.cnn.com' }
+    # sources = {"CNN": "www.cnn.com"}
+    targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
     data = Database()
     data.connect()
     parse = Parser()
