@@ -202,14 +202,8 @@ class Parser(object):
 
 
 if __name__ == '__main__':
-    #p = Parser()
-    #print p.get_screenshot_binary('http://www.aljazeera.com/')
-
-    #Both the sources and targets are dictionaries and the format is
-    #{ source/target name: source/target url }
     sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
                     'CNN': 'www.cnn.com' }
-    # sources = {"CNN": "www.cnn.com"}
     targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
     data = Database()
     data.connect()
@@ -223,8 +217,5 @@ if __name__ == '__main__':
                 article = data.add_article(article_meta, website)
                 citations = parse.get_citation(article_meta.get('html'), t, t_name)
                 parse.add_citations(citations, t, t_name, article)
-
-                # parse.extract_citation(article_meta.get('html'), t, t_name, article)
-
 
 
