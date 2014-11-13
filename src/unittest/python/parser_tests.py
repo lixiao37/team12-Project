@@ -68,6 +68,3 @@ class TestSearchArticle(unittest.TestCase):
 		seen_twice = set(x for x in url_list if x in seen or seen_add(x))
 		self.assertEqual(seen_twice, set([]))
 
-
-if __name__ == '__main__':
-	unittest.main()

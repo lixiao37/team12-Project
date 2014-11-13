@@ -127,3 +127,48 @@ class DatabaseTest (unittest.TestCase):
 		self.assertEqual(cite.target_article, citation_meta["target_article"])
 		self.assertEqual(cite.target_name, citation_meta["target_name"])
 
+	def test_add_citation_duplicate(self):
+		'''
+		Test the add_citation method, that adds duplicate citation data into
+		the database
+		'''
+		website = Website(name="CNN", homepage_url="http://www.cnn.com")
+		website.save()
+
+		target_website = Website(name="Haaretz",
+								 homepage_url="http://www.haaretz.com")
+		target_website.save()
+
+		article_meta = {}
+		article_meta["title"] = "Article-1"
+		article_meta["author"] = "John Smith"
+		article_meta["url"] = "http://www.article-1.com"
+
+		art = self.data.add_article(article_meta, website)
+
+		target_article_meta = {}
+		target_article_meta["title"] = "Article-2"
+		target_article_meta["author"] = "John Smith"
+		target_article_meta["url"] = "http://www.article-2.com"
+
+		target_art = self.data.add_article(target_article_meta, target_website)
+
+		citation_meta = {}
+		citation_meta["text"] = "Haaretz said that people need to play football"
+		citation_meta["article"] = art
+		citation_meta["target_article"] = target_art
+		citation_meta["target_name"] = "Haaretz"
+
+		cite = self.data.add_citation(citation_meta)
+		cite_two = self.data.add_citation(citation_meta)
+
+		query = Citation.objects(text=citation_meta["text"],
+								 article=citation_meta["article"],
+								 target_article=citation_meta["target_article"],
+								 target_name=citation_meta["target_name"])
+
+		#make sure that there are no duplicate entries in citation
+		self.assertEqual(len(query), 1)
+
+
+

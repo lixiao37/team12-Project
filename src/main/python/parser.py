@@ -170,13 +170,13 @@ class Parser(object):
             if 'author' == anchor_name:
                 content = m.get('content').encode('utf-8')
                 meta['author'] = content
-        
+
         #Special case to find the title of the target website
         if not meta.get('author'):
             meta['title'] = soup.find(itemprop="headline").text.encode("utf-8").strip()
-                
+
         #Special case to find the author of the target website
-        if not meta.get('author'):               
+        if not meta.get('author'):
             #This case is for human author
             if soup.find(rel="author"):
                 meta['author'] = soup.find(rel="author").text.encode("utf-8").strip()
@@ -185,15 +185,15 @@ class Parser(object):
             elif soup.find(itemprop="author"):
                 hold = soup.find(itemprop="author").findChildren()
                 meta['author'] = hold[len(hold)-1].text.encode("utf-8").strip()
-               
+
         #puts empty string as title and author if not found
         if not meta.get('title'):
             meta["title"] = ""
-                    
+
         if not meta.get('author'):
-            meta["author"] = ""            
-                
-        return meta        
+            meta["author"] = ""
+
+        return meta
 
     def get_screenshot_binary(self, url):
         '''
