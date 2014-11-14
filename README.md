@@ -50,9 +50,10 @@ After the build is done, please go to **"target/dist/team12-Project1-1.0-SNAPSHO
 
 	- $ python userinterface.py
 
-This will launch a webserver on your local computer. Then you can go to your internet browser and type "localhost:8080", this will take you to the report.
+This will launch a webserver on your local computer. Then you can go to your internet browser and type "localhost:8080", this will take you to the report. Then, login using the username "guest", and leave the password blank. Then click on "Generate Graph", this will generate graphs from the live database.
 
 The data that you will see is live data from a database, located at mongolab.com
+
 Note: You have to login using the username "guest" and leave the password blank.
 
 ### Critical source files:
