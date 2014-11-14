@@ -172,7 +172,7 @@ class Parser(object):
                 meta['author'] = content
 
         #Special case to find the title of the target website
-        if not meta.get('author'):
+        if not meta.get('title') and soup.find(itemprop="headline"):
             meta['title'] = soup.find(itemprop="headline").text.encode("utf-8").strip()
 
         #Special case to find the author of the target website

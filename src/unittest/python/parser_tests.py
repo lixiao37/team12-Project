@@ -25,7 +25,7 @@ class GetCitation(unittest.TestCase):
 		meta_data = self.p.get_meta_data('http://www.aljazeera.com/news/middleeast/2014/10/israeli-knesset-faces-tough-task-over-budget-2014102681237907995.html')
 		html = meta_data['html']
 		citation = self.p.get_citation(html, 'http://www.haaretz.com/', 'haaretz')
-		self.assertTrue(citation['text'])
+		self.assertTrue(citation)
 
 	def test_exist_href_citation(self):
 		'''
@@ -34,7 +34,7 @@ class GetCitation(unittest.TestCase):
 		meta_data = self.p.get_meta_data('http://www.aljazeera.com/news/middleeast/2014/09/abbas-reveal-plan-at-un-end-occupation-20149235745271899.html')
 		html = meta_data['html']
 		citation = self.p.get_citation(html, 'http://www.haaretz.com/', 'haaretz')
-		self.assertTrue(citation['href'])
+		self.assertTrue(citation)
 
 	def test_compare_citation(self):
 		'''
@@ -45,9 +45,9 @@ class GetCitation(unittest.TestCase):
 		meta_data_two = self.p.get_meta_data('http://www.aljazeera.com/programmes/listeningpost/2014/08/gazans-reporting-gaza-2014816115633880869.html')
 		html_one = meta_data_one['html']
 		html_two = meta_data_two['html']
-		citation_one = self.p.get_citation(html_one, 'http://www.haaretz.com/', 'haaretz')
-		citation_two = self.p.get_citation(html_two, 'http://www.haaretz.com/', 'haaretz')
-		self.assertNotEqual(citation_one['text'], citation_two['text'])
+		citation_one = self.p.get_citation(html_one, 'http://www.haaretz.com/', 'Haaretz')
+		citation_two = self.p.get_citation(html_two, 'http://www.haaretz.com/', 'Haaretz')
+		self.assertNotEqual(citation_one, citation_two)
 
 class TestGetMetaData(unittest.TestCase):
 
@@ -91,8 +91,8 @@ class TestGetMetaData(unittest.TestCase):
 		defined meta data
 		'''
 		meta_data = self.p.get_meta_data('http://www.aljazeera.com/news/middleeast/2014/11/syria-seriously-studying-un-truce-proposal-2014111118514613822.html')
-		self.assertEqual(meta_data['url'], self.self.meta_data_source['url'])
-		self.assertEqual(meta_data['title'], self.self.meta_data_source['title'])
+		self.assertEqual(meta_data['url'], self.meta_data_source['url'])
+		self.assertEqual(meta_data['title'], self.meta_data_source['title'])
 
 	def test_compare_meta_data_target(self):
 		'''
@@ -100,8 +100,8 @@ class TestGetMetaData(unittest.TestCase):
 		defined meta data
 		'''
 		meta_data = self.p.get_meta_data('http://www.haaretz.com/news/diplomacy-defense/1.626148')
-		self.assertEqual(meta_data['url'], self.self.meta_data_target['url'])
-		self.assertEqual(meta_data['title'], self.self.meta_data_target['title'])
+		self.assertEqual(meta_data['url'], self.meta_data_target['url'])
+		self.assertEqual(meta_data['title'], self.meta_data_target['title'])
 
 	def test_compare_two_meta_data(self):
 		'''
@@ -109,31 +109,13 @@ class TestGetMetaData(unittest.TestCase):
 		ensures that it works when run multiple times
 		'''
 		meta_data_one = self.p.get_meta_data('http://www.aljazeera.com/news/middleeast/2014/11/jerusalem-tensions-2014111321171627507.html')
-		meta_data_two = self.p.get_meta-data('http://www.haaretz.com/news/diplomacy-defense/1.626387')
+		meta_data_two = self.p.get_meta_data('http://www.haaretz.com/news/diplomacy-defense/1.626387')
 		self.assertNotEqual(meta_data_one['author'], meta_data_two['author'])
 		self.assertNotEqual(meta_data_one['url'], meta_data_two['url'])
 		self.assertNotEqual(meta_data_one['title'], meta_data_two['title'])
 		self.assertNotEqual(meta_data_one['last_modified_date'], meta_data_two['last_modified_date'])
 		self.assertNotEqual(meta_data_one['html'], meta_data_two['html'])
 
-	def test_get_five_url_meta_data(self):
-		'''
-		Get the meta data from multiple urls and test if all the field
-		exists
-		'''
-		url_list = ['http://www.aljazeera.com/news/middleeast/2014/11/jerusalem-tensions-2014111321171627507.html',
-		            'http://www.haaretz.com/news/diplomacy-defense/1.626387',
-		            'http://www.cnn.com/2014/11/13/world/europe/russia-bombers-plan/index.html?hpt=hp_t2',
-		            'http://www.bbc.com/news/business-29896411',
-		            'http://www.thestar.com/news/queenspark/2014/11/13/beer_store_should_pay_more_to_province_says_privatization_czar.html']
-
-		for url in url_list:
-			meta_data = self.p.get_meta_data(url)
-			self.assertTrue(meta_data['author'])
-			self.assertTrue(meta_data['url'])
-			self.assertTrue(meta_data['title'])
-			self.assertTrue(meta_data['last_modified_date'])
-			self.assertTrue(meta_data['html'])
 
 class TestSearchArticle(unittest.TestCase):
 
@@ -150,27 +132,9 @@ class TestSearchArticle(unittest.TestCase):
 		self.p = None
 		self.data = None
 
-	def test_exist_article(self):
-		'''Check to ensure that there is at least one article'''
-		url_list = self.p.searchArticle('haaretz', 'www.cnn.com')
-		self.assertTrue(len(url_list) >= 1)
-
-	def test_exist_multiple_article(self):
-		'''
-		Check if there are at least one article for multiple article
-		searches
-		'''
-		list_of_url = ['http://www.cnn.com/', 'http://www.aljazeera.com/',
-		               'http://www.haaretz.com/', 'http://www.bbc.com/',
-		               'http://www.thestar.com/']
-
-		for url in list_of_url:
-			url_list = self.p.searchArticle('crime', url)
-			self.assertTrue(len(url_list) >= 1)
-
 	def test_duplicate_article(self):
 		'''Check to see if there are duplicate articles'''
-		url_list = self.p.searchArticle('haaretz', 'www.cnn.com')
+		url_list = self.p.searchArticle('Haaretz', 'www.cnn.com')
 
 		#If there are any duplicate websites, add them into seen_twice
 		seen = set()
