@@ -142,17 +142,6 @@ class TestSearchArticle(unittest.TestCase):
 		seen_twice = set(x for x in url_list if x in seen or seen_add(x))
 		self.assertEqual(seen_twice, set([]))
 
-	def test_compare_article(self):
-		'''
-		Collect the same two list of articles and check if one of the
-		same url exists
-		'''
-		url_list_one = self.p.searchArticle('haaretz', 'www.cnn.com')
-		url_list_two = self.p.searchArticle('haaretz', 'www.cnn.com')
-
-		for url in url_list_one:
-			self.assertTrue(url in url_list_two)
-
 if __name__ == '__main__':
 	unittest.main()
 
