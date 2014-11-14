@@ -45,6 +45,16 @@ called "target". The python builder will also run the unittests, which are locat
 The build files will be located under:
 **"target/dist/team12-Project1-1.0-SNAPSHOT"**
 
+### Looking at the report
+After the build is done, please go to **"target/dist/team12-Project1-1.0-SNAPSHOT"** and write.
+
+	- $ python userinterface.py
+
+This will launch a webserver on your local computer. Then you can go to your internet browser and type "localhost:8080", this will take you to the report.
+
+The data that you will see is live data from a database, located at mongolab.com
+Note: You have to login using the username "guest" and leave the password blank.
+
 ### Critical source files:
 
 ###### user.py
