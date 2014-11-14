@@ -13,6 +13,7 @@
 	- beautifulsoup4
 	- mako
 	- dryscrape
+	- tweepy
 
 Most of the dependencies are python modules, therefore you can install them
 locally by running "pip install {module_name}".
