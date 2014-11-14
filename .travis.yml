@@ -6,23 +6,20 @@ python:
 
 before_install:
     - sudo apt-get update
+    - sudo apt-get install xvfb
 
 install:
     - pip install virtualenv
     - virtualenv venv
     - source venv/bin/activate
-    - pip install pybuilder
-    - pip install pytest
-    - pip install mongoengine
-    - pip install beautifulsoup4
-    - pip install cherrypy
-    - pip install nose
+    - pip install -r requirements.txt
+    - sudo sh dryscrape.sh
 
 before_script:
     - pyb install_dependencies
 
 script:
-    - pyb
+    - xvfb-run pyb
 
 notifications:
     email:
