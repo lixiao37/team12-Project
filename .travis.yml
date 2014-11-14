@@ -1,28 +1,29 @@
 language: python
 
 python:
-    - "2.6"
     - "2.7"
 
 before_install:
     - sudo apt-get update
+    - sudo apt-get install libqt4-dev libqtwebkit-dev qt4-qmake build-essential python-lxml python-pip
+    - sudo apt-get install xvfb
 
 install:
     - pip install virtualenv
     - virtualenv venv
     - source venv/bin/activate
-    - pip install pybuilder
-    - pip install pytest
-    - pip install mongoengine
-    - pip install beautifulsoup4
-    - pip install cherrypy
-    - pip install nose
+    - pip install -r requirements.txt
+    - git clone https://github.com/niklasb/dryscrape.git dryscrape
+    - cd dryscrape
+    - pip install -r requirements.txt
+    - python setup.py install
+    - cd ..
 
 before_script:
     - pyb install_dependencies
 
 script:
-    - pyb
+    - xvfb-run pyb
 
 notifications:
     email:
