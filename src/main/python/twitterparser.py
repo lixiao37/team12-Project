@@ -51,6 +51,31 @@ class TwitterParser:
         '''Return the twitter account user'''
         return self.api.get_user(user)
 
+    def get_user_mentions(self, tweets, target_mentions):
+        '''Return tweets that mention the target people'''
+        target_mentions = [x.lower() for x in target_mentions]
+        match_tweets = []
+        for tweet in tweets:
+            mentions = tweet.entities["user_mentions"]
+            if mentions:
+                for each_mention in mentions:
+                    if each_mention["screen_name"].lower() in target_mentions:
+                        match_tweets.append(tweet)
+        return match_tweets
+
+    def count_mentions(self, tweets):
+        count_mentions = {}
+        for tweet in tweets:
+            mentions = tweet.entities["user_mentions"]
+            if mentions:
+                for each_mention in mentions:
+                    name = each_mention["screen_name"]
+                    if count_mentions.has_key(name):
+                        count_mentions[name] += 1
+                    else:
+                        count_mentions[name] = 1
+        return count_mentions
+
 
 if __name__ == '__main__':
     from requests import get
@@ -58,4 +83,8 @@ if __name__ == '__main__':
     twitter = TwitterParser()
     twitter.authorize()
 
-    tweets = twitter.get_user_tweets("AlJazeera")
+    tweets = twitter.get_user_tweets("DanielSeidemann")
+    # match_tweets = twitter.get_user_mentions(tweets, ['annepaq'])
+    # print len(match_tweets), match_tweets[0].text
+    print twitter.count_mentions(tweets)
+
