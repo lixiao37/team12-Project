@@ -1,5 +1,5 @@
 import tweepy
-
+from database import *
 
 class TwitterParser:
 
@@ -78,13 +78,14 @@ class TwitterParser:
 
 
 if __name__ == '__main__':
-    from requests import get
-
+    host = "ds053310.mongolab.com:53310"
+    dbName = "twitter"
+    data = Database(host=host, dbName=dbName)
+    data.connect(username="admin", password="admin")
     twitter = TwitterParser()
     twitter.authorize()
 
     tweets = twitter.get_user_tweets("DanielSeidemann")
-    # match_tweets = twitter.get_user_mentions(tweets, ['annepaq'])
-    # print len(match_tweets), match_tweets[0].text
+
     print twitter.count_mentions(tweets)
 
