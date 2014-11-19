@@ -1,5 +1,8 @@
 import tweepy
 from database import *
+from twitter import *
+import re
+
 
 class TwitterParser:
 
@@ -78,14 +81,38 @@ class TwitterParser:
 
 
 if __name__ == '__main__':
-    host = "ds053310.mongolab.com:53310"
-    dbName = "twitter"
+    m = re.compile("(RT @.*?: )(.*)")
+
+    host = "ds053380.mongolab.com:53380"
+    dbName = "twitterparser"
     data = Database(host=host, dbName=dbName)
     data.connect(username="admin", password="admin")
     twitter = TwitterParser()
     twitter.authorize()
 
-    tweets = twitter.get_user_tweets("DanielSeidemann")
+    user = twitter.get_user("DaliaHatuqa")
+    name = user.name
+    screen_name = user.screen_name
+    ta = TwitterAccount(name=name, screen_name=screen_name)
+    ta.save()
 
-    print twitter.count_mentions(tweets)
+    print "Done"
+
+    tweets = twitter.get_user_tweets("DaliaHatuqa")
+    for tweet in tweets:
+        text = tweet.text
+        author = ta
+        if m.match(text):
+            user = tweet.retweeted_status.author
+            name = user.name
+            screen_name = user.screen_name
+            rt_ta = TwitterAccount(name=name, screen_name=screen_name)
+            rt_ta.save()
+            text = ""
+            author = rt_ta
+        entities = tweet.entities
+        # retweet =
+        tw = Tweet(text=text, entities=entities, author=author)
+        tw.save()
+    # print twitter.count_mentions(tweets)
 
