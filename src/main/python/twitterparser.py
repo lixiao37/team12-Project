@@ -90,6 +90,7 @@ if __name__ == '__main__':
     twitter = TwitterParser()
     twitter.authorize()
 
+    #save the original author
     user = twitter.get_user("DaliaHatuqa")
     name = user.name
     screen_name = user.screen_name
@@ -99,20 +100,54 @@ if __name__ == '__main__':
     print "Done"
 
     tweets = twitter.get_user_tweets("DaliaHatuqa")
+    retweeted = False
     for tweet in tweets:
-        text = tweet.text
-        author = ta
-        if m.match(text):
+        if m.match(tweet.text):
+            #save the founded author
             user = tweet.retweeted_status.author
             name = user.name
             screen_name = user.screen_name
-            rt_ta = TwitterAccount(name=name, screen_name=screen_name)
-            rt_ta.save()
-            text = ""
+            
+            rt_ta = TwitterAccount.objects(screen_name=screen_name).first()
+            if not rt_ta:
+                rt_ta = TwitterAccount(name=name, screen_name=screen_name)
+                rt_ta.save()
+
+            print "Saved rt_ta"
+
             author = rt_ta
+            text = tweet.retweeted_status.text
+            entities = tweet.retweeted_status.entities
+            tw = Tweet(text=text, entities=entities, author=author)
+            tw.save()
+
+            print "Saved rt_tw"
+
+            rt_ta.tweets.append(tw)
+            rt_ta.save()
+
+            print "Saved rt_ta.append"
+
+            retweeted = True
+        
+        text = tweet.text
+        author = ta      
         entities = tweet.entities
-        # retweet =
-        tw = Tweet(text=text, entities=entities, author=author)
+        if retweeted:
+            retweeted_author = rt_ta
+            retweet = tw
+        else:
+            retweeted_author = None
+            retweet = None
+
+        tw = Tweet(text=text, entities=entities, author=author,
+                   retweeted=retweeted, retweeted_author=retweeted_author, 
+                   retweet=retweet)
         tw.save()
-    # print twitter.count_mentions(tweets)
+
+        ta.tweets.append(tw)
+        ta.save()
+
+        retweeted = False
+    
 
