@@ -12,6 +12,8 @@ class TwitterParser:
     access_token_secret = "LwkBILLYzqEn2h3FbjoMxpGcuna8RTYIomF3WnDsBHYuS"
     auth = None
     api = None
+    m = re.compile("(RT @.*?: )(.*)")
+    handlers = []
 
     def __init__ (self, consumer_key=None, consumer_secret=None):
         if consumer_key and consumer_secret:
@@ -66,7 +68,8 @@ class TwitterParser:
                         match_tweets.append(tweet)
         return match_tweets
 
-    def count_mentions(self, tweets):
+    def count_mentions(self, user):
+        tweets = self.get_user_tweets(user)
         count_mentions = {}
         for tweet in tweets:
             mentions = tweet.entities["user_mentions"]
@@ -80,74 +83,107 @@ class TwitterParser:
         return count_mentions
 
 
-if __name__ == '__main__':
-    m = re.compile("(RT @.*?: )(.*)")
+    def add_user_tweets(self, user):
+        #save the original author
+        user = self.get_user(user)
+        name = user.name
+        screen_name = user.screen_name
+        ta = TwitterAccount.objects(screen_name=screen_name).first()
+        if not ta:
+            ta = TwitterAccount(name=name, screen_name=screen_name)
+            ta.save()
 
+        tweets = self.get_user_tweets(screen_name)
+        retweeted = False
+        for tweet in tweets:
+            #check if its a reply tweet, then skip
+            if tweet.in_reply_to_screen_name:
+                continue
+            if self.m.match(tweet.text):
+                #save the founded author
+                user = tweet.retweeted_status.author
+                name = user.name
+                screen_name = user.screen_name
+                
+                rt_ta = TwitterAccount.objects(screen_name=screen_name).first()
+                if not rt_ta:
+                    rt_ta = TwitterAccount(name=name, screen_name=screen_name)
+                    rt_ta.save()
+
+                author = rt_ta
+                text = tweet.retweeted_status.text
+                entities = tweet.retweeted_status.entities
+                
+                tw = Tweet.objects(text=text, author=author).first()
+                if not tw:
+                    tw = Tweet(text=text, entities=entities, author=author)
+                    tw.save()
+
+                    rt_ta.tweets.append(tw)
+                    rt_ta.save()
+
+                retweeted = True
+            
+            text = tweet.text
+            author = ta      
+            entities = tweet.entities
+            if retweeted:
+                retweet_author = rt_ta
+                retweet = tw
+            else:
+                retweet_author = None
+                retweet = None
+
+            tw = Tweet.objects(text=text, author=author).first()
+            if not tw:
+                tw = Tweet(text=text, entities=entities, author=author,
+                           retweeted=retweeted, retweet_author=retweet_author, 
+                           retweet=retweet)
+                tw.save()
+                # print text, author.name
+
+                ta.tweets.append(tw)
+                ta.save()
+
+            retweeted = False
+
+    def count_ref(self, source, target):
+        s_user = TwitterAccount.objects(screen_name=source).first()
+        s_tweets = s_user.tweets
+        total = 0
+        for each in s_tweets:
+            user_mentions = each.entities["user_mentions"]
+            if each.retweeted and each.retweet_author.screen_name == target:
+                total += 1
+                print each.text
+
+            elif user_mentions:
+                for each_mention in user_mentions:
+                    if each_mention["screen_name"] == target:
+                        total += 1
+                        print each.text
+
+        return total
+
+    def run(self, handlers):
+        print "Running Twitter Crawler"
+        self.handlers = handlers
+        for each in self.handlers:
+            self.add_user_tweets(each)
+        return True
+        
+        
+if __name__ == '__main__':
     host = "ds053380.mongolab.com:53380"
     dbName = "twitterparser"
+    people = ["DaliaHatuqa", "DanielSeidemann", "galberger"]
+
     data = Database(host=host, dbName=dbName)
     data.connect(username="admin", password="admin")
+    
     twitter = TwitterParser()
     twitter.authorize()
-
-    #save the original author
-    user = twitter.get_user("DaliaHatuqa")
-    name = user.name
-    screen_name = user.screen_name
-    ta = TwitterAccount(name=name, screen_name=screen_name)
-    ta.save()
-
-    print "Done"
-
-    tweets = twitter.get_user_tweets("DaliaHatuqa")
-    retweeted = False
-    for tweet in tweets:
-        if m.match(tweet.text):
-            #save the founded author
-            user = tweet.retweeted_status.author
-            name = user.name
-            screen_name = user.screen_name
-            
-            rt_ta = TwitterAccount.objects(screen_name=screen_name).first()
-            if not rt_ta:
-                rt_ta = TwitterAccount(name=name, screen_name=screen_name)
-                rt_ta.save()
-
-            print "Saved rt_ta"
-
-            author = rt_ta
-            text = tweet.retweeted_status.text
-            entities = tweet.retweeted_status.entities
-            tw = Tweet(text=text, entities=entities, author=author)
-            tw.save()
-
-            print "Saved rt_tw"
-
-            rt_ta.tweets.append(tw)
-            rt_ta.save()
-
-            print "Saved rt_ta.append"
-
-            retweeted = True
-        
-        text = tweet.text
-        author = ta      
-        entities = tweet.entities
-        if retweeted:
-            retweeted_author = rt_ta
-            retweet = tw
-        else:
-            retweeted_author = None
-            retweet = None
-
-        tw = Tweet(text=text, entities=entities, author=author,
-                   retweeted=retweeted, retweeted_author=retweeted_author, 
-                   retweet=retweet)
-        tw.save()
-
-        ta.tweets.append(tw)
-        ta.save()
-
-        retweeted = False
+    twitter.run(people)
+    
     
 

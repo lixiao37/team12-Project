@@ -19,7 +19,7 @@ class Parser(object):
     verbose = True
     host = "ds039020.mongolab.com:39020"
     dbName = "parser"
-    #base_url = ""
+    data = None
     google_url = "http://www.google.ca"
 
     #{0}:keyword, {1}:website, {2}:sort by month or year or day
@@ -33,8 +33,17 @@ class Parser(object):
 
     def __init__(self, host=None, dbName=None, verbose=True):
         '''Initialize a session to connect to the database'''
+        if host and dbName:
+            self.host = host
+            self.dbName = dbName
+
         self.session = dryscrape.Session()
         self.verbose = verbose
+        self.data = Database(host=self.host, dbName=self.dbName, 
+                             verbose=self.verbose)
+        self.data.connect()
+        
+
 
     def searchArticle(self, q, site, since="y"):
         '''
@@ -115,21 +124,21 @@ class Parser(object):
 
     def add_citations(self, cited, target_url, target_name, article):
         '''Some Docstring'''
-        website = data.add_website(
+        website = self.data.add_website(
                               {"name": target_name, "homepage_url": target_url})
 
         for i in cited:
             each_citation = cited[i]
             if each_citation["href"]:
                 article_meta = self.get_meta_data(each_citation["href"])
-                target_article = data.add_article(article_meta, website)
-                cite = data.add_citation(
+                target_article = self.data.add_article(article_meta, website)
+                cite = self.data.add_citation(
                     {"text": each_citation["text"],
                      "article": article,
                      "target_article": target_article,
                      "target_name": target_name})
             else:
-                cite = data.add_citation(
+                cite = self.data.add_citation(
                     {"text": each_citation["text"],
                      "article": article,
                      "target_name": target_name})
@@ -216,22 +225,30 @@ class Parser(object):
         temp.close()
         return binary
 
+    def run(self, sources, targets):
+        for s_name, s in sources.viewitems():
+            website = self.data.add_website({"name": s_name, "homepage_url": s})
+            for t_name, t in targets.viewitems():
+                articles = self.searchArticle(t_name, s)
+                for a in articles:
+                    article_meta = self.get_meta_data(a)
+                    article = self.data.add_article(article_meta, website)
+                    citations = self.get_citation(article_meta.get('html'), t, t_name)
+                    self.add_citations(citations, t, t_name, article)
+
 
 if __name__ == '__main__':
-    sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
-                    'CNN': 'www.cnn.com' }
-    targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
-    data = Database()
-    data.connect()
-    parse = Parser()
-    for s_name, s in sources.viewitems():
-        website = data.add_website({"name": s_name, "homepage_url": s})
-        for t_name, t in targets.viewitems():
-            articles = parse.searchArticle(t_name, s)
-            for a in articles:
-                article_meta = parse.get_meta_data(a)
-                article = data.add_article(article_meta, website)
-                citations = parse.get_citation(article_meta.get('html'), t, t_name)
-                parse.add_citations(citations, t, t_name, article)
+    host = "ds053380.mongolab.com:53380"
+    dbName = "twitterparser"
+    # sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
+                    # 'CNN': 'www.cnn.com' }
+    # targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
+    
+    sources = {'Al Jazeera' : 'www.aljazeera.com'}
+    targets = {'Ahram' : 'www.english.ahram.org.eg'}
+
+    parse = Parser(host=host, dbName=dbName)
+    parse.run(sources, targets)    
+
 
 

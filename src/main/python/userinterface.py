@@ -1,7 +1,9 @@
 import os, os.path
 import cherrypy
+import thread
 from mako.template import Template
 from mongoengine import *
+from parser import *
 from user import User
 from article import Article
 from website import Website
@@ -270,40 +272,22 @@ class Root:
             relation_dict[source_name] = target_count
         return relation_dict
     
+    @require()
     @cherrypy.expose
     def parse(self):
-        source_dict = {}
-        target_dict = {}
-        user = User.objects(name=cherrypy.session["user"]).only('news_sources', 'news_targets').first()
-        news_sources_name = user.news_sources_name
-        news_sources_url = user.news_sources_url
-        news_targets_name = user.news_targets_name
-        news_targets_url = user.news_targets_url
-        if not news_sources_name:
-            return "Fail: Your news source section is not complete"
-        elif not news_targets_name:
-            return "Fail: Your news target section is not complete"
-        else:
-            # store the relationship between name and url in the two dictionaries
-            i = 0
-            t = 0
-            while i < len(news_sources_name):
-                source_dict[news_sources_name[i]] = news_sources_url[i]
-            while t < len(news_targets_name):
-                target_dict[news_targets_name[i]] = news_targets_url[i]
-            # parse the internet by the given sources and targets
-            # now only pase the news websites
-            p = Parser()
-            for s_name, s in source_dict.viewitems():
-                website = p.add_website({"name": s_name, "homepage_url": s})
-                for t_name, t in target_dict.viewitems():
-                    articles = p.searchArticle(t_name, s)
-                    for a in articles:
-                        article_meta = p.get_meta_data(a)
-                        article = p.add_article(article_meta, website)
-                        p.extract_citation(article_meta.get('html'), t, t_name, article)
-            return "Success!"
         
+        def threaded_parser(p, sources, targets):
+            p.run(sources, targets)
+
+        host = "ds053380.mongolab.com:53380"
+        dbName = "twitterparser"
+        user = User.objects(name=cherrypy.session["user"]).first()
+        sources = user.news_sources
+        targets = user.news_targets
+        p = Parser(host=host, dbName=dbName)        
+        thread.start_new_thread( threaded_parser , (p, sources, targets))
+
+        return "Success"        
         
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun

@@ -8,7 +8,7 @@ class TwitterAccount(Document):
 
 
 class Tweet(Document):
-	text = StringField(unique=True)
+	text = StringField()
 	entities = DictField()
 	author = ReferenceField(TwitterAccount, reverse_delete_rule=CASCADE, 
 							required=True)
