@@ -262,12 +262,11 @@ class Root:
         
         for twitter_sources_screenname in twitter_sources.iteritems():
             target_count = [0] * len(twitter_targets)
-            twitteraccounts = TwitterAccount.objects(screen_name=twitter_sources_screenname)
-            for twitteraccount in twitteraccounts:
-                i = 0
-                for twitter_target in twitter_targets:
-                    target_count[i] = count_ref(twitteraccount, twitter_target)
-                    i += 1
+            twitteraccount = TwitterAccount.objects(screen_name=twitter_sources_screenname).first()
+            i = 0
+            for twitter_target in twitter_targets:
+                target_count[i] = count_ref(twitteraccount, twitter_target)
+                i += 1
             relation_dict[twitteraccount] = target_count
         return relation_dict
                     
