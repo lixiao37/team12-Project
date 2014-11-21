@@ -4,7 +4,9 @@ import thread
 from mako.template import Template
 from mongoengine import *
 from parser import *
+from twitterparser import *
 from user import User
+from twitter import *
 from article import Article
 from website import Website
 from citation import Citation
@@ -162,12 +164,18 @@ class Root:
 
         # generate a relation list, described in more depth at the fnc
         relation_dict = self.generate_relation_dict()
+        twitter_relation_dict = self.generate_twitter_relation_dict()
 
-        # generate basic bar graphs and add them to total_graphs
-        total_graphs += self.generate_basic_graphs(relation_dict)
+        if relation_dict:
+            # generate basic bar graphs and add them to total_graphs
+            total_graphs += self.generate_basic_graphs(relation_dict)
 
-        # generate a combined detailed graph and add it to total_graphs
-        total_graphs += self.generate_detailed_graph(relation_dict)
+            # generate a combined news detailed graph and add it to total_graphs
+            total_graphs += self.generate_detailed_graph(relation_dict, "news")
+        
+        if twitter_relation_dict:
+            # generate a combined twitter detailed graph and add it to total_graphs
+            total_graphs += self.generate_detailed_graph(relation_dict, "twitter")
         
         # generate pie graphs and add it to total_graphs
         total_graphs += self.generate_completed_pie_graphs(relation_dict)
@@ -204,20 +212,23 @@ class Root:
                 pie_graphs += self.generate_pie_graph(relation_dict, i, target)
                 i += 1
         return pie_graphs
-
+    
     # generate a detail bar graph from the relation_dict
-    def generate_detailed_graph(self, relation_dict):
+    def generate_detailed_graph(self, relation_dict, datatype):
         user = User.objects(name=cherrypy.session["user"]).first()
-        news_targets = user.news_targets.values()
-        news_targets_str = str(news_targets).replace("u'","'")
-        total_bar = len(relation_dict.keys()) * len(news_targets_str.split(","))
+        if datatype == "news":
+            targets = user.news_targets.values()
+        elif datatype == "twitter":
+            targets = user.twitter_targets
+        targets_str = str(targets).replace("u'","'")
+        total_bar = len(relation_dict.keys()) * len(targets_str.split(","))
         # generate the whole graph dataset
         data = ""
         for source in relation_dict:
             data+= '{fillColor : randomColor(),strokeColor : "rgba(151,187,205,0.8)",data: ' + str(relation_dict.get(source)) + ',label: "' + source + '"},'
         data = data[0:-1]
         graph_generator_template = Template(filename='detailed_graph_generator.html')
-        return graph_generator_template.render(targets=news_targets_str,
+        return graph_generator_template.render(targets=targets_str,
                 sources=relation_dict.keys(), target_counts=relation_dict.values(),
                 value_space=600/(6+total_bar), dataset_space=((600/(6+total_bar))/5),
                 data=data)
@@ -237,13 +248,27 @@ class Root:
     def generate_twitter_relation_dict(self):
         relation_dict = {}
         user = User.objects(name=cherrypy.session["user"]).only('twitter_sources', 'twitter_targets').first()
+        twitter_sources = user.twitter_sources
+        twitter_targets = user.twitter_targets
+        
+        for twitter_sources_screenname in twitter_sources.iteritems():
+            target_count = [0] * len(twitter_targets)
+            twitteraccounts = TwitterAccount.objects(screen_name=twitter_sources_screenname)
+            for twitteraccount in twitteraccounts:
+                i = 0
+                for twitter_target in twitter_targets:
+                    target_count[i] = count_ref(twitteraccount, twitter_target)
+                    i += 1
+            relation_dict[twitteraccount] = target_count
+        return relation_dict
+                    
 
-    '''generates a list of string/string lists in the format
-        [source, news_targets, target_count]
-        ie. [[s1, [t1, t2 ... tn], [tc1, tc2, ... tcn]], 
-        [s2, [t1, t2 ... tn], [tc1, tc2, ... tcn]], ...
-        [sn, [t1, t2 ... tn], [tc1, tc2, ... tcn]]
-        where sn is the source, tn is the target, tcn is the citation count of tn'''
+    '''generates a dictionary of string/list(int) in the format
+        {source : target_count}
+        ie. {s1 : [tc1, tc2, ... tcn], 
+        s2 : [tc1, tc2, ... tcn], ...
+        sn : [tc1, tc2, ... tcn]}
+        where sn is the source, tcn is the citation count of each target'''
     def generate_relation_dict(self):
         relation_dict = {}
         # get the current user's sources and targets
