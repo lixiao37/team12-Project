@@ -172,13 +172,18 @@ class Root:
 
             # generate a combined news detailed graph and add it to total_graphs
             total_graphs += self.generate_detailed_graph(relation_dict, "news")
+            
+            # generate pie graphs and add it to total_graphs
+            total_graphs += self.generate_completed_pie_graphs(relation_dict, "news")
         
         if twitter_relation_dict:
             # generate a combined twitter detailed graph and add it to total_graphs
             total_graphs += self.generate_detailed_graph(relation_dict, "twitter")
+            
+            # generate pie graphs and add it to total_graphs
+            total_graphs += self.generate_completed_pie_graphs(relation_dict, "twitter")
         
-        # generate pie graphs and add it to total_graphs
-        total_graphs += self.generate_completed_pie_graphs(relation_dict)
+        
 
         return page_header + total_graphs 
     
@@ -199,16 +204,20 @@ class Root:
                     sources_counts=sources_counts)
         return "<h1>Pie Graph for target " + target + "</h1><br/>Sorry, we can't generate this pie, since the source count is " + str(sources_counts) + " for this target.<br>"
     
-    def generate_completed_pie_graphs(self, relation_dict):
+    def generate_completed_pie_graphs(self, relation_dict, datatype):
         user = User.objects(name=cherrypy.session["user"]).first()
-        news_sources = user.news_sources
-        news_targets = user.news_targets.values()
+        if datatype == "news":
+            sources = user.news_sources.keys()
+            targets = user.news_targets.values()
+        elif datatype == "twitter":
+            sources = user.twitter_sources
+            targets = user.twitter_targets
         pie_graphs = ""
         i = 0
         # generate the pie graph only if traking more than two sources and more
         # than one targets
-        if len(news_sources) >= 2 and news_targets:
-            for target in news_targets:
+        if len(sources) >= 2 and targets:
+            for target in targets:
                 pie_graphs += self.generate_pie_graph(relation_dict, i, target)
                 i += 1
         return pie_graphs
