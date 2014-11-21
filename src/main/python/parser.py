@@ -192,8 +192,9 @@ class Parser(object):
             #This case if for non-human author (i.e. organization, another web site
             #source)
             elif soup.find(itemprop="author"):
-                hold = soup.find(itemprop="author").findChildren()
-                meta['author'] = hold[len(hold)-1].text.encode("utf-8").strip()
+		hold = soup.find(itemprop="author").findChildren()
+                if hold:
+		    meta['author'] = hold[len(hold)-1].text.encode("utf-8").strip()
 
         #puts empty string as title and author if not found
         if not meta.get('title'):

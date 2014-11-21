@@ -11,9 +11,6 @@ from user import User
 
 SESSION_KEY = '_cp_username'
 
-# connects to the database
-connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
-
 # Might be userful for later - Chun
 # def createUserInDB(username, password):
 #     p = hashlib.md5()

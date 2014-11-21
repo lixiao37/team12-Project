@@ -12,7 +12,6 @@ from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
-connect("parser", host="ds039020.mongolab.com:39020", username="admin", password="admin")
 
 class RestrictedArea:
 
@@ -335,6 +334,10 @@ class Root:
 
 
 if __name__ == '__main__':
+    host = "ds053380.mongolab.com:53380"
+    dbName = "twitterparser"
+    data = Database(host=host, dbName=dbName)
+    data.connect(username="admin", password="admin")
     _cp_config = {
         '/': {
             'tools.sessions.on': True,
