@@ -178,10 +178,10 @@ class Root:
         
         if twitter_relation_dict:
             # generate a combined twitter detailed graph and add it to total_graphs
-            total_graphs += self.generate_detailed_graph(relation_dict, "twitter")
+            total_graphs += self.generate_detailed_graph(twitter_relation_dict, "twitter")
             
             # generate pie graphs and add it to total_graphs
-            total_graphs += self.generate_completed_pie_graphs(relation_dict, "twitter")
+            total_graphs += self.generate_completed_pie_graphs(twitter_relation_dict, "twitter")
         
         
 
