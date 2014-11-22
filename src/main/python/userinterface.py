@@ -352,8 +352,17 @@ class Root:
         thread.start_new_thread( threaded_parser , 
                         (p, t_p, sources, targets, twitter_sources, twitter_targets, p.logger))
 
+        p.logger.info('Executing Parser Commands')
         return "Success"
-        
+    
+    @require()
+    @cherrypy.expose
+    def log(self):
+        log_template = Template(filename='log.html', lookup=mylookup)
+        logContent = open('beta.log').readlines()
+        logContent = reversed(logContent)
+        return log_template.render(logContent=logContent)
+
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
     def only_for_chun(self):

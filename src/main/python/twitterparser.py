@@ -113,7 +113,7 @@ class TwitterParser:
         
         ta = self.data.add_twitteraccount(twitteraccount_meta)
         tweets = self.get_user_tweets(screen_name)
-        
+
         retweeted = False
         for tweet in tweets:
             #check if its a reply tweet, then skip
@@ -190,7 +190,6 @@ class TwitterParser:
 
     def run(self, handlers):
         self.logger.info('Started Twitter Crawler')
-        print "Running Twitter Crawler"
         self.handlers = handlers
         for each in self.handlers:
             self.add_user_tweets(each)
