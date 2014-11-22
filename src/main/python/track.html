@@ -1,164 +1,157 @@
-<link rel="stylesheet" type="text/css" href="static/css/general.css"/>
 <html>
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script type="text/javascript">
-	$(document).ready(function(){
-		// ----------general function declarations-----------
-		/**
-		 * gets data from a page, then displays the data to a 
-		 * area(the div id) located in the web page
-		 */
-		function display_data(area) {
-			page = '/get_list'
-			$.get(page, {list_type:area}, 
-				function(data) {
-					e = document.getElementById(area);
-					e.innerHTML = data;
-				}
-			);
-		}
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			// ----------general function declarations-----------
+			/**
+			 * gets data from a page, then displays the data to a 
+			 * area(the div id) located in the web page
+			 */
+			function display_data(area) {
+				page = '/get_list'
+				$.get(page, {list_type:area}, 
+					function(data) {
+						e = document.getElementById(area);
+						e.innerHTML = data;
+					}
+				);
+			}
 
-		/**
-		 * sends the string in the textbox to a page which
-		 * will then modify the data depending on mod_type
-		 */
-		function modify_data(textbox_name, textbox_url, mod_type) {
-			page="/modify_data"
-			// modifies the user's source/target list
-			if (textbox_name == "#news_source_name" ||
-				textbox_name == "#news_target_name") {
-			$.post(page, {value_name:$(textbox_name)[0].value,
-				list_type:textbox_name, mod_type:mod_type, 
-				value_url:$(textbox_url)[0].value}, 
-				function(status_message){
-					// alerts the status
-					alert(status_message);
-				}
-			);}
-			else if (textbox_name == "#twitter_source_name" ||
-					textbox_name == "#twitter_target_name") {
-			$.post(page, {value_name:$(textbox_name)[0].value,
-				list_type:textbox_name, mod_type:mod_type}, 
-				function(status_message){
-					// alerts the status
-					alert(status_message);
-				}
-			);}
-			// displays the updated list from the database to the page
-			if (textbox_name == "#news_source_name") {
-				display_data('news_source_list');}
-			else if (textbox_name == "#news_target_name") {
-				display_data('news_target_list');}
-			else if (textbox_name == "#twitter_source_name") {
-				display_data('twitter_source_list');}
-			else if (textbox_name == "#twitter_target_name") {
-				display_data('twitter_target_list');}
-		}
-		// --------general function declarations end----------
+			/**
+			 * sends the string in the textbox to a page which
+			 * will then modify the data depending on mod_type
+			 */
+			function modify_data(textbox_name, textbox_url, mod_type) {
+				page="/modify_data"
+				// modifies the user's source/target list
+				if (textbox_name == "#news_source_name" ||
+					textbox_name == "#news_target_name") {
+				$.post(page, {value_name:$(textbox_name)[0].value,
+					list_type:textbox_name, mod_type:mod_type, 
+					value_url:$(textbox_url)[0].value}, 
+					function(status_message){
+						// alerts the status
+						alert(status_message);
+					}
+				);}
+				else if (textbox_name == "#twitter_source_name" ||
+						textbox_name == "#twitter_target_name") {
+				$.post(page, {value_name:$(textbox_name)[0].value,
+					list_type:textbox_name, mod_type:mod_type}, 
+					function(status_message){
+						// alerts the status
+						alert(status_message);
+					}
+				);}
+				// displays the updated list from the database to the page
+				if (textbox_name == "#news_source_name") {
+					display_data('news_source_list');}
+				else if (textbox_name == "#news_target_name") {
+					display_data('news_target_list');}
+				else if (textbox_name == "#twitter_source_name") {
+					display_data('twitter_source_list');}
+				else if (textbox_name == "#twitter_target_name") {
+					display_data('twitter_target_list');}
+			}
+			// --------general function declarations end----------
 
 
-		// ---------button click function declarations--------
-		$("#add_news_source").click(function(){
-			modify_data("#news_source_name", "#news_source_url", "add");
+			// ---------button click function declarations--------
+			$("#add_news_source").click(function(){
+				modify_data("#news_source_name", "#news_source_url", "add");
+			});
+
+			$("#delete_news_source").click(function(){
+				modify_data("#news_source_name", "#news_source_url", "delete");
+			});
+
+			$("#add_news_target").click(function(){
+				modify_data("#news_target_name", "#news_target_url", "add");
+			});
+
+			$("#delete_news_target").click(function(){
+				modify_data("#news_target_name", "#news_target_url", "delete");
+			});
+
+			$("#add_twitter_source").click(function(){
+				modify_data("#twitter_source_name", "", "add");
+			});
+
+			$("#delete_twitter_source").click(function(){
+				modify_data("#twitter_source_name", "", "delete");
+			});
+
+			$("#add_twitter_target").click(function(){
+				modify_data("#twitter_target_name", "", "add");
+			});
+
+			$("#delete_twitter_target").click(function(){
+				modify_data("#twitter_target_name", "", "delete");
+			});
+
+			// ------button click function declarations end--------
+
+
+			// when page starts up, display the sources and targets lists
+			display_data('news_source_list')
+			display_data('news_target_list')
+			display_data('twitter_source_list')
+			display_data('twitter_target_list')
+
 		});
+	</script>
 
-		$("#delete_news_source").click(function(){
-			modify_data("#news_source_name", "#news_source_url", "delete");
-		});
+    <%include file="navbar_fixed.html"/>
 
-		$("#add_news_target").click(function(){
-			modify_data("#news_target_name", "#news_target_url", "add");
-		});
-
-		$("#delete_news_target").click(function(){
-			modify_data("#news_target_name", "#news_target_url", "delete");
-		});
-
-		$("#add_twitter_source").click(function(){
-			modify_data("#twitter_source_name", "", "add");
-		});
-
-		$("#delete_twitter_source").click(function(){
-			modify_data("#twitter_source_name", "", "delete");
-		});
-
-		$("#add_twitter_target").click(function(){
-			modify_data("#twitter_target_name", "", "add");
-		});
-
-		$("#delete_twitter_target").click(function(){
-			modify_data("#twitter_target_name", "", "delete");
-		});
-
-		// ------button click function declarations end--------
-
-
-		// when page starts up, display the sources and targets lists
-		display_data('news_source_list')
-		display_data('news_target_list')
-		display_data('twitter_source_list')
-		display_data('twitter_target_list')
-
-	});
-</script>
-	<head>
-		<title>Track</title>
-	</head>
-<body>
-	<div align = "right">
-		Current User: ${name}<br>
-		<input type="button" value="Menu Page" onClick="location='/'"/>
-		<input type="button" value="Logout" onClick="location='/auth/logout'"/>
-	</div>
-	<center>
-	<h1>Tracking Page</h1>
-	<hr>
-    <div style="float: left; width: 50%">
-	<h2>News Section</h2>
-		Add the website sources below. <br/>
-		Name <input type="text" id="news_source_name"/><br/>
-		URL <input type="text" id="news_source_url"/><br/>
-		<button id="add_news_source">Add Source</button>
-		<button id="delete_news_source">Delete Source</button>
-		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:25%;">
-		<div id="news_source_list"></div>
-		</ul>
-		<br/>
-		Add the website targets below. <br/>
-		Name <input type="text" id="news_target_name"/><br/>
-		URL <input type="text" id="news_target_url"/><br/>
-		<button id="add_news_target">Add Target</button>
-		<button id="delete_news_target">Delete Target</button>
-		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:25%;">
-		<div id="news_target_list"></div>
-		</ul>
-		<br/>
-	</div>
-	<div style="float: right; width: 50%">
-	<h2>Twitter Section</h2>
-		Add the twitter sources below. <br/>
-		Name <input type="text" id="twitter_source_name"/><br/>
-		<button id="add_twitter_source">Add Source</button>
-		<button id="delete_twitter_source">Delete Source</button>
-		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:25%;">
-		<div id="twitter_source_list"></div>
-		</ul>
-		<br/>
-		Add the twitter targets below. <br/>
-		Name <input type="text" id="twitter_target_name"/><br/>
-		<button id="add_twitter_target">Add Target</button>
-		<button id="delete_twitter_target">Delete Target</button>
-		<br/>
-		<ul style="list-style-type:decimal;text-align:left;margin-left:25%;">
-		<div id="twitter_target_list"></div>
-		</ul>
-		<br/>
-	</div>
-	<br/>
-	<input type="button" value="Parse the internet" onClick="location='/parse'"/>
-	</center>
-</body>
+    <body>
+    <div class="container">
+		<!-- Example row of columns -->
+		<div class="row">
+			<div class="col-md-4">
+				<h2>News Section</br><small>Add the website sources below.</small></h2>
+				<p>
+					Name <input type="text" id="news_source_name"/><br/>
+					URL <input type="text" id="news_source_url"/><br/>
+					<button id="add_news_source">Add Source</button>
+					<button id="delete_news_source">Delete Source</button><br/>
+					<ul>
+						<div id="news_source_list"></div>
+					</ul>
+				</p>
+				<h2><small>Add the website targets below.</small></h2>
+				<p>
+					Name <input type="text" id="news_target_name"/><br/>
+					URL <input type="text" id="news_target_url"/><br/>
+					<button id="add_news_target">Add Target</button>
+					<button id="delete_news_target">Delete Target</button>
+					<ul>
+						<div id="news_target_list"></div>
+					</ul>
+				</p>
+			</div>
+			<div class="col-md-4">
+				<h2>Twitter Section</br>
+					<small>Add the twitter sources below.</small></h2>
+				<p>
+					Name <input type="text" id="twitter_source_name"/><br/>
+					<button id="add_twitter_source">Add Source</button>
+					<button id="delete_twitter_source">Delete Source</button>
+					<br/>
+					<ul>
+						<div id="twitter_source_list"></div>
+					</ul>
+				</p>
+					<h2><small>Add the twitter targets below.</small></h2>
+				<p>
+					Name <input type="text" id="twitter_target_name"/><br/>
+					<button id="add_twitter_target">Add Target</button>
+					<button id="delete_twitter_target">Delete Target</button><br/>
+					<ul>
+						<div id="twitter_target_list"></div>
+					</ul>
+				</p>
+				<p><input type="button" value="Parse the internet" onClick="location='/parse'"/></p>
+			</div>
+		</div>
+    </body>
 </html>

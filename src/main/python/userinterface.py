@@ -147,8 +147,8 @@ class Root:
     @require()
     @cherrypy.expose
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
-        track_template = Template(filename='track.html')
-        return track_template.render(name=cherrypy.session["user"])
+        track_template = Template(filename='track.html', lookup=mylookup)
+        return track_template.render(username=cherrypy.session["user"])
     
     @cherrypy.expose
     def get_articles(self):
@@ -250,7 +250,7 @@ class Root:
         return graph_generator_template.render(targets=targets_str,
                 sources=relation_dict.keys(), target_counts=relation_dict.values(),
                 value_space=600/(6+total_bar), dataset_space=((600/(6+total_bar))/5),
-                data=data)
+                data=data, datatype=datatype)
 
     # generate basic bar graphs from the relation_dict
     def generate_basic_graphs(self, relation_dict):
@@ -270,7 +270,7 @@ class Root:
         twitter_sources = user.twitter_sources
         twitter_targets = user.twitter_targets
         
-        for twitter_sources_screenname in twitter_sources.iteritems():
+        for twitter_sources_screenname in twitter_sources:
             target_count = [0] * len(twitter_targets)
             i = 0
             for twitter_target in twitter_targets:
