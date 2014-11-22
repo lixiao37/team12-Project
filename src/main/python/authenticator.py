@@ -120,20 +120,46 @@ class AuthController(object):
         username = escape(username, True)
         from_page = escape(from_page, True)
         return """
-            <link rel="stylesheet" type="text/css" href="/static/css/general.css"/>
-            <html><head><title>Login</title></head><body><center>
-            <br><br>
-            <h1>Login Screen</h1>
-            <hr>
-            <form method="post" action="/auth/login">
-            <input type="hidden" name="from_page" value="%(from_page)s" />
-            %(msg)s<br/>
-            Username: <input type="text" name="username" value="%(username)s" /><br/>
-            Password: <input type="password" name="password" /><br/>
-            <input type="submit" value="Log in" />
-            <input type="button" value="Back" onClick="location='/require_login'"/>
-            </form>
-        </center></body></html>""" % locals()
+                <!DOCTYPE html>
+                <html lang="en">
+                    <head>
+                        <title>Project: Relation Parser</title>
+
+                        <!-- Bootstrap core CSS -->
+                        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+                        <!-- Custom styles for this template -->
+                        <link href="/static/css/login.css" rel="stylesheet">
+                    </head>
+
+                    <body>
+                        <div class="container">
+                            <form class="form-signin" role="form" method="post" action="/auth/login">
+                                <h2 class="form-signin-heading">
+                                    Login Screen </br>
+                                    <small><input type="hidden" name="from_page" 
+                                        value="%(from_page)s"/>%(msg)s<br/></small></h2>
+                                        
+                                <label for="inputEmail" class="sr-only">Username</label>
+                                <input type="text" name="username" class="form-control" 
+                                    value="%(username)s" placeholder="Username" required autofocus>
+
+                                <label for="inputPassword" class="sr-only">Password</label>
+                                <input type="password" name="password" class="form-control" placeholder="Password">
+                                
+                                <div class="checkbox">
+                                  <label>
+                                    <input type="checkbox" value="remember-me"> Remember me
+                                  </label>
+                                </div>
+                                
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                            </form>
+                        </div>
+
+
+                    </body>
+                </html>""" % locals()
 
     @cherrypy.expose
     def login(self, username=None, password=None, from_page="/"):

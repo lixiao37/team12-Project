@@ -4,7 +4,7 @@ import thread
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from mongoengine import *
-from parser import *
+# from parser import *
 from twitterparser import *
 from user import User
 from twitter import *
@@ -36,19 +36,19 @@ class Root:
     @cherrypy.expose
     @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
-        # navbar_template = Template(filename='navbar_fixed.html')
-        # dynamic_navbar = navbar_template.render(username=cherrypy.session["user"])
         index_page_template = Template(filename='index.html', lookup=mylookup)
-        return index_page_template.render(username=cherrypy.session["user"])
-        
+        return index_page_template.render(username=cherrypy.session["user"], home="active")
+
     @cherrypy.expose
     def require_login(self): # This page is http://127.0.0.1:8080/require_login
         require_login_template = Template(filename='require_login.html', lookup=mylookup)
-        return require_login_template.render()
-    
+        return require_login_template.render(home="active")
+
     @cherrypy.expose
-    def example(self):
-        return """ hi"""
+    @require()
+    def about(self):
+        about_template = Template(filename='about.html', lookup=mylookup)
+        return about_template.render(username=cherrypy.session["user"], about="active")
 
     @cherrypy.expose
     def modify_data(self, value_name=None, 
