@@ -1,0 +1,28 @@
+<html>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript">
+		function show_articles(){
+			$.get("/get_articles",
+				function( data ) {
+				e = document.getElementById('articlelist');
+	                        e.innerHTML = data;
+				}
+			);
+		}
+	</script>
+
+    <%include file="navbar_fixed.html"/>
+    <body>
+        <div class="container">
+            <!-- Main component -->
+            <div class="jumbotron">
+                <h1>Display Articles</h1>
+                <p>
+                	<button type="button" class="btn btn-info" 
+                		onclick="show_articles()">Show All Collected Articles</button>
+					<div id="articlelist"></div>
+                </p>
+            </div>
+        </div>
+    </body>
+</html>

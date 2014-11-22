@@ -135,33 +135,37 @@ class Root:
     def get_list(self, list_type = None):
         user = User.objects(name=cherrypy.session["user"]).first()
         show_list_template = Template(filename='show_list.html')
+        show_twitter_list_template = Template(filename='show_twitter_list.html')
         if 'news_source_list' == list_type:
             list_name = user.news_sources
+            return show_list_template.render(list_name=list_name)
         elif 'news_target_list' == list_type:
             list_name = user.news_targets
+            return show_list_template.render(list_name=list_name)
         elif 'twitter_source_list' == list_type:
             list_name = user.twitter_sources
+            return show_twitter_list_template.render(list_name=list_name)
         elif 'twitter_target_list' == list_type:
             list_name = user.twitter_targets
-        return show_list_template.render(list_name=list_name)
+            return show_twitter_list_template.render(list_name=list_name)
 
     @require()
     @cherrypy.expose
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
-        track_template = Template(filename='track.html')
-        return track_template.render(name=cherrypy.session["user"])
+        track_template = Template(filename='track.html', lookup=mylookup)
+        return track_template.render(username=cherrypy.session["user"])
     
     @cherrypy.expose
-    def display_show_articles(self):
-        show_article_template = Template(filename='show_articles.html')
+    def get_articles(self):
+        show_article_template = Template(filename='get_articles.html')
         articles = Article.objects()
         return show_article_template.render(articles=articles)
     
     @require()
     @cherrypy.expose
-    def display(self): # This page is http://127.0.0.1:8080/display
-        article_template = Template(filename='articles.html')
-        return article_template.render(name=cherrypy.session["user"])
+    def display_articles(self): # This page is http://127.0.0.1:8080/display
+        article_template = Template(filename='display_articles.html', lookup=mylookup)
+        return article_template.render(username=cherrypy.session["user"])
     
     @require()
     @cherrypy.expose
@@ -251,7 +255,7 @@ class Root:
         return graph_generator_template.render(targets=targets_str,
                 sources=relation_dict.keys(), target_counts=relation_dict.values(),
                 value_space=600/(6+total_bar), dataset_space=((600/(6+total_bar))/5),
-                data=data)
+                data=data, datatype=datatype)
 
     # generate basic bar graphs from the relation_dict
     def generate_basic_graphs(self, relation_dict):
@@ -271,7 +275,7 @@ class Root:
         twitter_sources = user.twitter_sources
         twitter_targets = user.twitter_targets
         
-        for twitter_sources_screenname in twitter_sources.iteritems():
+        for twitter_sources_screenname in twitter_sources:
             target_count = [0] * len(twitter_targets)
             i = 0
             for twitter_target in twitter_targets:
@@ -347,7 +351,7 @@ class Root:
         thread.start_new_thread( threaded_parser , 
                         (p, t_p, sources, targets, twitter_sources, twitter_targets))
 
-        return "Success"        
+        return "Success"
         
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
