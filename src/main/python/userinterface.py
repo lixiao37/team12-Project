@@ -1,6 +1,7 @@
 import os, os.path
 import cherrypy
 import thread
+from database import Database
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from mongoengine import *
@@ -279,7 +280,7 @@ class Root:
             target_count = [0] * len(twitter_targets)
             i = 0
             for twitter_target in twitter_targets:
-                target_count[i] = TwitterParser().count_ref(twitter_sources_screenname, twitter_target)
+                target_count[i] = TwitterParser(data=data).count_ref(twitter_sources_screenname, twitter_target)
                 i += 1
             relation_dict[twitter_sources_screenname] = target_count
         return relation_dict
@@ -323,19 +324,19 @@ class Root:
     @cherrypy.expose
     def parse(self):
         
-        def threaded_parser(p, t_p, sources, targets, twitter_sources, twitter_targets):
+        def threaded_parser(p, t_p, sources, targets, twitter_sources, twitter_targets, logger):
             try:
                 p.run(sources, targets)
             except Exception, e:
-                self.logger.error('News Parser Failed', exc_info=True)
+                logger.error('News Parser Failed', exc_info=True)
             try:
                 t_p.run(sources)
             except Exception, e:
-                self.logger.error('Twiiter Parser(Sources) Failed', exc_info=True)
+                logger.error('Twiiter Parser(Sources) Failed', exc_info=True)
             try:
                 t_p.run(targets)
             except Exception, e:
-                self.logger.error('Twiiter Parser(Targets) Failed', exc_info=True)
+                logger.error('Twiiter Parser(Targets) Failed', exc_info=True)
 
         user = User.objects(name=cherrypy.session["user"]).first()
         sources = user.news_sources
@@ -349,7 +350,7 @@ class Root:
         t_p.authorize()      
         
         thread.start_new_thread( threaded_parser , 
-                        (p, t_p, sources, targets, twitter_sources, twitter_targets))
+                        (p, t_p, sources, targets, twitter_sources, twitter_targets, p.logger))
 
         return "Success"
         
@@ -369,6 +370,7 @@ class Root:
 if __name__ == '__main__':
     data = Database(host=host, dbName=dbName)
     data.connect(username=username, password=username)
+
     _cp_config = {
         '/': {
             'tools.sessions.on': True,
