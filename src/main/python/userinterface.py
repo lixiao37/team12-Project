@@ -359,9 +359,12 @@ class Root:
     @cherrypy.expose
     def log(self):
         log_template = Template(filename='log.html', lookup=mylookup)
-        logContent = open('beta.log').readlines()
+        try:
+            logContent = open('beta.log').readlines()
+        except IOError:
+            logContent = []
         logContent = reversed(logContent)
-        return log_template.render(logContent=logContent)
+        return log_template.render(logContent=logContent, username=cherrypy.session["user"])
 
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
