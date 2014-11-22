@@ -12,16 +12,21 @@ class TwitterParser:
     access_token_secret = "LwkBILLYzqEn2h3FbjoMxpGcuna8RTYIomF3WnDsBHYuS"
     auth = None
     api = None
+    data = None
     m = re.compile("(RT @.*?: )(.*)")
     handlers = []
     log = 'beta.log'
 
-    def __init__ (self, consumer_key=None, consumer_secret=None, log=None):
+    def __init__ (self, consumer_key=None, consumer_secret=None, log=None, 
+                                                                     data=None):
         if consumer_key and consumer_secret:
             self.consumer_key = consumer_key
             self.consumer_secret = consumer_secret
         if log:
             self.log = log
+        if not data:
+            raise Exception('No Connection To Database')
+        self.data = data
         self.auth = tweepy.OAuthHandler(self.consumer_key, self.consumer_secret)
 
         #create a logger
@@ -104,12 +109,11 @@ class TwitterParser:
         user = self.get_user(user)
         name = user.name
         screen_name = user.screen_name
-        ta = TwitterAccount.objects(screen_name=screen_name).first()
-        if not ta:
-            ta = TwitterAccount(name=name, screen_name=screen_name)
-            ta.save()
-
+        twitteraccount_meta = {"user": user, "name": name, "screen_name": screen_name}
+        
+        ta = self.data.add_twitteraccount(twitteraccount_meta)
         tweets = self.get_user_tweets(screen_name)
+        
         retweeted = False
         for tweet in tweets:
             #check if its a reply tweet, then skip
@@ -130,23 +134,21 @@ class TwitterParser:
                     self.logger.warn('Re-tweet is not an actual retweet, ')
                 name = user.name
                 screen_name = user.screen_name
+                twitteraccount_meta = {"name": name, "screen_name": screen_name}
 
-                rt_ta = TwitterAccount.objects(screen_name=screen_name).first()
-                if not rt_ta:
-                    rt_ta = TwitterAccount(name=name, screen_name=screen_name)
-                    rt_ta.save()
+                rt_ta = self.data.add_twitteraccount(twitteraccount_meta)
 
                 author = rt_ta
                 text = tweet.retweeted_status.text
                 entities = tweet.retweeted_status.entities
                 created_at = tweet.created_at
-                tw = Tweet.objects(text=text, author=author).first()
-                if not tw:
-                    tw = Tweet(text=text, entities=entities, author=author, created_at=created_at)
-                    tw.save()
+                
+                tweet_meta = {"text": text, "entities": entities, 
+                                 "author": author, "created_at": created_at}
+                tw = self.data.add_tweet(tweet_meta)
 
-                    rt_ta.tweets.append(tw)
-                    rt_ta.save()
+                rt_ta.tweets.append(tw)
+                rt_ta.save()
 
                 retweeted = True
 
@@ -160,17 +162,13 @@ class TwitterParser:
             else:
                 retweet_author = None
                 retweet = None
+            tweet_meta = {"text": text, "author": author, "entities": entities, 
+                          "created_at": created_at, "retweeted": retweeted, 
+                          "retweet": retweet, "retweet_author": retweet_author}
+            tw = self.data.add_tweet(tweet_meta)
 
-            tw = Tweet.objects(text=text, author=author).first()
-            if not tw:
-                tw = Tweet(text=text, entities=entities, author=author,
-                           retweeted=retweeted, retweet_author=retweet_author,
-                           retweet=retweet, created_at=created_at)
-                tw.save()
-                # print text, author.name
-
-                ta.tweets.append(tw)
-                ta.save()
+            ta.tweets.append(tw)
+            ta.save()
 
             retweeted = False
 
@@ -182,13 +180,11 @@ class TwitterParser:
             user_mentions = each.entities["user_mentions"]
             if each.retweeted and each.retweet_author.screen_name == target:
                 total += 1
-                print each.text
 
             elif user_mentions:
                 for each_mention in user_mentions:
                     if each_mention["screen_name"] == target:
                         total += 1
-                        print each.text
 
         return total
 
@@ -210,7 +206,7 @@ if __name__ == '__main__':
     data = Database(host=host, dbName=dbName)
     data.connect(username="admin", password="admin")
 
-    twitter = TwitterParser()
+    twitter = TwitterParser(data=data)
     twitter.authorize()
     twitter.run(people)
 

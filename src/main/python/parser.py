@@ -17,7 +17,6 @@ class Parser(object):
 
     conn = None
     session = None
-    verbose = True
     host = "ds039020.mongolab.com:39020"
     dbName = "parser"
     data = None
@@ -33,13 +32,13 @@ class Parser(object):
     date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate", 'datePublished']
     title_names = ['Headline', 'title', 'og:title']
 
-    def __init__(self, host=None, dbName=None, verbose=True, log=None):
+    def __init__(self, log=None, data=None):
         '''Initialize a session to connect to the database'''
-        if host and dbName:
-            self.host = host
-            self.dbName = dbName
         if log:
             self.log = log
+        if not data:
+            raise Exception("No Database Connection Found")
+        self.data = data
 
         #create a logger
         self.logger = logging.getLogger(__name__)
@@ -54,12 +53,6 @@ class Parser(object):
         self.logger.addHandler(handler)
 
         self.session = dryscrape.Session()
-        self.verbose = verbose
-        self.data = Database(host=self.host, dbName=self.dbName,
-                             verbose=self.verbose)
-        self.data.connect()
-
-
 
     def searchArticle(self, q, site, since="y"):
         '''
@@ -261,14 +254,16 @@ class Parser(object):
 if __name__ == '__main__':
     host = "ds053380.mongolab.com:53380"
     dbName = "twitterparser"
+    data = Database(host=host, dbName=dbName)
+    data.connect()
     # sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
                     # 'CNN': 'www.cnn.com' }
     # targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
 
-    sources = {'Al Jazeera' : 'www.aljazeera.com'}
-    targets = {'Ahram' : 'www.english.ahram.org.eg'}
+    sources = {'Globe and Mail' : 'www.theglobeandmail.com'}
+    targets = {'Haaretz' : 'www.haaretz.com'}  
 
-    parse = Parser(host=host, dbName=dbName)
+    parse = Parser(data=data)
     parse.run(sources, targets)
 
 

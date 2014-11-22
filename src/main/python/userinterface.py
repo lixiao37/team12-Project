@@ -4,7 +4,7 @@ import thread
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from mongoengine import *
-# from parser import *
+from parser import Parser
 from twitterparser import *
 from user import User
 from twitter import *
@@ -13,7 +13,12 @@ from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
+
 mylookup = TemplateLookup(directories=['.'])
+host = "ds053380.mongolab.com:53380"
+dbName = "twitterparser"
+username = "admin"
+password = "admin"
 
 class RestrictedArea:
 
@@ -318,16 +323,33 @@ class Root:
     @cherrypy.expose
     def parse(self):
         
-        def threaded_parser(p, sources, targets):
-            p.run(sources, targets)
+        def threaded_parser(p, t_p, sources, targets, twitter_sources, twitter_targets):
+            try:
+                p.run(sources, targets)
+            except Exception, e:
+                self.logger.error('News Parser Failed', exc_info=True)
+            try:
+                t_p.run(sources)
+            except Exception, e:
+                self.logger.error('Twiiter Parser(Sources) Failed', exc_info=True)
+            try:
+                t_p.run(targets)
+            except Exception, e:
+                self.logger.error('Twiiter Parser(Targets) Failed', exc_info=True)
 
-        host = "ds053380.mongolab.com:53380"
-        dbName = "twitterparser"
         user = User.objects(name=cherrypy.session["user"]).first()
         sources = user.news_sources
         targets = user.news_targets
-        p = Parser(host=host, dbName=dbName)        
-        thread.start_new_thread( threaded_parser , (p, sources, targets))
+        twitter_sources = user.twitter_sources
+        twitter_targets = user.twitter_targets
+
+        p = Parser(data=data) 
+        
+        t_p = TwitterParser(data=data)
+        t_p.authorize()      
+        
+        thread.start_new_thread( threaded_parser , 
+                        (p, t_p, sources, targets, twitter_sources, twitter_targets))
 
         return "Success"
         
@@ -345,10 +367,8 @@ class Root:
 
 
 if __name__ == '__main__':
-    host = "ds053380.mongolab.com:53380"
-    dbName = "twitterparser"
     data = Database(host=host, dbName=dbName)
-    data.connect(username="admin", password="admin")
+    data.connect(username=username, password=username)
     _cp_config = {
         '/': {
             'tools.sessions.on': True,

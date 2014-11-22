@@ -1,6 +1,16 @@
 <html>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script type="text/javascript">
+		/**
+		* Start the parser, which will parse the news websites
+		* and twitter accounts	
+		*/
+		function startParser(){
+			$.get('/parse', function(data) {
+				alert('Success')
+			});
+		}
+		
 		$(document).ready(function(){
 			// ----------general function declarations-----------
 			/**
@@ -157,6 +167,6 @@
 				</p>
 			</div>
 		</div>
-		<p><input type="button" value="Parse the internet" onClick="location='/parse'"/></p>
+		<p><input type="button" value="Parse the internet" onClick="startParser()"/></p>
     </body>
 </html>
