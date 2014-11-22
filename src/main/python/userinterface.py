@@ -130,15 +130,19 @@ class Root:
     def get_list(self, list_type = None):
         user = User.objects(name=cherrypy.session["user"]).first()
         show_list_template = Template(filename='show_list.html')
+        show_twitter_list_template = Template(filename='show_twitter_list.html')
         if 'news_source_list' == list_type:
             list_name = user.news_sources
+            return show_list_template.render(list_name=list_name)
         elif 'news_target_list' == list_type:
             list_name = user.news_targets
+            return show_list_template.render(list_name=list_name)
         elif 'twitter_source_list' == list_type:
             list_name = user.twitter_sources
+            return show_twitter_list_template.render(list_name=list_name)
         elif 'twitter_target_list' == list_type:
             list_name = user.twitter_targets
-        return show_list_template.render(list_name=list_name)
+            return show_twitter_list_template.render(list_name=list_name)
 
     @require()
     @cherrypy.expose
@@ -325,7 +329,7 @@ class Root:
         p = Parser(host=host, dbName=dbName)        
         thread.start_new_thread( threaded_parser , (p, sources, targets))
 
-        return "Success"        
+        return "Success"
         
     @cherrypy.expose
     @require(name_is("chun")) # requires the logged in user to be chun
