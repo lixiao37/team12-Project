@@ -25,14 +25,25 @@
 		function modify_data(textbox_name, textbox_url, mod_type) {
 			page="/modify_data"
 			// modifies the user's source/target list
+			if (textbox_name == "#news_source_name" ||
+				textbox_name == "#news_target_name") {
 			$.post(page, {value_name:$(textbox_name)[0].value,
-				value_url:$(textbox_url)[0].value, 
+				list_type:textbox_name, mod_type:mod_type, 
+				value_url:$(textbox_url)[0].value}, 
+				function(status_message){
+					// alerts the status
+					alert(status_message);
+				}
+			);}
+			else if (textbox_name == "#twitter_source_name" ||
+					textbox_name == "#twitter_target_name") {
+			$.post(page, {value_name:$(textbox_name)[0].value,
 				list_type:textbox_name, mod_type:mod_type}, 
 				function(status_message){
 					// alerts the status
 					alert(status_message);
 				}
-			);
+			);}
 			// displays the updated list from the database to the page
 			if (textbox_name == "#news_source_name") {
 				display_data('news_source_list');}
@@ -48,35 +59,35 @@
 
 		// ---------button click function declarations--------
 		$("#add_news_source").click(function(){
-			modify_data("#news_source_name", "#news_source_url", "add");
+			modify_news_data("#news_source_name", "#news_source_url", "add");
 		});
 
 		$("#delete_news_source").click(function(){
-			modify_data("#news_source_name", "#news_source_url", "delete");
+			modify_news_data("#news_source_name", "#news_source_url", "delete");
 		});
 
 		$("#add_news_target").click(function(){
-			modify_data("#news_target_name", "#news_target_url", "add");
+			modify_news_data("#news_target_name", "#news_target_url", "add");
 		});
 
 		$("#delete_news_target").click(function(){
-			modify_data("#news_target_name", "#news_target_url", "delete");
+			modify_news_data("#news_target_name", "#news_target_url", "delete");
 		});
 
 		$("#add_twitter_source").click(function(){
-			modify_data("#twitter_source_name", "#twitter_source_url", "add");
+			modify_data("#twitter_source_name", "add");
 		});
 
 		$("#delete_twitter_source").click(function(){
-			modify_data("#twitter_source_name", "#twitter_source_url", "delete");
+			modify_data("#twitter_source_name", "delete");
 		});
 
 		$("#add_twitter_target").click(function(){
-			modify_data("#twitter_target_name", "#twitter_target_url", "add");
+			modify_data("#twitter_target_name", "add");
 		});
 
 		$("#delete_twitter_target").click(function(){
-			modify_data("#twitter_target_name", "#twitter_target_url", "delete");
+			modify_data("#twitter_target_name", "delete");
 		});
 
 		// ------button click function declarations end--------
@@ -129,7 +140,6 @@
 	<h2>Twitter Section</h2>
 		Add the twitter sources below. <br/>
 		Name <input type="text" id="twitter_source_name"/><br/>
-		URL <input type="text" id="twitter_source_url"/><br/>
 		<button id="add_twitter_source">Add Source</button>
 		<button id="delete_twitter_source">Delete Source</button>
 		<br/>
@@ -139,7 +149,6 @@
 		<br/>
 		Add the twitter targets below. <br/>
 		Name <input type="text" id="twitter_target_name"/><br/>
-		URL <input type="text" id="twitter_target_url"/><br/>
 		<button id="add_twitter_target">Add Target</button>
 		<button id="delete_twitter_target">Delete Target</button>
 		<br/>

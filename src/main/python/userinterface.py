@@ -52,14 +52,16 @@ class Root:
 
     @cherrypy.expose
     def modify_data(self, value_name=None, 
-        value_url=None, list_type=None, mod_type=None):
+        list_type=None, mod_type=None, value_url=None):
         user = User.objects(name=cherrypy.session["user"]).first()
         # checks to see if the textbox is empty
-        if value_url == "" or value_name == "":
-            return "Fail: The name or url text box is empty."
+        if value_name == "":
+            return "Fail: The name text box is empty."
         if mod_type == "add":
             # adding news sources and targets
             if list_type == "#news_source_name":
+                if value_url == "":
+                    return "Fail: The url text box is empty."                
                 if value_name in user.news_sources.keys() \
                 or value_url in user.news_sources.values():
                     return "Fail: This news name or link is already in the source list."
@@ -67,6 +69,8 @@ class Root:
                     user.news_sources[value_name] = value_url
                     user.save()
             elif list_type == "#news_target_name":
+                if value_url == "":
+                    return "Fail: The url text box is empty."                
                 if value_name in user.news_targets.keys() \
                 or value_url in user.news_targets.values():
                     return "Fail: This news name or link is already in the target list."
@@ -75,22 +79,22 @@ class Root:
                     user.save()
             # adding twitter sources and targets
             elif list_type == "#twitter_source_name":
-                if value_name in user.twitter_sources.keys() \
-                or value_url in user.twitter_sources.values():
-                    return "Fail: This twitter name or link is already in the source list."
+                if value_name in user.twitter_sources:
+                    return "Fail: This twitter screen name is already in the source list."
                 else:
-                    user.twitter_sources[value_name] = value_url
+                    user.twitter_sources.append(value_name)
                     user.save()
             elif list_type == "#twitter_target_name":
-                if value_name in user.twitter_targets.keys() \
-                or value_url in user.twitter_targets.values():
-                    return "Fail: This twitter name or link is already in the target list."
+                if value_name in user.twitter_targets:
+                    return "Fail: This twitter screen name is already in the target list."
                 else:
-                    user.twitter_targets[value_name] = value_url
+                    user.twitter_targets.append(value_name)
                     user.save()
         elif mod_type == "delete":
             # deleting news sources and targets
             if list_type == "#news_source_name":
+                if value_url == "":
+                    return "Fail: The url text box is empty."                
                 if value_name in user.news_sources.keys() \
                 and value_url in user.news_sources.values():
                     del user.news_sources[value_name]
@@ -98,6 +102,8 @@ class Root:
                 else:
                     return "Fail: This news link is not in the source list"
             elif list_type == "#news_target_name":
+                if value_url == "":
+                    return "Fail: The url text box is empty."                
                 if value_name in user.news_targets.keys() \
                 and value_url in user.news_targets.values():
                     del user.news_targets[value_name]
@@ -106,19 +112,17 @@ class Root:
                     return "Fail: This news link is not in the target list"
             # deleting twitter sources and targets
             elif list_type == "#twitter_source_name":
-                if value_name in user.twitter_sources.keys() \
-                and value_url in user.twitter_sources.values():
-                    del user.twitter_sources[value_name]
+                if value_name in user.twitter_sources:
+                    user.twitter_sources.remove(value_name)
                     user.save()
                 else:
-                    return "Fail: This twitter link is not in the source list"
+                    return "Fail: This twitter screen name is not in the source list"
             elif list_type == "#twitter_target_name":
-                if value_name in user.twitter_targets.keys() \
-                and value_url in user.twitter_targets.values():
-                    del user.twitter_targets[value_name]
+                if value_name in user.twitter_targets:
+                    user.twitter_targets.remove(value_name)
                     user.save()
                 else:
-                    return "Fail: This twitter link is not in the target list"
+                    return "Fail: This twitter screen name is not in the target list"
         return "Success!"
 
     # gets the user's list accordingly and returns it to the tracking page    
