@@ -1,6 +1,8 @@
 from mongoengine import *
 from website import Website
 from article import Article
+from twitter import Tweet
+from twitter import TwitterAccount
 from user import User
 from citation import Citation
 import logging
@@ -48,7 +50,6 @@ class Database(object):
         self.conn = connect(self.dbName, host=self.host, username=self.username,
                             password=self.password)
         if self.isConnect() and self.verbose:
-            print "Connected to the \"{0}\" Database!".format(self.dbName)
             self.logger.info('Connected to the \"{0}\" Database!' \
                                                            .format(self.dbName))
 
@@ -72,10 +73,10 @@ class Database(object):
 
         if art:
             if self.verbose:
-                print "Article already exists and has not been updated"
-                self.logger.warn( \
+                self.logger.info( \
                     'Article exists, id: {0}, title: {1}, url: {2}' \
-                                            .format(art.id, art.title, art.url))
+                        .format(art.id, art.title.encode('utf-8'), 
+                                                       art.url.encode('utf-8')))
             return art
 
         #This article object is used to add to the database
@@ -136,8 +137,7 @@ class Database(object):
                 ).first()
 
         if cite:
-            print "Citation already exists!"
-            self.logger.warn('Citation exists, id: {0}, article: {1}' \
+            self.logger.info('Citation exists, id: {0}, article: {1}' \
                                              .format(cite.id, cite.article.url))
             return cite
 
@@ -157,5 +157,44 @@ class Database(object):
             return cite
         else:
             return None
+
+    def add_tweet(self, tweet_meta):
+        text = tweet_meta.get('text')
+        author = tweet_meta.get('author')
+        created_at = tweet_meta.get('created_at')
+        entities = tweet_meta.get('entities')
+        retweet = tweet_meta.get('retweet')
+        retweet_author = tweet_meta.get('retweet_author')
+        retweeted = tweet_meta.get('retweeted')
+
+        #check if tweet already exists
+        tw = Tweet.objects(text=text, author=author, created_at=created_at) \
+                                                                        .first()
+        if tw:
+            self.logger.info('Tweet Already Exists, id: {0}'.format(tw.id))
+            return tw
+        
+        tw = Tweet(text=text, entities=entities, author=author,
+                   retweeted=retweeted, retweet_author=retweet_author,
+                   retweet=retweet, created_at=created_at)
+        tw.save()
+
+        return tw
+
+    def add_twitteraccount(self, twitteraccount_meta):
+        name = twitteraccount_meta.get('name')
+        screen_name = twitteraccount_meta.get('screen_name')
+
+        ta = TwitterAccount.objects(name=name, screen_name=screen_name).first()
+        if ta:
+            self.logger.info('TwitterAccount Already Exists, id: {0}' \
+                                                                 .format(ta.id))
+            return ta
+
+        ta = TwitterAccount(name=name, screen_name=screen_name)
+        ta.save()
+
+        return ta
+
 
 
