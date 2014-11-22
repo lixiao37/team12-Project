@@ -140,11 +140,11 @@ class AuthController(object):
                                     <small><input type="hidden" name="from_page" 
                                         value="%(from_page)s"/>%(msg)s<br/></small></h2>
                                         
-                                <label for="inputEmail" class="sr-only">Username</label>
+                                <label for="username" class="sr-only">Username</label>
                                 <input type="text" name="username" class="form-control" 
                                     value="%(username)s" placeholder="Username" required autofocus>
 
-                                <label for="inputPassword" class="sr-only">Password</label>
+                                <label for="password" class="sr-only">Password</label>
                                 <input type="password" name="password" class="form-control" placeholder="Password">
                                 
                                 <div class="checkbox">

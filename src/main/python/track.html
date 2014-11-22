@@ -114,59 +114,74 @@
     <%include file="navbar_fixed.html"/>
 
     <body>
-    <div class="container">
-		<div class="row">
-			<h2>News Section</h2>
-			<div class="col-md-4">
-				<p class="lead">Add the website sources below.</p>
-				<p>
-					Name <input type="text" class="form-control" id="news_source_name" 
-						placeholder="Name" required autofocus><br/>
-					URL <input type="text" id="news_source_url"/><br/>
-					<button id="add_news_source">Add Source</button>
-					<button id="delete_news_source">Delete Source</button><br/>
-					<ul>
-						<div id="news_source_list"></div>
-					</ul>
-				</p>
+	    <div class="container">
+	    	<p align="right"><input type="button" value="Click here to parse the
+	    		 internet after entering your sources and targets" 
+    		onClick="startParser()" class="btn btn-primary btn-lg btn-block"></p>
+    		<div class="jumbotron">
+				<div class="row">
+					<h2>News Section</h2>
+					<div class="col-md-4">
+						<p class="lead">Sources</p>
+						<p><input type="text" id="news_source_name" class="form-control"
+								placeholder="Name" required autofocus>
+							<input type="text" id="news_source_url" class="form-control"
+								placeholder="URL" required autofocus>
+						</p>
+						<p><button id="add_news_source" class="btn btn-success">Add Source</button>
+							<button id="delete_news_source" class="btn btn-danger">Delete Source</button><br/>
+							<ul>
+								<div id="news_source_list"></div>
+							</ul>
+						</p>
+					</div>
+					<div class="col-md-4">
+						<p class="lead">Targets</p>
+						<p><input type="text" id="news_target_name" class="form-control"
+								placeholder="Name" required autofocus>
+							<input type="text" id="news_target_url" class="form-control"
+								placeholder="URL" required autofocus>
+						</p>
+						<p>
+							<button id="add_news_target" class="btn btn-success">Add Target</button>
+							<button id="delete_news_target" class="btn btn-danger">Delete Target</button>
+							<ul>
+								<div id="news_target_list"></div>
+							</ul>
+						</p>
+					</div>
+				</div>
 			</div>
-			<div class="col-md-4">
-				<p class="lead">Add the website targets below.</p>
-				<p>
-					Name <input type="text" id="news_target_name"/><br/>
-					URL <input type="text" id="news_target_url"/><br/>
-					<button id="add_news_target">Add Target</button>
-					<button id="delete_news_target">Delete Target</button>
-					<ul>
-						<div id="news_target_list"></div>
-					</ul>
-				</p>
+			<div class="jumbotron">
+				<div class="row">
+					<h2>Twitter Section</h2>
+					<div class="col-md-4">
+						<p class="lead">Sources</p>
+						<p><input type="text" id="twitter_source_name" class="form-control"
+							placeholder="Name" required autofocus>
+						</p>
+						<p><button id="add_twitter_source" class="btn btn-success">Add Source</button>
+							<button id="delete_twitter_source" class="btn btn-danger">Delete Source</button>
+							<br/>
+							<ul>
+								<div id="twitter_source_list"></div>
+							</ul>
+						</p>
+					</div>
+					<div class="col-md-4">
+						<p class="lead">Targets</p>
+						<p><input type="text" id="twitter_target_name" class="form-control"
+								placeholder="Name" required autofocus>
+						</p>
+						<p><button id="add_twitter_target" class="btn btn-success">Add Target</button>
+							<button id="delete_twitter_target" class="btn btn-danger">Delete Target</button><br/>
+							<ul>
+								<div id="twitter_target_list"></div>
+							</ul>
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="row">
-			<h2>Twitter Section</h2>
-			<div class="col-md-4">
-				<p class="lead">Add the twitter sources below.</p>
-				<p>Name <input type="text" id="twitter_source_name"/><br/>
-					<button id="add_twitter_source">Add Source</button>
-					<button id="delete_twitter_source">Delete Source</button>
-					<br/>
-					<ul>
-						<div id="twitter_source_list"></div>
-					</ul>
-				</p>
-			</div>
-			<div class="col-md-4">
-				<p class="lead">Add the twitter targets below.</p>
-				<p>Name <input type="text" id="twitter_target_name"/><br/>
-					<button id="add_twitter_target">Add Target</button>
-					<button id="delete_twitter_target">Delete Target</button><br/>
-					<ul>
-						<div id="twitter_target_list"></div>
-					</ul>
-				</p>
-			</div>
-		</div>
-		<p><input type="button" value="Parse the internet" onClick="startParser()"/></p>
     </body>
 </html>
