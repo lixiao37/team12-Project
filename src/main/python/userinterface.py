@@ -2,6 +2,7 @@ import os, os.path
 import cherrypy
 import thread
 from mako.template import Template
+from mako.lookup import TemplateLookup
 from mongoengine import *
 from parser import *
 from twitterparser import *
@@ -12,6 +13,7 @@ from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
+mylookup = TemplateLookup(directories=['.'])
 
 class RestrictedArea:
 
@@ -29,19 +31,20 @@ class RestrictedArea:
 
 class Root:
     auth = AuthController()
-
     restricted = RestrictedArea()
 
     @cherrypy.expose
     @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
-        index_page_template = Template(filename='index.html')
-        return index_page_template.render(name=cherrypy.session["user"])
+        # navbar_template = Template(filename='navbar_fixed.html')
+        # dynamic_navbar = navbar_template.render(username=cherrypy.session["user"])
+        index_page_template = Template(filename='index.html', lookup=mylookup)
+        return index_page_template.render(username=cherrypy.session["user"])
         
     @cherrypy.expose
-    def home(self): # This page is http://127.0.0.1:8080/home
-        home_page_template = Template(filename='home.html')
-        return home_page_template.render()
+    def require_login(self): # This page is http://127.0.0.1:8080/require_login
+        require_login_template = Template(filename='require_login.html', lookup=mylookup)
+        return require_login_template.render()
     
     @cherrypy.expose
     def example(self):
