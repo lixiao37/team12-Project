@@ -3,6 +3,7 @@ from website import Website
 from article import Article
 from user import User
 from citation import Citation
+import logging
 
 
 class Database(object):
@@ -13,13 +14,29 @@ class Database(object):
     dbName = "parser"
     username = "admin"
     password = "admin"
+    log = "beta.log"
+    logger = None
 
-    def __init__(self, host=None, dbName=None, verbose=True):
+    def __init__(self, host=None, dbName=None, verbose=True, log=None):
         self.verbose = verbose
         if host:
             self.host = host
         if dbName:
             self.dbName = dbName
+        if log:
+            self.log = log
+
+        #create a logger
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        # create a file handler
+        handler = logging.FileHandler(self.log)
+        handler.setLevel(logging.INFO)
+        # create a logging format
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        # add the handlers to the logger
+        self.logger.addHandler(handler)
 
     def connect(self, username=None, password=None):
         '''Connect to the database'''
@@ -32,6 +49,8 @@ class Database(object):
                             password=self.password)
         if self.isConnect() and self.verbose:
             print "Connected to the \"{0}\" Database!".format(self.dbName)
+            self.logger.info('Connected to the \"{0}\" Database!' \
+                                                           .format(self.dbName))
 
     def isConnect(self):
         '''Check if connection exists with the database'''
@@ -54,6 +73,9 @@ class Database(object):
         if art:
             if self.verbose:
                 print "Article already exists and has not been updated"
+                self.logger.warn( \
+                    'Article exists, id: {0}, title: {1}, url: {2}' \
+                                            .format(art.id, art.title, art.url))
             return art
 
         #This article object is used to add to the database
@@ -115,6 +137,8 @@ class Database(object):
 
         if cite:
             print "Citation already exists!"
+            self.logger.warn('Citation exists, id: {0}, article: {1}' \
+                                             .format(cite.id, cite.article.url))
             return cite
 
         #This citation object is used to add to the database

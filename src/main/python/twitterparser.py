@@ -14,12 +14,27 @@ class TwitterParser:
     api = None
     m = re.compile("(RT @.*?: )(.*)")
     handlers = []
+    log = 'beta.log'
 
-    def __init__ (self, consumer_key=None, consumer_secret=None):
+    def __init__ (self, consumer_key=None, consumer_secret=None, log=None):
         if consumer_key and consumer_secret:
             self.consumer_key = consumer_key
             self.consumer_secret = consumer_secret
+        if log:
+            self.log = log
         self.auth = tweepy.OAuthHandler(self.consumer_key, self.consumer_secret)
+
+        #create a logger
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        # create a file handler
+        handler = logging.FileHandler(self.log)
+        handler.setLevel(logging.INFO)
+        # create a logging format
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        # add the handlers to the logger
+        self.logger.addHandler(handler)
 
     def authorize(self, access_token=None, access_token_secret=None):
         '''Authorize the Parser with the twitter API'''
@@ -28,6 +43,7 @@ class TwitterParser:
             self.access_token_secret = access_token_secret
         self.auth.set_access_token(self.access_token, self.access_token_secret)
         self.api = tweepy.API(self.auth)
+        self.logger.info('Authorized with Twitter')
 
     def search_tweets(self, q, rpp=100):
         '''Return a list of query results from the parameter, q'''
@@ -100,11 +116,21 @@ class TwitterParser:
             if tweet.in_reply_to_screen_name:
                 continue
             if self.m.match(tweet.text):
+                try:
+                    tweet.retweeted_status
+                    retweet_verified = True
+                except AttributeError:
+                    self.logger.warn('Re-tweet is not an actual retweet, {0}'.format(tweet.text))
+                    retweet_verified = False
+            if self.m.match(tweet.text) and retweet_verified:
                 #save the founded author
-                user = tweet.retweeted_status.author
+                try:
+                    user = tweet.retweeted_status.author
+                except AttributeError:
+                    self.logger.warn('Re-tweet is not an actual retweet, ')
                 name = user.name
                 screen_name = user.screen_name
-                
+
                 rt_ta = TwitterAccount.objects(screen_name=screen_name).first()
                 if not rt_ta:
                     rt_ta = TwitterAccount(name=name, screen_name=screen_name)
@@ -113,20 +139,21 @@ class TwitterParser:
                 author = rt_ta
                 text = tweet.retweeted_status.text
                 entities = tweet.retweeted_status.entities
-                
+                created_at = tweet.created_at
                 tw = Tweet.objects(text=text, author=author).first()
                 if not tw:
-                    tw = Tweet(text=text, entities=entities, author=author)
+                    tw = Tweet(text=text, entities=entities, author=author, created_at=created_at)
                     tw.save()
 
                     rt_ta.tweets.append(tw)
                     rt_ta.save()
 
                 retweeted = True
-            
+
             text = tweet.text
-            author = ta      
+            author = ta
             entities = tweet.entities
+            created_at = tweet.created_at
             if retweeted:
                 retweet_author = rt_ta
                 retweet = tw
@@ -137,8 +164,8 @@ class TwitterParser:
             tw = Tweet.objects(text=text, author=author).first()
             if not tw:
                 tw = Tweet(text=text, entities=entities, author=author,
-                           retweeted=retweeted, retweet_author=retweet_author, 
-                           retweet=retweet)
+                           retweeted=retweeted, retweet_author=retweet_author,
+                           retweet=retweet, created_at=created_at)
                 tw.save()
                 # print text, author.name
 
@@ -166,13 +193,15 @@ class TwitterParser:
         return total
 
     def run(self, handlers):
+        self.logger.info('Started Twitter Crawler')
         print "Running Twitter Crawler"
         self.handlers = handlers
         for each in self.handlers:
             self.add_user_tweets(each)
+        self.logger.info('Done Twitter Crawler')
         return True
-        
-        
+
+
 if __name__ == '__main__':
     host = "ds053380.mongolab.com:53380"
     dbName = "twitterparser"
@@ -180,10 +209,10 @@ if __name__ == '__main__':
 
     data = Database(host=host, dbName=dbName)
     data.connect(username="admin", password="admin")
-    
+
     twitter = TwitterParser()
     twitter.authorize()
     twitter.run(people)
-    
-    
+
+
 
