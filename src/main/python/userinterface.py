@@ -151,16 +151,16 @@ class Root:
         return track_template.render(name=cherrypy.session["user"])
     
     @cherrypy.expose
-    def display_show_articles(self):
-        show_article_template = Template(filename='show_articles.html')
+    def get_articles(self):
+        show_article_template = Template(filename='get_articles.html')
         articles = Article.objects()
         return show_article_template.render(articles=articles)
     
     @require()
     @cherrypy.expose
-    def display(self): # This page is http://127.0.0.1:8080/display
-        article_template = Template(filename='articles.html')
-        return article_template.render(name=cherrypy.session["user"])
+    def display_articles(self): # This page is http://127.0.0.1:8080/display
+        article_template = Template(filename='display_articles.html', lookup=mylookup)
+        return article_template.render(username=cherrypy.session["user"])
     
     @require()
     @cherrypy.expose
