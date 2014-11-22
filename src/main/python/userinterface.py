@@ -14,33 +14,18 @@ from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
-
 mylookup = TemplateLookup(directories=['.'])
 host = "ds053380.mongolab.com:53380"
 dbName = "twitterparser"
 username = "admin"
 password = "admin"
 
-class RestrictedArea:
-
-    # all methods in this controller (and subcontrollers) is
-    # open only to members of the admin group
-
-    _cp_config = {
-        'auth.require': [member_of('admin')]
-    }
-
-    @cherrypy.expose
-    def index(self):
-        return """This area requires admin group status."""
-
 
 class Root:
     auth = AuthController()
-    restricted = RestrictedArea()
 
+    @require() # requires user to be logged in to view page
     @cherrypy.expose
-    @require() # requires logged in status to view page
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
         index_page_template = Template(filename='index.html', lookup=mylookup)
         return index_page_template.render(username=cherrypy.session["user"], home="active")
@@ -50,11 +35,22 @@ class Root:
         require_login_template = Template(filename='require_login.html', lookup=mylookup)
         return require_login_template.render(home="active")
 
+    @require() # requires user to be logged in to view page
     @cherrypy.expose
-    @require()
     def about(self):
         about_template = Template(filename='about.html', lookup=mylookup)
         return about_template.render(username=cherrypy.session["user"], about="active")
+
+    @require() # requires user to be logged in to view page
+    @cherrypy.expose
+    def log(self):
+        log_template = Template(filename='log.html', lookup=mylookup)
+        try:
+            logContent = open('beta.log').readlines()
+        except IOError:
+            logContent = []
+        logContent = reversed(logContent)
+        return log_template.render(logContent=logContent, username=cherrypy.session["user"], log="active")
 
     @cherrypy.expose
     def modify_data(self, value_name=None, 
@@ -131,7 +127,8 @@ class Root:
                     return "Fail: This twitter screen name is not in the target list"
         return "Success!"
 
-    # gets the user's list accordingly and returns it to the tracking page    
+    # gets the user's list accordingly and returns it to the tracking page
+    @require() # requires user to be logged in to view page
     @cherrypy.expose
     def get_list(self, list_type = None):
         user = User.objects(name=cherrypy.session["user"]).first()
@@ -150,7 +147,7 @@ class Root:
             list_name = user.twitter_targets
             return show_twitter_list_template.render(list_name=list_name)
 
-    @require()
+    @require() # requires user to be logged in to view page
     @cherrypy.expose
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
         track_template = Template(filename='track.html', lookup=mylookup)
@@ -162,13 +159,13 @@ class Root:
         articles = Article.objects()
         return show_article_template.render(articles=articles)
     
-    @require()
+    @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_articles(self): # This page is http://127.0.0.1:8080/display
         article_template = Template(filename='display_articles.html', lookup=mylookup)
         return article_template.render(username=cherrypy.session["user"])
     
-    @require()
+    @require() # requires user to be logged in to view page
     @cherrypy.expose
     def generate_graphs(self):
         page_header = ""
@@ -198,8 +195,6 @@ class Root:
             
             # generate pie graphs and add it to total_graphs
             total_graphs += self.generate_completed_pie_graphs(twitter_relation_dict, "twitter")
-        
-        
 
         return page_header + total_graphs 
     
@@ -320,7 +315,7 @@ class Root:
             relation_dict[source_name] = target_count
         return relation_dict
     
-    @require()
+    @require() # requires user to be logged in to view page
     @cherrypy.expose
     def parse(self):
         
@@ -354,29 +349,6 @@ class Root:
 
         p.logger.info('Executing Parser Commands')
         return "Success"
-    
-    @require()
-    @cherrypy.expose
-    def log(self):
-        log_template = Template(filename='log.html', lookup=mylookup)
-        try:
-            logContent = open('beta.log').readlines()
-        except IOError:
-            logContent = []
-        logContent = reversed(logContent)
-        return log_template.render(logContent=logContent, username=cherrypy.session["user"])
-
-    @cherrypy.expose
-    @require(name_is("chun")) # requires the logged in user to be chun
-    def only_for_chun(self):
-        return """Hello Chun - this page is available to you only"""
-
-    # This is only available if the user name is chun and he's in group admin
-    @cherrypy.expose
-    @require(name_is("chun")) # requires the logged in user to be chun
-    @require(member_of("admin")) # requires the logged in user to be a member of the admin group
-    def only_for_chun_admin(self):
-        return """Hello Chun, the Admin - this page is available to you only and because you are admin"""
 
 
 if __name__ == '__main__':
@@ -394,7 +366,5 @@ if __name__ == '__main__':
             'tools.staticdir.dir': './public'
         }
     }
-    cherrypy.config.update({'server.socket_host': '0.0.0.0',
-                        'server.socket_port': 8080,
-                       })
+    cherrypy.config.update({'server.socket_host': '0.0.0.0', 'server.socket_port': 8080,})
     cherrypy.quickstart(Root(), '/', _cp_config)

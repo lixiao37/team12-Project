@@ -1,25 +1,17 @@
 <html>
-	<head>
-		<%include file="navbar_fixed.html"/>
-		<style>
-		</style>
-	</head>
-
+	<%include file="navbar_fixed.html"/>
 	<body>
 		<div class="col-md-12" id="logmessage">
 			<div class="panel panel-default">
-			  <div class="panel-heading">
-			    <h3 class="panel-title">Log</h3>
-			  </div>
-			  <ul class="list-group">
-			  		% for each in logContent:
-				  	<li class="list-group-item">${each.decode('utf-8')}</li>
-				  	% endfor
+				<div class="panel-heading">
+					<h3 class="panel-title">Log</h3>
+				</div>
+				<ul class="list-group">
+				% for each in logContent:
+					<li class="list-group-item">${each.decode('utf-8')}</li>
+				% endfor
 				</ul>
-			  
 			</div>
 		</div>
 	</body>
-
-
 </html>
