@@ -5,10 +5,10 @@ import requests
 import re
 import binascii
 
-def WarcRecorder(message,url):
+def WarcRecorder(message,url,filename="test"):
         #currently only allows creation on one file and one content in file
         #opens a new file for writing
-        f = warc.open("test.warc.gz", "w")
+        f = warc.open(filename+".warc.gz", "w")
         #creates Warc headers, warcinfo header is required, defaults=True generates missing fields
         #warc uses dictionary as internal structure
         header1 = warc.WARCHeader({"WARC-Type": "warcinfo", "WARC-Filename": "test.warc.gz"}, defaults=True)    
