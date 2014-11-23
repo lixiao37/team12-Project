@@ -53,6 +53,7 @@ if __name__ == "__main__":
         
         '''
         #warc file from https://ia601004.us.archive.org/4/items/Okmij00000.warc/
+        #DO NOT TRY TO OPEN Okmij00000.warc WITH ANY TEXT EDITOR, FILE TOO LARGE
         y = ArcWarcRecordLoader()
         for i in range(9000):
                 try:
@@ -65,6 +66,7 @@ if __name__ == "__main__":
         
         '''
         #warc file obtained from https://ia601004.us.archive.org/4/items/Okmij00000.warc/
+        #DO NOT TRY TO OPEN Okmij00000.warc WITH ANY TEXT EDITOR, FILE TOO LARGE
         t = warc.open("okmij-00000.warc.gz")
         for h in t:
             print list(h.header)
@@ -97,7 +99,7 @@ pywb only used for testing, not needed for warc creation
 
 Tests
 tests with pywb on test.warc.gz showed broken formating
-while tests with other two .warc.gz shows correct formating
+while tests with pywb on other two .warc.gz shows correct formating
 
 tests with warc on test.warc.gz showed correct formating
 while tests with warc on other two .warc.gz shows incorrect characters
