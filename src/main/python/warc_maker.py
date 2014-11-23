@@ -90,3 +90,19 @@ if __name__ == "__main__":
                 print list(h.header)
                 print list(h.payload)
         '''
+        
+'''
+NOTES:
+pywb only used for testing, not needed for warc creation
+
+Tests
+tests with pywb on test.warc.gz showed broken formating
+while tests with other two .warc.gz shows correct formating
+
+tests with warc on test.warc.gz showed correct formating
+while tests with warc on other two .warc.gz shows incorrect characters
+
+Possible Causes
+formating of warc module may be incorrect when decoded by pywb
+decoding by warc module may be faulty on non warc generated .warc.gz files
+'''
