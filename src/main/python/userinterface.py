@@ -325,11 +325,11 @@ class Root:
             except Exception, e:
                 logger.error('News Parser Failed', exc_info=True)
             try:
-                t_p.run(sources)
+                t_p.run(twitter_sources)
             except Exception, e:
                 logger.error('Twiiter Parser(Sources) Failed', exc_info=True)
             try:
-                t_p.run(targets)
+                t_p.run(twitter_targets)
             except Exception, e:
                 logger.error('Twiiter Parser(Targets) Failed', exc_info=True)
 

@@ -124,7 +124,7 @@ class TwitterParser:
                     tweet.retweeted_status
                     retweet_verified = True
                 except AttributeError:
-                    self.logger.warn('Re-tweet is not an actual retweet, {0}'.format(tweet.text))
+                    self.logger.warn('Re-tweet is not an actual retweet, {0}'.format(tweet.text.encode('utf-8')))
                     retweet_verified = False
             if self.m.match(tweet.text) and retweet_verified:
                 #save the founded author
