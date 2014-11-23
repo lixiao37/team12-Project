@@ -1,6 +1,7 @@
 import os, os.path
 import cherrypy
 import thread
+import hashlib
 from database import Database
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -23,6 +24,8 @@ password = "admin"
 
 class Root:
     auth = AuthController()
+    relation_dict = {}
+    twitter_relation_dict = {}
 
     @require() # requires user to be logged in to view page
     @cherrypy.expose
@@ -34,6 +37,45 @@ class Root:
     def require_login(self): # This page is http://127.0.0.1:8080/require_login
         require_login_template = Template(filename='require_login.html', lookup=mylookup)
         return require_login_template.render(home="active")
+
+    @cherrypy.expose
+    def signup(self, username=None, password=None, from_page="/"):
+        signup_template = Template(filename='signup.html')
+
+        if username is None or password is None:
+            return signup_template.render(msg="Enter login information", from_page=from_page)
+        
+        user_exist = self.check_user_exist(username)
+        if user_exist:
+            # username exist in the database, can't create
+            return signup_template.render(msg="Username is taken, please try another one", from_page=from_page)
+        else:
+            # username does not exist in the database, can create it now
+            group = "User"
+            news_sources ={}
+            news_targets ={}
+            twitter_sources = []
+            twitter_targets = []
+
+            p = hashlib.md5()
+            p.update(password)
+            User(name = username,
+                password = p.hexdigest(),
+                group = group,
+                news_sources = news_sources,
+                news_targets = news_targets,
+                twitter_sources = twitter_sources,
+                twitter_targets = twitter_targets).save()
+
+            # go to home page
+            raise cherrypy.HTTPRedirect(from_page or "/")
+
+    def check_user_exist(self, username):
+        # See if the username is in the database, also if the password is correct
+        if User.objects(name=username):
+            return True
+        else:
+            return False
 
     @require() # requires user to be logged in to view page
     @cherrypy.expose
@@ -161,13 +203,32 @@ class Root:
     
     @require() # requires user to be logged in to view page
     @cherrypy.expose
-    def display_articles(self): # This page is http://127.0.0.1:8080/display
+    def display_articles(self):
         article_template = Template(filename='display_articles.html', lookup=mylookup)
         return article_template.render(username=cherrypy.session["user"])
     
+    # @require() # requires user to be logged in to view page
+    # @cherrypy.expose
+    # def generate_graphs_overview(self):
+    #     # generate a relation list, described in more depth at the fnc
+    #     self.relation_dict = self.generate_relation_dict()
+    #     self.twitter_relation_dict = self.generate_twitter_relation_dict()
+
+    #     generate_template = Template(filename='generate_graphs_overview.html', lookup=mylookup)
+    #     return generate_template.render(username=cherrypy.session["user"])
+
+    # @require() # requires user to be logged in to view page
+    # @cherrypy.expose
+    # def generate_twitter_bar(self):
+        
+    #     graphs = self.generate_detailed_graph(self.twitter_relation_dict, "twitter")
+
+    #     generate_template = Template(filename='generate_twitter_bar.html', lookup=mylookup)
+    #     return generate_template.render(username=cherrypy.session["user"], graphs=graphs)
+
     @require() # requires user to be logged in to view page
     @cherrypy.expose
-    def generate_graphs(self):
+    def generate_graphs_overview(self):
         page_header = ""
         total_graphs = ""
 

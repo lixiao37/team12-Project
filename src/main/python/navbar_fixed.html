@@ -12,7 +12,6 @@
     </head>
 
     <body>
-    
         <!-- Fixed navbar -->
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
           <div class="container">
@@ -44,18 +43,10 @@
                     <li class="divider"></li>
                     <li class="dropdown-header">Displaying Data</li>
                     <li><a href="display_articles">Articles</a></li>
-                    <li><a href="generate_graphs">Graphs</a></li>
+                    <li><a href="generate_graphs_overview">Graphs</a></li>
                   </ul>
                 </li>
                 <!-- dropdown menu end -->
-                
-                <!-- about button -->
-                % if about:
-                    <li class="active">
-                % else:
-                    <li>
-                % endif
-                <a href="about">About</a></li>
 
                 <!-- log button -->
                 % if log:
@@ -64,6 +55,14 @@
                     <li>
                 % endif
                 <a href="log">Log</a></li>
+
+                <!-- about button -->
+                % if about:
+                    <li class="active">
+                % else:
+                    <li>
+                % endif
+                <a href="about">About</a></li>
 
               </ul>
               <ul class="nav navbar-nav navbar-right">
