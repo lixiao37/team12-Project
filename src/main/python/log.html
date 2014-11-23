@@ -8,7 +8,7 @@
 						buttonPressed = $('#onButton')[0]
 						console.log(buttonPressed.disabled);
 						if (buttonPressed.disabled) {
-							# if onButton is pressed, refresh the page
+							// if onButton is pressed, refresh the page
 							location.reload(true);
 						}
 						timedRefresh(5000);
@@ -19,11 +19,11 @@
 			function setRefresh(context){
 				buttonPressed = context.id;
 				if (buttonPressed == 'offButton') {
-					# if offButton is pressed, then disable auto-refresh
+					// if offButton is pressed, then disable auto-refresh
 					$('#onButton')[0].disabled = false;
 					context.disabled = true;
 				} else {
-					# if onButton is pressed, then enable auto-refresh
+					// if onButton is pressed, then enable auto-refresh
 					$('#offButton')[0].disabled = false;
 					context.disabled = true;
 				};
