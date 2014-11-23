@@ -2,23 +2,22 @@
 	source - string
 	targets - list of str
 	target_count - list of int-->
-<h1>Detailed Graph</h1>
 <!--area to display the graph-->
 <div style="width: 50%">
 	<canvas id="${datatype}_detailed_graph" height="450" width="600"></canvas>
-</div>
+</div><br>
+<p class="lead">Legend</p>
 <div id="${datatype}_legend"></div>
 </br>
 
-x-axis are targets<br>
-y-axis are number of cites<br>
-each bar per target represents a source and are ordered as following: <br>
-% for source in sources:
-	Bar ${loop.index + 1}: ${source}<br>
-% endfor
-
-target count is ${target_counts}<br>
-
+<p class="lead">Description</p>
+<p>x-axis are the user's targets<br>
+	y-axis are number of cites<br>
+	Each bar per target represents a source and are ordered as following: <br>
+	% for source in sources:
+		Bar ${loop.index + 1}: ${source}<br>
+	% endfor
+</p>
 <!--script to produce the graph according to 
 	the parameters passed in from python-->
 <script>

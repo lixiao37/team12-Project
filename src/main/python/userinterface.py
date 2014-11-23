@@ -207,24 +207,51 @@ class Root:
         article_template = Template(filename='display_articles.html', lookup=mylookup)
         return article_template.render(username=cherrypy.session["user"])
     
-    # @require() # requires user to be logged in to view page
-    # @cherrypy.expose
-    # def generate_graphs_overview(self):
-    #     # generate a relation list, described in more depth at the fnc
-    #     self.relation_dict = self.generate_relation_dict()
-    #     self.twitter_relation_dict = self.generate_twitter_relation_dict()
+    @require() # requires user to be logged in to view page
+    @cherrypy.expose
+    def display_graphs_overview(self):
+        # generate a relation list, described in more depth at the fnc
+        self.relation_dict = self.generate_relation_dict()
+        self.twitter_relation_dict = self.generate_twitter_relation_dict()
 
-    #     generate_template = Template(filename='generate_graphs_overview.html', lookup=mylookup)
-    #     return generate_template.render(username=cherrypy.session["user"])
+        generate_template = Template(filename='generate_graphs_overview.html', lookup=mylookup)
+        return generate_template.render(username=cherrypy.session["user"])
 
-    # @require() # requires user to be logged in to view page
-    # @cherrypy.expose
-    # def generate_twitter_bar(self):
-        
-    #     graphs = self.generate_detailed_graph(self.twitter_relation_dict, "twitter")
+    @require() # requires user to be logged in to view page
+    @cherrypy.expose
+    def display_news_bar(self):
+        graphs = self.generate_detailed_graph(self.relation_dict, "news")
 
-    #     generate_template = Template(filename='generate_twitter_bar.html', lookup=mylookup)
-    #     return generate_template.render(username=cherrypy.session["user"], graphs=graphs)
+        generate_template = Template(filename='display_graphs.html', lookup=mylookup)
+        return generate_template.render(username=cherrypy.session["user"], 
+            graphs=graphs, section_name="News", graph_type="Bar")
+
+    @require() # requires user to be logged in to view page
+    @cherrypy.expose
+    def display_news_pie(self):
+        graphs = self.generate_completed_pie_graphs(self.relation_dict, "news")
+
+        generate_template = Template(filename='display_graphs.html', lookup=mylookup)
+        return generate_template.render(username=cherrypy.session["user"], 
+            graphs=graphs, section_name="News", graph_type="Pie")
+
+    @require() # requires user to be logged in to view page
+    @cherrypy.expose
+    def display_twitter_bar(self):
+        graphs = self.generate_detailed_graph(self.twitter_relation_dict, "twitter")
+
+        generate_template = Template(filename='display_graphs.html', lookup=mylookup)
+        return generate_template.render(username=cherrypy.session["user"], 
+            graphs=graphs, section_name="Twitter", graph_type="Bar")
+
+    @require() # requires user to be logged in to view page
+    @cherrypy.expose
+    def display_twitter_pie(self):
+        graphs = self.generate_completed_pie_graphs(self.twitter_relation_dict, "twitter")
+
+        generate_template = Template(filename='display_graphs.html', lookup=mylookup)
+        return generate_template.render(username=cherrypy.session["user"], 
+            graphs=graphs, section_name="Twitter", graph_type="Pie")
 
     @require() # requires user to be logged in to view page
     @cherrypy.expose
@@ -386,11 +413,11 @@ class Root:
             except Exception, e:
                 logger.error('News Parser Failed', exc_info=True)
             try:
-                t_p.run(twitter_sources)
+                t_p.run(sources)
             except Exception, e:
                 logger.error('Twiiter Parser(Sources) Failed', exc_info=True)
             try:
-                t_p.run(twitter_targets)
+                t_p.run(targets)
             except Exception, e:
                 logger.error('Twiiter Parser(Targets) Failed', exc_info=True)
 
