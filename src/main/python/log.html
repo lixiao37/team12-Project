@@ -3,7 +3,30 @@
 		<%include file="navbar_fixed.html"/>
 		<script>
 			function timedRefresh(timeoutPeriod) {
-				setTimeout("location.reload(true);",timeoutPeriod);
+				setTimeout(
+					function() {
+						buttonPressed = $('#onButton')[0]
+						console.log(buttonPressed.disabled);
+						if (buttonPressed.disabled) {
+							# if onButton is pressed, refresh the page
+							location.reload(true);
+						}
+						timedRefresh(5000);
+				},
+				timeoutPeriod);
+			}
+
+			function setRefresh(context){
+				buttonPressed = context.id;
+				if (buttonPressed == 'offButton') {
+					# if offButton is pressed, then disable auto-refresh
+					$('#onButton')[0].disabled = false;
+					context.disabled = true;
+				} else {
+					# if onButton is pressed, then enable auto-refresh
+					$('#offButton')[0].disabled = false;
+					context.disabled = true;
+				};
 			}
 		</script>
 	</head>
@@ -12,7 +35,10 @@
 		<div class="col-md-12" id="logmessage">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Log</h3>
+					<h3 class="panel-title">Log - Autorefresh 
+					<button id="onButton" type="button" class="btn btn-lg btn-success" disabled="disabled" onClick="setRefresh(this)">ON</button>
+					<button id="offButton" type="button" class="btn btn-lg btn-danger"  onClick="setRefresh(this)">OFF</button>
+					</h3>
 				</div>
 				<ul class="list-group">
 				% for each in logContent:
