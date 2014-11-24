@@ -21,6 +21,9 @@ dbName = "twitterparser"
 username = "admin"
 password = "admin"
 
+#check for parser running
+global parserRun
+parserRun = 0
 
 class Root:
     auth = AuthController()
@@ -407,7 +410,13 @@ class Root:
     @cherrypy.expose
     def parse(self):
         
+        global parserRun
+        if parserRun == 1:
+            return "Fail: Parser is already running"
+
         def threaded_parser(p, t_p, sources, targets, twitter_sources, twitter_targets, logger):
+            global parserRun
+            parserRun = 1
             try:
                 p.run(sources, targets)
             except Exception, e:
@@ -420,6 +429,7 @@ class Root:
                 t_p.run(targets)
             except Exception, e:
                 logger.error('Twiiter Parser(Targets) Failed', exc_info=True)
+            parserRun = 0
 
         user = User.objects(name=cherrypy.session["user"]).first()
         sources = user.news_sources
@@ -436,7 +446,7 @@ class Root:
                         (p, t_p, sources, targets, twitter_sources, twitter_targets, p.logger))
 
         p.logger.info('Executing Parser Commands')
-        return "Success"
+        return "Success: Parser Running In The Background"
 
 
 if __name__ == '__main__':
