@@ -88,6 +88,12 @@ class Root:
 
     @require() # requires user to be logged in to view page
     @cherrypy.expose
+    def git_hub_project(self):
+        git_project_template = Template(filename='git_hub_project.html', lookup=mylookup)
+        return git_project_template.render(username=cherrypy.session["user"])
+
+    @require() # requires user to be logged in to view page
+    @cherrypy.expose
     def log(self):
         log_template = Template(filename='log.html', lookup=mylookup)
         try:
