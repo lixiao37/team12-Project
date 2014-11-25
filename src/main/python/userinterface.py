@@ -415,18 +415,22 @@ class Root:
             return "Fail: Parser is already running"
 
         def threaded_parser(p, t_p, sources, targets, twitter_sources, twitter_targets, logger):
+            logger.info("Started Parser Background")
             global parserRun
             parserRun = 1
+            # News Website Parser
             try:
                 p.run(sources, targets)
             except Exception, e:
                 logger.error('News Parser Failed', exc_info=True)
+            #TwitterParser For Sources
             try:
-                t_p.run(sources)
+                t_p.run(twitter_sources)
             except Exception, e:
                 logger.error('Twiiter Parser(Sources) Failed', exc_info=True)
+            #TwitterParser For Targets
             try:
-                t_p.run(targets)
+                t_p.run(twitter_targets)
             except Exception, e:
                 logger.error('Twiiter Parser(Targets) Failed', exc_info=True)
             parserRun = 0

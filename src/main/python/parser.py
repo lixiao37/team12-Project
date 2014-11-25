@@ -13,7 +13,9 @@ import tempfile
 import sys
 
 class Parser(object):
-    '''Generic Parser Class'''
+    '''
+    News Website Parser that parses the news articles.
+    '''
 
     conn = None
     session = None
@@ -24,12 +26,14 @@ class Parser(object):
     log = 'beta.log'
 
     #{0}:keyword, {1}:website, {2}:sort by month or year or day
-    search_meta = "http://www.google.ca/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
+    search_meta = \
+          "http://www.google.ca/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
     username = "admin"
     password = "admin"
 
     #different names for author's meta data
-    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate", 'datePublished']
+    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate", 
+                                                                'datePublished']
     title_names = ['Headline', 'title', 'og:title']
 
     def __init__(self, log=None, data=None):
@@ -47,7 +51,8 @@ class Parser(object):
         handler = logging.FileHandler(self.log)
         handler.setLevel(logging.INFO)
         # create a logging format
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter(\
+                         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         # add the handlers to the logger
         self.logger.addHandler(handler)
@@ -97,7 +102,6 @@ class Parser(object):
         Return a dictionary of citations extracted from the given html,
         and using the parameters, target_url and target_name
         '''
-
         cited = {}
         numCited = 0
         #Compile a list of urls that contains the given target url
@@ -191,49 +195,45 @@ class Parser(object):
 
         #Special case to find the title of the target website
         if not meta.get('title') and soup.find(itemprop="headline"):
-            meta['title'] = soup.find(itemprop="headline").text.encode("utf-8").strip()
+            meta['title'] = soup.find(itemprop="headline")\
+                                                   .text.encode("utf-8").strip()
+
+        #special case for haaretz
+        if not meta.get('title') and soup.find('hgroup'):
+            hgroup = soup.find("hgroup")
+            if hgroup.find('h1'):
+                meta["title"] = hgroup.find('h1').text
+
+        #special case for ynetnews
+        if not meta.get('title') and soup.find('h1') and soup.find('h1', class_='text20b'):
+            meta['title'] = soup.find('h1', class_='text20b').text
+
+        #last resort, if cant find the title
+        if not meta.get('title') and soup.find('title'):
+            meta['title'] = soup.find('title').text
+
+        #finall leave it blank
+        if not meta.get('title'):
+            meta['title'] = ''
 
         #Special case to find the author of the target website
         if not meta.get('author'):
             #This case is for human author
             if soup.find(rel="author"):
-                meta['author'] = soup.find(rel="author").text.encode("utf-8").strip()
-            #This case if for non-human author (i.e. organization, another web site
-            #source)
+                meta['author'] = soup.find(rel="author")\
+                                                   .text.encode("utf-8").strip()
+            # This case if for non-human author (i.e. organization, another web 
+            # site source)
             elif soup.find(itemprop="author"):
                 hold = soup.find(itemprop="author").findChildren()
                 if hold:
-                    meta['author'] = hold[len(hold)-1].text.encode("utf-8").strip()
-
-        #puts empty string as title and author if not found
-        if not meta.get('title'):
-            meta["title"] = ""
+                    meta['author'] = hold[len(hold)-1]\
+                                                   .text.encode("utf-8").strip()
 
         if not meta.get('author'):
             meta["author"] = ""
 
         return meta
-
-    def get_screenshot_binary(self, url):
-        '''
-        Takes a screenshot of the article and return a binary representation
-        of it.
-        '''
-
-        # visit the url
-        self.session.visit(url)
-
-        # define a temporary jpg file to be read as binary
-        temp = tempfile.NamedTemporaryFile(mode='rb', suffix = '.jpg')
-
-        # save the temporary file of the web page
-        self.session.render(temp.name)
-
-        binary = temp.read()
-
-        # temporary file is removed
-        temp.close()
-        return binary
 
     def run(self, sources, targets):
         '''Run the website parser using the parameters'''
@@ -245,7 +245,10 @@ class Parser(object):
                 for a in articles:
                     article_meta = self.get_meta_data(a)
                     article = self.data.add_article(article_meta, website)
-                    citations = self.get_citation(article_meta.get('html'), t, t_name)
+                    if not article:
+                        continue
+                    citations = self.get_citation(
+                                            article_meta.get('html'), t, t_name)
                     self.add_citations(citations, t, t_name, article)
         self.logger.info("Done Parsing Websites")
         return True
@@ -262,9 +265,12 @@ if __name__ == '__main__':
 
     sources = {'Globe and Mail' : 'www.theglobeandmail.com'}
     targets = {'Haaretz' : 'www.haaretz.com'}  
+    
+    url = "http://www.ynetnews.com/articles/0,7340,L-4595629,00.html"
 
     parse = Parser(data=data)
-    parse.run(sources, targets)
+    print parse.get_meta_data(url)["title"]
+    # parse.run(sources, targets)
 
 
 

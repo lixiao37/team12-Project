@@ -9,7 +9,10 @@ import logging
 
 
 class Database(object):
-
+    '''
+    Database api, this will help connect to the Database.
+    All data needs to be added in the database using this API.
+    '''
     conn = None
     verbose = True
     host = "ds039020.mongolab.com:39020"
@@ -88,7 +91,11 @@ class Database(object):
                 url=article_meta.get("url"),
                 website=website
                     )
-        status = art.save()
+        try:
+            status = art.save()
+        except NotUniqueError:
+            self.logger.warn('Article is not unique, url: {0}'.format(art.url))
+            return None
 
         if status:
             return art
@@ -127,7 +134,6 @@ class Database(object):
         3. The target name does not exist in the text but a different name that
         links to the target url is in the text
         '''
-
         #Create a citation object to check if it exists in the database
         cite = Citation.objects(
                     text=citation_meta.get('text'),
@@ -159,6 +165,7 @@ class Database(object):
             return None
 
     def add_tweet(self, tweet_meta):
+        '''Add the tweet into the database'''
         text = tweet_meta.get('text')
         author = tweet_meta.get('author')
         created_at = tweet_meta.get('created_at')
@@ -182,6 +189,7 @@ class Database(object):
         return tw
 
     def add_twitteraccount(self, twitteraccount_meta):
+        '''Add twitter user acccount in the database'''
         name = twitteraccount_meta.get('name')
         screen_name = twitteraccount_meta.get('screen_name')
 
