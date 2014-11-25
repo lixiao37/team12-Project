@@ -24,7 +24,7 @@ class Parser(object):
     data = None
     google_url = "http://www.google.ca"
     log = 'beta.log'
-
+    logger = None
     #{0}:keyword, {1}:website, {2}:sort by month or year or day
     search_meta = \
           "http://www.google.ca/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
@@ -36,26 +36,15 @@ class Parser(object):
                                                                 'datePublished']
     title_names = ['Headline', 'title', 'og:title']
 
-    def __init__(self, log=None, data=None):
+    def __init__(self, log=None, data=None, logger=logger):
         '''Initialize a session to connect to the database'''
         if log:
             self.log = log
         if not data:
             raise Exception("No Database Connection Found")
-        self.data = data
-
-        #create a logger
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
-        # create a file handler
-        handler = logging.FileHandler(self.log)
-        handler.setLevel(logging.INFO)
-        # create a logging format
-        formatter = logging.Formatter(\
-                         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        # add the handlers to the logger
-        self.logger.addHandler(handler)
+        if logger:
+            self.logger = logger
+        self.data = data        
 
         self.session = dryscrape.Session()
 
@@ -237,7 +226,8 @@ class Parser(object):
 
     def run(self, sources, targets):
         '''Run the website parser using the parameters'''
-        self.logger.info('Started Website Parsing')
+        if self.logger:
+            self.logger.info('Started Website Parsing')
         for s_name, s in sources.viewitems():
             website = self.data.add_website({"name": s_name, "homepage_url": s})
             for t_name, t in targets.viewitems():
@@ -250,27 +240,29 @@ class Parser(object):
                     citations = self.get_citation(
                                             article_meta.get('html'), t, t_name)
                     self.add_citations(citations, t, t_name, article)
-        self.logger.info("Done Parsing Websites")
+        if self.logger:
+            self.logger.info("Done Parsing Websites")
         return True
 
 
 if __name__ == '__main__':
-    host = "ds053380.mongolab.com:53380"
-    dbName = "twitterparser"
-    data = Database(host=host, dbName=dbName)
-    data.connect()
-    # sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
-                    # 'CNN': 'www.cnn.com' }
-    # targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
+    pass
+    # host = "ds053380.mongolab.com:53380"
+    # dbName = "twitterparser"
+    # data = Database(host=host, dbName=dbName)
+    # data.connect()
+    # # sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
+    #                 # 'CNN': 'www.cnn.com' }
+    # # targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
 
-    sources = {'Globe and Mail' : 'www.theglobeandmail.com'}
-    targets = {'Haaretz' : 'www.haaretz.com'}  
+    # sources = {'Globe and Mail' : 'www.theglobeandmail.com'}
+    # targets = {'Haaretz' : 'www.haaretz.com'}  
     
-    url = "http://www.ynetnews.com/articles/0,7340,L-4595629,00.html"
+    # url = "http://www.ynetnews.com/articles/0,7340,L-4595629,00.html"
 
-    parse = Parser(data=data)
-    print parse.get_meta_data(url)["title"]
-    # parse.run(sources, targets)
+    # parse = Parser(data=data)
+    # print parse.get_meta_data(url)["title"]
+    # # parse.run(sources, targets)
 
 
 

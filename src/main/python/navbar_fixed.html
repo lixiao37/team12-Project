@@ -66,6 +66,12 @@
 
               </ul>
               <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" class="btn btn-warning btn-sm disabled" id="running" style="display:none">Parser Running</a>
+                </li>
+                <li>
+                    <a href="#" class="btn btn-success btn-sm disabled" id="done" style="display:none">Parser Done</a>
+                </li>
                 <!-- display different buttons depending on if the user is logged in or not -->
                 % if username:
                     <li><a href="/auth/logout">Logout</a></li>
@@ -84,5 +90,25 @@
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
         <script src="static/javascript/bootstrap.min.js"></script>
+        <script>
+                $(function() {
+                    $.ajax({url: "/isParserRunning"}).done(
+                    function(data) {
+                        response = data;
+                        if (response == 'No'){
+                            document.getElementById('running').style = "display:none"
+                            document.getElementById('done').style = "display:"
+                        }
+                        else if (response == 'Yes') {
+                            document.getElementById('done').style = "display:none"
+                            document.getElementById('running').style = "display:"
+                        }
+                        else {
+                            document.getElementById('done').style = "display:none"
+                            document.getElementById('running').style = "display:none"
+                        }
+                    });
+                });                                    
+        </script>
     </body>
 </html>

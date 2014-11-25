@@ -15,8 +15,8 @@ class Database(object):
     '''
     conn = None
     verbose = True
-    host = "ds039020.mongolab.com:39020"
-    dbName = "parser"
+    host = "ds053380.mongolab.com:53380"
+    dbName = "twitterparser"
     username = "admin"
     password = "admin"
     log = "beta.log"
@@ -75,11 +75,11 @@ class Database(object):
                     ).first()
 
         if art:
-            if self.verbose:
-                self.logger.info( \
-                    'Article exists, id: {0}, title: {1}, url: {2}' \
-                        .format(art.id, art.title.encode('utf-8'), 
-                                                       art.url.encode('utf-8')))
+            # if self.verbose:
+                # self.logger.info( \
+                #     'Article exists, id: {0}, title: {1}, url: {2}' \
+                #         .format(art.id, art.title.encode('utf-8'), 
+                #                                        art.url.encode('utf-8')))
             return art
 
         #This article object is used to add to the database
@@ -143,8 +143,8 @@ class Database(object):
                 ).first()
 
         if cite:
-            self.logger.info('Citation exists, id: {0}, article: {1}' \
-                                             .format(cite.id, cite.article.url))
+            # self.logger.info('Citation exists, id: {0}, article: {1}' \
+            #                                  .format(cite.id, cite.article.url))
             return cite
 
         #This citation object is used to add to the database
@@ -178,13 +178,15 @@ class Database(object):
         tw = Tweet.objects(text=text, author=author, created_at=created_at) \
                                                                         .first()
         if tw:
-            self.logger.info('Tweet Already Exists, id: {0}'.format(tw.id))
+            # self.logger.info('Tweet Already Exists, id: {0}'.format(tw.id))
             return tw
         
         tw = Tweet(text=text, entities=entities, author=author,
                    retweeted=retweeted, retweet_author=retweet_author,
                    retweet=retweet, created_at=created_at)
         tw.save()
+        author.tweets.append(tw)
+        author.save()
 
         return tw
 
@@ -193,10 +195,10 @@ class Database(object):
         name = twitteraccount_meta.get('name')
         screen_name = twitteraccount_meta.get('screen_name')
 
-        ta = TwitterAccount.objects(name=name, screen_name=screen_name).first()
+        ta = TwitterAccount.objects(screen_name=screen_name).first()
         if ta:
-            self.logger.info('TwitterAccount Already Exists, id: {0}' \
-                                                                 .format(ta.id))
+            # self.logger.info('TwitterAccount Already Exists, id: {0}' \
+                                                                 # .format(ta.id))
             return ta
 
         ta = TwitterAccount(name=name, screen_name=screen_name)

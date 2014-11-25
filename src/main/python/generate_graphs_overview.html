@@ -1,6 +1,8 @@
 <html>
     <%include file="navbar_fixed.html"/>
-    <%include file="navbar_side.html"/>
+    % if available == True:
+      <%include file="navbar_side.html"/>  
+    % endif    
     <body>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">Overview</h1>
@@ -8,6 +10,9 @@
           <p>Here you will find the graphs generated from
             the sources and targets you have defined. Start by clicking
             on a graph you would like to see on the left panel.</p>
+          % if available != True:
+            <p><b>Please wait while the parser builds the relational graphs</b></p>
+          % endif
         </div>
     </body>
 </html>

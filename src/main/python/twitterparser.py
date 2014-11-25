@@ -28,9 +28,12 @@ class TwitterParser:
     retweet_regex = re.compile("(RT @.*?: )(.*)")
     handlers = []
     log = 'beta.log'
+    logger = None
 
     def __init__ (self, consumer_key=None, consumer_secret=None, log=None, 
-                                                                     data=None):
+                                                                     data=None, logger=None):
+        if logger:
+            self.logger = logger
         if consumer_key and consumer_secret:
             self.consumer_key = consumer_key
             self.consumer_secret = consumer_secret
@@ -42,19 +45,6 @@ class TwitterParser:
         self.data = data
         self.auth = tweepy.OAuthHandler(self.consumer_key, self.consumer_secret)
 
-        #create a logger
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
-        # create a file handler
-        handler = logging.FileHandler(self.log)
-        handler.setLevel(logging.INFO)
-        # create a logging format
-        formatter = logging.Formatter('%(asctime)s - %(name)s - \
-                                                   %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        # add the handlers to the logger
-        self.logger.addHandler(handler)
-
     def authorize(self, access_token=None, access_token_secret=None):
         '''Authorize the Parser with the twitter API'''
         if access_token and access_token_secret:
@@ -62,7 +52,8 @@ class TwitterParser:
             self.access_token_secret = access_token_secret
         self.auth.set_access_token(self.access_token, self.access_token_secret)
         self.api = tweepy.API(self.auth)
-        self.logger.info('Authorized with Twitter')
+        if self.logger:
+            self.logger.info('Authorized with Twitter')
 
     def search_tweets(self, q, rpp=100):
         '''Return a list of query results from the parameter, q'''
@@ -96,7 +87,8 @@ class TwitterParser:
         try:
             return self.api.get_user(user)
         except tweepy.TweepError:
-            self.logger.warn('User not found, user: {0}'.format(user))
+            if self.logger:
+                self.logger.warn('User not found, user: {0}'.format(user))
             return None
 
     def get_user_mentions(self, tweets, target_mentions):
@@ -151,7 +143,9 @@ class TwitterParser:
                     tweet.retweeted_status
                     retweet_verified = True
                 except AttributeError:
-                    self.logger.warn('Re-tweet is not an actual retweet, {0}'\
+                    if self.logger:
+                        self.logger.warn( \
+                            'Re-tweet is not an actual retweet, {0}'\
                                             .format(tweet.text.encode('utf-8')))
                     retweet_verified = False
             if self.retweet_regex.match(tweet.text) and retweet_verified:
@@ -159,7 +153,8 @@ class TwitterParser:
                 try:
                     user = tweet.retweeted_status.author
                 except AttributeError:
-                    self.logger.warn('Re-tweet is not an actual retweet, ')
+                    if self.logger:
+                        self.logger.warn('Re-tweet is not an actual retweet, ')
                 name = user.name
                 screen_name = user.screen_name
                 twitteraccount_meta = {"name": name, "screen_name": screen_name}
@@ -174,9 +169,6 @@ class TwitterParser:
                 tweet_meta = {"text": text, "entities": entities, 
                                  "author": author, "created_at": created_at}
                 tw = self.data.add_tweet(tweet_meta)
-
-                rt_ta.tweets.append(tw)
-                rt_ta.save()
 
                 retweeted = True
 
@@ -195,9 +187,6 @@ class TwitterParser:
                           "retweet": retweet, "retweet_author": retweet_author}
             tw = self.data.add_tweet(tweet_meta)
 
-            ta.tweets.append(tw)
-            ta.save()
-
             retweeted = False
 
     def count_ref(self, source, target):
@@ -206,6 +195,12 @@ class TwitterParser:
         has referenced the target USER
         '''
         s_user = TwitterAccount.objects(screen_name=source).first()
+        if not s_user:
+            if self.logger:
+                self.logger.info( \
+                    'TwitterAccount does not exists, source: {0}'\
+                                                                .format(source))
+            return 0
         s_tweets = s_user.tweets
         total = 0
         for each in s_tweets:
@@ -222,25 +217,28 @@ class TwitterParser:
 
     def run(self, handlers):
         '''Run the twitter_parser'''
-        self.logger.info('Started Twitter Crawler')
+        if self.logger:
+            self.logger.info('Started Twitter Crawler')
         self.handlers = handlers
         for each in self.handlers:
             self.add_user_tweets(each)
-        self.logger.info('Done Twitter Crawler')
+        if self.logger:
+            self.logger.info('Done Twitter Crawler')
         return True
 
 
 if __name__ == '__main__':
-    host = "ds053380.mongolab.com:53380"
-    dbName = "twitterparser"
-    people = ["DaliaHatuqa", "DanielSeidemann", "galberger"]
+    pass
+    # host = "ds053380.mongolab.com:53380"
+    # dbName = "twitterparser"
+    # people = ["DaliaHatuqa", "DanielSeidemann", "galberger"]
 
-    data = Database(host=host, dbName=dbName)
-    data.connect(username="admin", password="admin")
+    # data = Database(host=host, dbName=dbName)
+    # data.connect(username="admin", password="admin")
 
-    twitter = TwitterParser(data=data)
-    twitter.authorize()
-    twitter.run(people)
+    # twitter = TwitterParser(data=data)
+    # twitter.authorize()
+    # twitter.run(people)
 
 
 

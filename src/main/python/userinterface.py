@@ -2,19 +2,22 @@ import os, os.path
 import cherrypy
 import thread
 import hashlib
+import time
+import logging
+from mongoengine import *
 from database import Database
 from mako.template import Template
 from mako.lookup import TemplateLookup
-from mongoengine import *
 from parser import Parser
-from twitterparser import *
+from twitterparser import TwitterParser
 from user import User
-from twitter import *
+from twitter import TwitterAccount
+from twitter import Tweet
 from article import Article
 from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
-
+    
 mylookup = TemplateLookup(directories=['.'])
 host = "ds053380.mongolab.com:53380"
 dbName = "twitterparser"
@@ -22,8 +25,12 @@ username = "admin"
 password = "admin"
 
 #check for parser running
-global parserRun
+global parserRun, graph_thread_flag, graph_thread_running, user, logger
+graph_thread_running = 0
+graph_thread_flag = 1
 parserRun = 0
+username = None
+
 
 class Root:
     auth = AuthController()
@@ -33,6 +40,42 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def index(self): # index is our home page or root directory (ie. http://127.0.0.1:8080/)
+        global graph_thread_running, username
+        def graph_thread():
+            global graph_thread_running, username
+            global parserRun, graph_thread_flag
+            global relation_dict, twitter_relation_dict
+            logger.info('Started Thread on Relation Graphs')
+            graph_thread_running = 1            
+            runAgain = 1
+            while graph_thread_flag:
+                if parserRun == 1:
+                    #wait for one minute for the parser to finish
+                    logger.info('Pause Relation Dict')
+                    runAgain = 1
+                    while parserRun:
+                        time.sleep(5)
+                elif runAgain == 1:
+                    logger.info('Running Relation Dict on {0}'.format(username))
+                    #data has changed, generate the relation again
+                    user = User.objects(name=username).first()
+                    news_sources = user.news_sources
+                    news_targets = user.news_targets
+                    twitter_sources = user.twitter_sources
+                    twitter_targets = user.twitter_targets
+                    try:
+                        relation_dict = self.generate_relation_dict(news_sources, news_targets)
+                        twitter_relation_dict = self.generate_twitter_relation_dict(twitter_sources, twitter_targets)
+                    except:
+                        logger.info('Not Enough Data to Process For Graphs')
+                    logger.info('Finish Updated Relation Dict')
+                    runAgain = 0
+                else:
+                    time.sleep(5)
+        
+        if not graph_thread_running:
+            thread.start_new_thread(graph_thread, ())
+        username = cherrypy.session['user']
         index_page_template = Template(filename='index.html', lookup=mylookup)
         return index_page_template.render(username=cherrypy.session["user"], home="active")
 
@@ -94,6 +137,8 @@ class Root:
             logContent = open('beta.log').readlines()
         except IOError:
             logContent = []
+        if len(logContent) > 50:
+            logContent = logContent[ len(logContent) - 50: ]
         logContent = reversed(logContent)
         return log_template.render(logContent=logContent, username=cherrypy.session["user"], log="active")
 
@@ -214,15 +259,25 @@ class Root:
     @cherrypy.expose
     def display_graphs_overview(self):
         # generate a relation list, described in more depth at the fnc
-        self.relation_dict = self.generate_relation_dict()
-        self.twitter_relation_dict = self.generate_twitter_relation_dict()
+        # self.relation_dict = self.generate_relation_dict()
+        # self.twitter_relation_dict = self.generate_twitter_relation_dict()
 
+        global relation_dict, twitter_relation_dict
         generate_template = Template(filename='generate_graphs_overview.html', lookup=mylookup)
-        return generate_template.render(username=cherrypy.session["user"])
+        try:
+            self.relation_dict = relation_dict
+            self.twitter_relation_dict = twitter_relation_dict
+            available = True
+        except NameError:
+            available = False
+        return generate_template.render(username=cherrypy.session["user"], available=available)
 
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_news_bar(self):
+        # self.relation_dict = self.generate_relation_dict()
+        global relation_dict
+        self.relation_dict = relation_dict
         graphs = self.generate_detailed_graph(self.relation_dict, "news")
 
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
@@ -232,6 +287,9 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_news_pie(self):
+        # self.relation_dict = self.generate_relation_dict()
+        global relation_dict
+        self.relation_dict = relation_dict
         graphs = self.generate_completed_pie_graphs(self.relation_dict, "news")
 
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
@@ -241,6 +299,9 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_twitter_bar(self):
+        # self.twitter_relation_dict = self.generate_twitter_relation_dict()
+        global twitter_relation_dict
+        self.twitter_relation_dict = twitter_relation_dict
         graphs = self.generate_detailed_graph(self.twitter_relation_dict, "twitter")
 
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
@@ -250,6 +311,9 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_twitter_pie(self):
+        # self.twitter_relation_dict = self.generate_twitter_relation_dict()
+        global twitter_relation_dict
+        self.twitter_relation_dict = twitter_relation_dict
         graphs = self.generate_completed_pie_graphs(self.twitter_relation_dict, "twitter")
 
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
@@ -356,11 +420,11 @@ class Root:
                 targets=news_targets_str, target_count=target_count)
         return total_basic_graphs
 
-    def generate_twitter_relation_dict(self):
+    def generate_twitter_relation_dict(self, twitter_sources, twitter_targets):
         relation_dict = {}
-        user = User.objects(name=cherrypy.session["user"]).only('twitter_sources', 'twitter_targets').first()
-        twitter_sources = user.twitter_sources
-        twitter_targets = user.twitter_targets
+        # user = User.objects(name=cherrypy.session["user"]).only('twitter_sources', 'twitter_targets').first()
+        # twitter_sources = user.twitter_sources
+        # twitter_targets = user.twitter_targets
         
         for twitter_sources_screenname in twitter_sources:
             target_count = [0] * len(twitter_targets)
@@ -378,12 +442,12 @@ class Root:
         s2 : [tc1, tc2, ... tcn], ...
         sn : [tc1, tc2, ... tcn]}
         where sn is the source, tcn is the citation count of each target'''
-    def generate_relation_dict(self):
+    def generate_relation_dict(self, news_sources, news_targets):
         relation_dict = {}
         # get the current user's sources and targets
-        user = User.objects(name=cherrypy.session["user"]).only('news_sources', 'news_targets').first()
-        news_sources = user.news_sources
-        news_targets = user.news_targets
+        # user = User.objects(name=cherrypy.session["user"]).only('news_sources', 'news_targets').first()
+        # news_sources = user.news_sources
+        # news_targets = user.news_targets
 
         for source_name, source_url in news_sources.iteritems():
             # create an empty list with a specific size which describe the number 
@@ -418,11 +482,7 @@ class Root:
             logger.info("Started Parser Background")
             global parserRun
             parserRun = 1
-            # News Website Parser
-            try:
-                p.run(sources, targets)
-            except Exception, e:
-                logger.error('News Parser Failed', exc_info=True)
+
             #TwitterParser For Sources
             try:
                 t_p.run(twitter_sources)
@@ -433,6 +493,11 @@ class Root:
                 t_p.run(twitter_targets)
             except Exception, e:
                 logger.error('Twiiter Parser(Targets) Failed', exc_info=True)
+            #News Website Parser
+            try:
+                p.run(sources, targets)
+            except Exception, e:
+                logger.error('News Parser Failed', exc_info=True)                      
             parserRun = 0
 
         user = User.objects(name=cherrypy.session["user"]).first()
@@ -441,19 +506,41 @@ class Root:
         twitter_sources = user.twitter_sources
         twitter_targets = user.twitter_targets
 
-        p = Parser(data=data) 
+        p = Parser(data=data, logger=logger) 
         
-        t_p = TwitterParser(data=data)
+        t_p = TwitterParser(data=data, logger=logger)
         t_p.authorize()      
         
         thread.start_new_thread( threaded_parser , 
                         (p, t_p, sources, targets, twitter_sources, twitter_targets, p.logger))
 
-        p.logger.info('Executing Parser Commands')
+        logger.info('Executing Parser Commands')
         return "Success: Parser Running In The Background"
 
+    @require()
+    @cherrypy.expose
+    def isParserRunning(self):
+        global parserRun
+        if parserRun:
+            return "Yes"
+        else:
+            return "No"
 
 if __name__ == '__main__':
+    global logger
+    #create a logger
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    # create a file handler
+    handler = logging.FileHandler('beta.log')
+    handler.setLevel(logging.INFO)
+    # create a logging format
+    formatter = logging.Formatter(\
+                     '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    # add the handlers to the logger
+    logger.addHandler(handler)
+    
     data = Database(host=host, dbName=dbName)
     data.connect(username=username, password=username)
 
