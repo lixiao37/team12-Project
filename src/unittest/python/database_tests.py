@@ -185,11 +185,11 @@ class DatabaseTest (unittest.TestCase):
 		Test the add twitter account method, that adds the twitter
 		account object into the database
 		'''
-		twitter_account = TwitterAccount(
-		        name = 'Mehdi Ali',
-		        screen_name = 'alimehdi1992',
-		        tweets = []
-		        )
+		twitter_account = {
+		        'name': 'Mehdi Ali',
+		        'screen_name': 'alimehdi1992',
+		        'tweets': []
+		        }
 		
 		ta = self.data.add_twitteraccount(twitter_account)
 		
@@ -202,17 +202,17 @@ class DatabaseTest (unittest.TestCase):
 		Test the add twitter account method multiple times, that adds 
 		the twitter account object into the database
 		'''
-		twitter_account_one = TwitterAccount(
-	                name = 'Mehdi Ali',
-	                screen_name = 'alimehdi1992',
-	                tweets = []
-	                )
+		twitter_account_one = {
+	                'name': 'Mehdi Ali',
+	                'screen_name': 'alimehdi1992',
+	                'tweets': []
+	                }
 		
-		twitter_account_two = TwitterAccount(
-		        name = 'Dalia Hatuqa',
-		        screen_name = 'DaliaHatuqa',
-		        tweets = []
-		        )
+		twitter_account_two = {
+		        'name': 'Dalia Hatuqa',
+		        'screen_name': 'DaliaHatuqa',
+		        'tweets': []
+		        }
 		
 		ta_one = self.data.add_twitteraccount(twitter_account_one)
 		ta_two = self.data.add_twitteraccount(twitter_account_two)
@@ -228,21 +228,21 @@ class DatabaseTest (unittest.TestCase):
 		Test the add_tweet method, that adds the tweet object into the 
 		database
 		'''	
-		twitter_account = TwitterAccount(
-		        name = 'Mehdi Ali',
-		        screen_name = 'alimehdi1992',
-		        tweets = []
-		        )
+		twitter_account = {
+	                'name': 'Mehdi Ali',
+	                'screen_name': 'alimehdi1992',
+	                'tweets': []
+	                }
 		
 		ta = self.data.add_twitteraccount(twitter_account)
 		
-		tweet = Tweet(
-		        text = "Can't wait #BreakingBadFinale ...!",
-		        entities = {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
-		        author = ta,
-		        time_parsed = datetime.datetime.now,
-		        created_at = datetime.datetime(2013, 9, 29, 23, 49, 37)
-		        )
+		tweet = {
+		        'text': "Can't wait #BreakingBadFinale ...!",
+		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
+		        'author': ta,
+		        'time_parsed': datetime.datetime.now,
+		        'created_at': datetime.datetime(2013, 9, 29, 23, 49, 37)
+		        }
 		
 		t = self.data.add_tweet(tweet)
 		
@@ -258,29 +258,29 @@ class DatabaseTest (unittest.TestCase):
 		Test the add_tweet method multiple times, that adds the tweet 
 		object into the database
 		'''	
-		twitter_account = TwitterAccount(
-		        name = 'Mehdi Ali',
-		        screen_name = 'alimehdi1992',
-		        tweets = []
-		        )
+		twitter_account = {
+	                'name': 'Mehdi Ali',
+	                'screen_name': 'alimehdi1992',
+	                'tweets': []
+	                }
 		
 		ta = self.data.add_twitteraccount(twitter_account)
 		
-		tweet_one = Tweet(
-	                text = "Can't wait #BreakingBadFinale ...!",
-	                entities = {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
-	                author = ta,
-	                time_parsed = datetime.datetime.now,
-	                created_at = datetime.datetime(2013, 9, 29, 23, 49, 37)
-	                )
+		tweet_one = {
+		        'text': "Can't wait #BreakingBadFinale ...!",
+		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
+		        'author': ta,
+		        'time_parsed': datetime.datetime.now,
+		        'created_at': datetime.datetime(2013, 9, 29, 23, 49, 37)
+		        }
 		
-		tweet_two = Tweet(
-	                text = 'I love Dropbox because it is very fast, I use it to transfer files between my virtual box and my operating system http://t.co/LZXUBxWnDx',
-	                entities = {u'symbols': [], u'user_mentions': [], u'hashtags': [], u'urls': [{u'url': u'http://t.co/LZXUBxWnDx', u'indices': [114, 136], u'expanded_url': u'http://db.tt/O1n4DIdK', u'display_url': u'db.tt/O1n4DIdK'}]},
-	                author = ta,
-	                time_parsed = datetime.datetime.now,
-	                created_at = datetime.datetime(2013, 3, 1, 22, 39, 56)
-	                )
+		tweet_two = {
+	                'text': 'I love Dropbox because it is very fast, I use it to transfer files between my virtual box and my operating system http://t.co/LZXUBxWnDx',
+	                'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [], u'urls': [{u'url': u'http://t.co/LZXUBxWnDx', u'indices': [114, 136], u'expanded_url': u'http://db.tt/O1n4DIdK', u'display_url': u'db.tt/O1n4DIdK'}]},
+	                'author': ta,
+	                'time_parsed': datetime.datetime.now,
+	                'created_at': datetime.datetime(2013, 3, 1, 22, 39, 56)
+	                }
 		
 		t_one = self.data.add_tweet(tweet_one)
 		t_two = self.data.add_tweet(tweet_two)
