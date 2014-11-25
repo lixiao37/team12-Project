@@ -159,13 +159,13 @@ class Database(object):
             return None
 
     def add_tweet(self, tweet_meta):
-        text = tweet_meta.get('text')
-        author = tweet_meta.get('author')
-        created_at = tweet_meta.get('created_at')
-        entities = tweet_meta.get('entities')
-        retweet = tweet_meta.get('retweet')
-        retweet_author = tweet_meta.get('retweet_author')
-        retweeted = tweet_meta.get('retweeted')
+        text = tweet_meta.text
+        author = tweet_meta.author
+        created_at = tweet_meta.created_at
+        entities = tweet_meta.entities
+        retweet = tweet_meta.retweet
+        retweet_author = tweet_meta.retweet_author
+        retweeted = tweet_meta.retweeted
 
         #check if tweet already exists
         tw = Tweet.objects(text=text, author=author, created_at=created_at) \
@@ -182,8 +182,8 @@ class Database(object):
         return tw
 
     def add_twitteraccount(self, twitteraccount_meta):
-        name = twitteraccount_meta.get('name')
-        screen_name = twitteraccount_meta.get('screen_name')
+        name = twitteraccount_meta.name
+        screen_name = twitteraccount_meta.screen_name
 
         ta = TwitterAccount.objects(name=name, screen_name=screen_name).first()
         if ta:
