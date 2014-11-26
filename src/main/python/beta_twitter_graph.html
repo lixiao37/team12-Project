@@ -3,7 +3,7 @@
 		<%include file="navbar_fixed.html"/>
 	</head>
 	<body>
-
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
 		<script src="http://www.chartjs.org/assets/Chart.js"></script>
 
 		% if not data:
@@ -16,6 +16,7 @@
 				<form class="pure-form pure-form-stacked">
 				    <fieldset>
 				        <legend>Twitter Graph Generator</legend>
+				        <b>Note:</b> This will generate a pie-chart of top 10 people who got cited by the following source
 				        <form action="betaGraphs" id="">
 				        <label for="state">Sources</label>
 				        <select multiple name="source">

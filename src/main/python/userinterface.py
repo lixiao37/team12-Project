@@ -5,6 +5,8 @@ import hashlib
 import time
 import logging
 import operator
+import warcshotter
+import time
 from mongoengine import *
 from database import Database
 from mako.template import Template
@@ -257,7 +259,7 @@ class Root:
     @cherrypy.expose
     def get_articles(self):
         show_article_template = Template(filename='get_articles.html')
-        articles = Article.objects()
+        articles = Article.objects().only('title', 'url')
         return show_article_template.render(articles=articles)
 
     @require() # requires user to be logged in to view page
@@ -610,6 +612,27 @@ class Root:
                                                    data=mentions, source=source,
                                               username=cherrypy.session["user"],
                                                           beta_twitter="active")
+
+    @require()
+    @cherrypy.expose
+    def show_article(self, url=None):
+        if not url:
+            return ""
+        art = Article.objects(url=url).first()
+        html = art.html
+        return html
+
+    @require()
+    @cherrypy.expose
+    def downloadWarc(self, url=None):
+        if not url:
+            return "Invalid URL does not exists"
+        cherrypy.response.headers['Content-Type'] = "application/octet-stream"
+        cherrypy.response.headers['Content-Disposition'] = \
+                       'attachment; filename={0}.warc'.format(int(time.time()))
+        binary = warcshotter.get_warc(url)
+        return binary
+
 
 if __name__ == '__main__':
     global logger

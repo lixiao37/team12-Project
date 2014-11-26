@@ -75,11 +75,6 @@ class Database(object):
                     ).first()
 
         if art:
-            # if self.verbose:
-                # self.logger.info( \
-                #     'Article exists, id: {0}, title: {1}, url: {2}' \
-                #         .format(art.id, art.title.encode('utf-8'), 
-                #                                        art.url.encode('utf-8')))
             return art
 
         #This article object is used to add to the database
@@ -95,6 +90,10 @@ class Database(object):
             status = art.save()
         except NotUniqueError:
             self.logger.warn('Article is not unique, url: {0}'.format(art.url))
+            return None
+        except ValidationError:
+            self.logger.warn('Article Save/Validation Failed, url: {0}' \
+                                               .format(article_meta.get("url")))
             return None
 
         if status:
@@ -119,7 +118,11 @@ class Database(object):
                 name=website_meta.get("name"),
                 homepage_url=website_meta.get("homepage_url")
                 )
-        status = web.save()
+        try:
+            status = web.save()
+        except ValidationError:
+            self.logger.warn('Save/Validate Website Failed! url: {0}'\
+                                      .format(website_meta.get("homepage_url")))
 
         if status:
             return web
@@ -180,7 +183,7 @@ class Database(object):
         if tw:
             # self.logger.info('Tweet Already Exists, id: {0}'.format(tw.id))
             return tw
-        
+
         tw = Tweet(text=text, entities=entities, author=author,
                    retweeted=retweeted, retweet_author=retweet_author,
                    retweet=retweet, created_at=created_at)

@@ -51,14 +51,6 @@
                 </li>
                 <!-- dropdown menu end -->
 
-                <!-- log button -->
-                % if log:
-                    <li class="active">
-                % else:
-                    <li>
-                % endif
-                <a href="log">Log</a></li>
-
                 <!-- about button -->
                 % if about:
                     <li class="active">
@@ -72,7 +64,7 @@
                 % else:
                     <li>
                 % endif
-                <a href="betaGraphs">BetaGraphs</a></li>
+                <a href="betaGraphs">NewsGraph</a></li>
 
                 % if beta_twitter:
                     <li class="active">
@@ -80,6 +72,14 @@
                     <li>
                 % endif
                 <a href="beta_twitter_graphs">TwitterGraph</a></li>
+
+                <!-- log button -->
+                % if log:
+                    <li class="active">
+                % else:
+                    <li>
+                % endif
+                <a href="log">Log</a></li>
 
               </ul>
               <ul class="nav navbar-nav navbar-right">

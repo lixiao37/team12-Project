@@ -32,7 +32,7 @@ class Parser(object):
     password = "admin"
 
     #different names for author's meta data
-    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate", 
+    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate",
                                                                 'datePublished']
     title_names = ['Headline', 'title', 'og:title']
 
@@ -44,7 +44,7 @@ class Parser(object):
             raise Exception("No Database Connection Found")
         if logger:
             self.logger = logger
-        self.data = data        
+        self.data = data
 
         self.session = dryscrape.Session()
 
@@ -157,6 +157,11 @@ class Parser(object):
         except ConnectionError:
             return self.get_meta_data(url)
 
+        # if the page does not exists
+        if r.status_code == 404:
+            self.logger.warn('404 Error on url: {0}'.format(url))
+            return {}
+
         #get the content of the url
         content = r.content
 
@@ -211,7 +216,7 @@ class Parser(object):
             if soup.find(rel="author"):
                 meta['author'] = soup.find(rel="author")\
                                                    .text.encode("utf-8").strip()
-            # This case if for non-human author (i.e. organization, another web 
+            # This case if for non-human author (i.e. organization, another web
             # site source)
             elif soup.find(itemprop="author"):
                 hold = soup.find(itemprop="author").findChildren()
@@ -232,8 +237,13 @@ class Parser(object):
             website = self.data.add_website({"name": s_name, "homepage_url": s})
             for t_name, t in targets.viewitems():
                 articles = self.searchArticle(t_name, s)
-                for a in articles:
-                    article_meta = self.get_meta_data(a)
+                for each in articles:
+                    #check if the article is the source itself
+                    if each == s:
+                        continue
+                    article_meta = self.get_meta_data(each)
+                    if not article_meta:
+                        continue
                     article = self.data.add_article(article_meta, website)
                     if not article:
                         continue
@@ -256,8 +266,8 @@ if __name__ == '__main__':
     # # targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
 
     # sources = {'Globe and Mail' : 'www.theglobeandmail.com'}
-    # targets = {'Haaretz' : 'www.haaretz.com'}  
-    
+    # targets = {'Haaretz' : 'www.haaretz.com'}
+
     # url = "http://www.ynetnews.com/articles/0,7340,L-4595629,00.html"
 
     # parse = Parser(data=data)

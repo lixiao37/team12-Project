@@ -1,10 +1,23 @@
-<ol>
-% for a in articles:
-	<li><a href=${a.url}>
-	% if a.title != "":
-		${a.title}</li>
-	% else:
-		${a.url}</li>
+<table class="table table-condensed">
+
+	<% count = 1 %>
+	% if not articles:
+		<div align="center">Sorry, no articles found</div>
+	% elif articles:
+		<tr>
+			<th>#</th>
+			<th>Title</th>
+			<th>Download as WARC</th>
+		</tr>
+		% for each in articles[:50]:
+			<tr>
+			% if each.title:
+				<td>${count}</td>
+				<td><a href="/show_article?url=${each.url}">${each.title}</a></td>
+				<td><a href="/downloadWarc?url=${each.url}">Download</a></td>
+				<% count += 1 %>
+			% endif
+			</tr>
+		% endfor
 	% endif
-% endfor
-</ol>
+</table>

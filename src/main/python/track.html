@@ -3,24 +3,25 @@
 	<script type="text/javascript">
 		/**
 		* Start the parser, which will parse the news websites
-		* and twitter accounts	
+		* and twitter accounts
 		*/
 		function startParser(){
 
 			$.get('/parse', function(data) {
-				alert(data)
+				alert(data);
+				location.reload(true);
 			});
 		}
-		
+
 		$(document).ready(function(){
 			// ----------general function declarations-----------
 			/**
-			 * gets data from a page, then displays the data to a 
+			 * gets data from a page, then displays the data to a
 			 * area(the div id) located in the web page
 			 */
 			function display_data(area) {
 				page = '/get_list'
-				$.get(page, {list_type:area}, 
+				$.get(page, {list_type:area},
 					function(data) {
 						e = document.getElementById(area);
 						e.innerHTML = data;
@@ -38,8 +39,8 @@
 				if (textbox_name == "#news_source_name" ||
 					textbox_name == "#news_target_name") {
 				$.post(page, {value_name:$(textbox_name)[0].value,
-					list_type:textbox_name, mod_type:mod_type, 
-					value_url:$(textbox_url)[0].value}, 
+					list_type:textbox_name, mod_type:mod_type,
+					value_url:$(textbox_url)[0].value},
 					function(status_message){
 						// alerts the status
 						alert(status_message);
@@ -48,7 +49,7 @@
 				else if (textbox_name == "#twitter_source_name" ||
 						textbox_name == "#twitter_target_name") {
 				$.post(page, {value_name:$(textbox_name)[0].value,
-					list_type:textbox_name, mod_type:mod_type}, 
+					list_type:textbox_name, mod_type:mod_type},
 					function(status_message){
 						// alerts the status
 						alert(status_message);
@@ -117,7 +118,7 @@
     <body>
 	    <div class="container">
 	    	<p align="right"><input type="button" value="Click here to parse the
-	    		 internet after entering your sources and targets" 
+	    		 internet after entering your sources and targets"
     		onClick="startParser()" class="btn btn-success btn-lg btn-block"></p>
     		<div class="jumbotron">
 				<div class="row">
