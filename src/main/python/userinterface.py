@@ -4,6 +4,7 @@ import thread
 import hashlib
 import time
 import logging
+import operator
 from mongoengine import *
 from database import Database
 from mako.template import Template
@@ -548,7 +549,8 @@ class Root:
         t_p.authorize()
 
         thread.start_new_thread( threaded_parser ,
-                        (p, t_p, sources, targets, twitter_sources, twitter_targets, p.logger))
+                        (p, t_p, sources, targets, twitter_sources,
+                                                     twitter_targets, p.logger))
 
         logger.info('Executing Parser Commands')
         return "Success: Parser Running In The Background"
@@ -571,9 +573,12 @@ class Root:
                 targetlist = [targetlist]
             if not isinstance(sourcelist, list):
                 sourcelist = [sourcelist]
-            relation_dict = self.generate_relation_dict_beta(sourcelist, targetlist)
-            graphs = self.generate_detailed_graph(relation_dict, "news", targets=targetlist)
-        beta_graph_template = Template(filename='beta_graphs.html', lookup=mylookup)
+            relation_dict = self.generate_relation_dict_beta(sourcelist,
+                                                                     targetlist)
+            graphs = self.generate_detailed_graph(relation_dict, "news",
+                                                             targets=targetlist)
+        beta_graph_template = Template(filename='beta_graphs.html',
+                                                                lookup=mylookup)
         user = User.objects(name=cherrypy.session["user"]).first()
         sources = user.news_sources
         targets = user.news_targets
@@ -583,7 +588,23 @@ class Root:
                                           beta="active", targetlist=targets,
                                           sourcelist=sources, graphs=graphs)
 
-
+    @require()
+    @cherrypy.expose
+    def beta_twitter_graphs(self, source=None):
+        beta_twitter_graphs_template = \
+                   Template(filename="beta_twitter_graph.html", lookup=mylookup)
+        mentions = None
+        if source:
+            twitter_parser = TwitterParser(data=data)
+            twitter_parser.authorize()
+            mentions = twitter_parser.count_mentions(source)
+            mentions = dict(sorted(mentions.iteritems(),
+                                                     key=operator.itemgetter(1),
+                                         reverse=True)[:min(len(mentions), 10)])
+        user = User.objects(name=cherrypy.session["user"]).first()
+        sources = list(set(user.twitter_sources + user.twitter_targets))
+        return beta_twitter_graphs_template.render(sources=sources,
+                                                   data=mentions, source=source)
 
 if __name__ == '__main__':
     global logger

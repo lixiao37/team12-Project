@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<%include file="navbar_fixed.html"/>
+	</head>
+	<body>
+
+		<script src="http://www.chartjs.org/assets/Chart.js"></script>
+
+		% if not data:
+			<div align="center">
+				<form class="pure-form pure-form-stacked">
+				    <fieldset>
+				        <legend>Twitter Graph Generator</legend>
+				        <form action="betaGraphs" id="">
+				        <label for="state">Sources</label>
+				        <select multiple name="source">
+						  % for each in sources:
+						  	<option>${each}</option>
+						  % endfor
+						</select>
+				        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+				    </fieldset>
+			    </form>
+		% elif data:
+		<div class="col-md-4 col-md-offset-4">
+			<h3>${source}</h3>
+			<canvas id="myChart" width="400" height="400"></canvas>
+			<script type="text/javascript">
+				function getRandomColor() {
+				    var letters = '0123456789ABCDEF'.split('');
+				    var color = '#';
+				    for (var i = 0; i < 6; i++ ) {
+				        color += letters[Math.floor(Math.random() * 16)];
+				    }
+				    return color;
+				}
+				var ctx = document.getElementById("myChart").getContext("2d");
+				var data = [
+					% for each in data:
+				    {
+				        value: ${data[each]},
+				        color:getRandomColor(),
+				        highlight: getRandomColor(),
+				        label: "${each}"
+				    },
+				    % endfor
+				]
+				var myPieChart = new Chart(ctx).Pie(data,{});
+			</script>
+			% endif
+		</div>
+	</body>
+
+
+
+</html>

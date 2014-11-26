@@ -31,7 +31,7 @@ class TwitterParser:
     log = 'beta.log'
     logger = None
 
-    def __init__ (self, consumer_key=None, consumer_secret=None, log=None, 
+    def __init__ (self, consumer_key=None, consumer_secret=None, log=None,
                                                                      data=None, logger=None):
         if logger:
             self.logger = logger
@@ -98,10 +98,11 @@ class TwitterParser:
         match_tweets = []
         for tweet in tweets:
             mentions = tweet.entities["user_mentions"]
-            if mentions:
-                for each_mention in mentions:
-                    if each_mention["screen_name"].lower() in target_mentions:
-                        match_tweets.append(tweet)
+            if not mentions:
+                continue
+            for each_mention in mentions:
+                if each_mention["screen_name"].lower() in target_mentions:
+                    match_tweets.append(tweet)
         return match_tweets
 
     def count_mentions(self, user):
@@ -110,13 +111,16 @@ class TwitterParser:
         count_mentions = {}
         for tweet in tweets:
             mentions = tweet.entities["user_mentions"]
-            if mentions:
-                for each_mention in mentions:
-                    name = each_mention["screen_name"]
-                    if count_mentions.has_key(name):
-                        count_mentions[name] += 1
-                    else:
-                        count_mentions[name] = 1
+            if not mentions:
+                continue
+            for each_mention in mentions:
+                name = each_mention["screen_name"]
+                if name == user:
+                    continue
+                if count_mentions.has_key(name):
+                    count_mentions[name] += 1
+                else:
+                    count_mentions[name] = 1
         return count_mentions
 
 
@@ -128,9 +132,9 @@ class TwitterParser:
             return None
         name = user.name
         screen_name = user.screen_name
-        twitteraccount_meta = {"user": user, "name": name, 
+        twitteraccount_meta = {"user": user, "name": name,
                                                      "screen_name": screen_name}
-        
+
         ta = self.data.add_twitteraccount(twitteraccount_meta)
         tweets = self.get_user_tweets(screen_name)
 
@@ -166,8 +170,8 @@ class TwitterParser:
                 text = tweet.retweeted_status.text
                 entities = tweet.retweeted_status.entities
                 created_at = tweet.created_at
-                
-                tweet_meta = {"text": text, "entities": entities, 
+
+                tweet_meta = {"text": text, "entities": entities,
                                  "author": author, "created_at": created_at}
                 tw = self.data.add_tweet(tweet_meta)
 
@@ -183,8 +187,8 @@ class TwitterParser:
             else:
                 retweet_author = None
                 retweet = None
-            tweet_meta = {"text": text, "author": author, "entities": entities, 
-                          "created_at": created_at, "retweeted": retweeted, 
+            tweet_meta = {"text": text, "author": author, "entities": entities,
+                          "created_at": created_at, "retweeted": retweeted,
                           "retweet": retweet, "retweet_author": retweet_author}
             tw = self.data.add_tweet(tweet_meta)
 
