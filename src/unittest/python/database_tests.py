@@ -299,7 +299,50 @@ class DatabaseTest (unittest.TestCase):
 		self.assertEqual(t_two.created_at, datetime.datetime(2013, 3, 1, 22, 39, 56))
 		
 	def test_add_retweet(self):
-		pass
+            '''
+            Test the add_tweet method for adding retweets of a tweet
+            '''
+		twitter_account = {
+	                'name': 'Mehdi Ali',
+	                'screen_name': 'alimehdi1992',
+	                'tweets': []
+	                }
+		ta = self.data.add_twitteraccount(twitter_account)
+
+		retweet_account = {
+	                'name': 'Some Guy',
+	                'screen_name': 'someguy2008',
+	                'tweets': []
+	                }
+		ra = self.data.add_twitteraccount(retweet_account)
+		
+		tweet = {
+		        'text': "Can't wait #BreakingBadFinale ...!",
+		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
+		        'author': ta,
+		        'time_parsed': datetime.datetime.now,
+		        'created_at': datetime.datetime(2013, 9, 29, 23, 49, 37)
+		        }
+		t = self.data.add_tweet(tweet)
+
+		retweet = {
+		        'text': "RT Can't wait #BreakingBadFinale ...!",
+		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
+		        'author': ta,
+                        'retweet': t,
+                        'retweet_author': ra
+                        'retweeted': True,
+		        'time_parsed': datetime.datetime.now,
+		        'created_at': datetime.datetime(2014, 11, 26, 3, 0, 0)
+		        }
+		
+		rt = self.data.add_tweet(retweet)
+		
+		self.assertEqual(rt[retweet].text, "Can't wait #BreakingBadFinale ...!")
+		self.assertEqual(rt[retweet].entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
+		self.assertEqual(rt[retweet].author, ta)
+		self.assertEqual(rt.time_parsed, rt.time_parsed)
+		self.assertEqual(rt.created_at, datetime.datetime(2014, 11, 26, 3, 0, 0))
 	
 	def test_add_multiple_retweets(self):
 		pass
