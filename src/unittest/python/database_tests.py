@@ -341,6 +341,9 @@ class DatabaseTest (unittest.TestCase):
 		self.assertEqual(rt[retweet].text, "Can't wait #BreakingBadFinale ...!")
 		self.assertEqual(rt[retweet].entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
 		self.assertEqual(rt[retweet].author, ta)
+		self.assertEqual(rt.text, "RT Can't wait #BreakingBadFinale ...!")
+		self.assertEqual(rt.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
+		self.assertEqual(rt.author, ra)
 		self.assertEqual(rt.time_parsed, rt.time_parsed)
 		self.assertEqual(rt.created_at, datetime.datetime(2014, 11, 26, 3, 0, 0))
 	
