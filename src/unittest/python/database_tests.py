@@ -326,7 +326,7 @@ class DatabaseTest (unittest.TestCase):
 		t = self.data.add_tweet(tweet)
 
 		retweet = {
-		        'text': "RT Can't wait #BreakingBadFinale ...!",
+		        'text': "RT @alimehdi1992 Can't wait #BreakingBadFinale ...!",
 		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
 		        'author': ta,
 		        'retweet': t,
@@ -341,7 +341,7 @@ class DatabaseTest (unittest.TestCase):
 		self.assertEqual(rt[retweet].text, "Can't wait #BreakingBadFinale ...!")
 		self.assertEqual(rt[retweet].entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
 		self.assertEqual(rt[retweet].author, ta)
-		self.assertEqual(rt.text, "RT Can't wait #BreakingBadFinale ...!")
+		self.assertEqual(rt.text, "RT @alimehdi1992 Can't wait #BreakingBadFinale ...!")
 		self.assertEqual(rt.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
 		self.assertEqual(rt.author, ra)
 		self.assertEqual(rt.time_parsed, rt.time_parsed)
