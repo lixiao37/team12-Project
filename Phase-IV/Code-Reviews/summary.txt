@@ -19,13 +19,16 @@ File Reviewed: parser.py [get_meta_data & get_screenshot]
 File Timestamp: 11/11/2014, 05:38 PM
 
 Zhen:
- - The correctness was great, no conflicts with the design and no waste of the memory.
+ - The correctness was great, no conflicts with the design and no waste of 
+   the memory.
  - The coding style was great, variables were meaningful and easy to follow.
  - The coding guideline was bad.Some lines are too long [line 92, 97],
    which confilts the pep8.Also, there is no docstring.
- - The quality of documentation was good. Commenting style is maintained and easy to follow,
-   but there is lack of document in conditional statements [line 91].
- - Since all the reviewed codes were about the UI, it is hard to test it using the unittest.
+ - The quality of documentation was good. Commenting style is maintained and 
+   easy to follow, but there is lack of document in conditional 
+   statements [line 91].
+ - Since all the reviewed codes were about the UI, it is hard to test it using 
+   the unittest.
  - File reviewed, userinterface.py [line 87-117]
  - Timestamp, 21:09 Nov.25 2014
 
@@ -43,10 +46,13 @@ Chun:
 - File Timestamp: November 11, 2014
 
 Ali:
-- The overall correctness was correct. Except, the "extract_citation" needs 
-  to be split into smaller functions, so that testing is done more
-  more efficiently. The coding style was great, it was consistent with the
-  pep8 coding styles. The code however needs more documentation and comments.
-  There were no test-cases done, so the author needs to work more on that,
-  since testing is an essential part of the development.
-  File reviewed, parser.py. Timestamp, Nov. 11 05:38 PM.
+- The overall correctness was correct. The design pattern(Facada) was 
+   implemented properly and it was consistent. However, the Parser class itself
+   needs to be a generic class. This will allow further enhancements using the
+   Parser class. Coding style was great, very good use of blank spaces, the 
+   reader can easily see different parts of the code. Pep8 was not followed, 
+   hence it was causing issues when I was running pep8 against the file. Testing
+   needs to be done extensively. So far, there are only around ten test-cases,
+   however there needs to be more. Since Parser will server as an essential part
+   of the application, it needs to be stable.
+   File reviewed, parser.py. Timestamp, Nov. 25 09:40 PM.
