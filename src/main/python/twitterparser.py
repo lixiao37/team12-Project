@@ -1,4 +1,5 @@
 import tweepy
+import requests
 from database import *
 from twitter import *
 import re
