@@ -328,14 +328,13 @@ class DatabaseTest (unittest.TestCase):
 		retweet = {
 		        'text': "RT @alimehdi1992 Can't wait #BreakingBadFinale ...!",
 		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
-		        'author': ta,
+		        'author': ra,
 		        'retweet': t,
-		        'retweet_author': ra,
+		        'retweet_author': ta,
 		        'retweeted': True,
 		        'time_parsed': datetime.datetime.now,
 		        'created_at': datetime.datetime(2014, 11, 26, 3, 0, 0)
 		}
-		
 		rt = self.data.add_tweet(retweet)
 		
 		self.assertEqual(rt[retweet].text, "Can't wait #BreakingBadFinale ...!")
