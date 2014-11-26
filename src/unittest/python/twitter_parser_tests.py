@@ -232,7 +232,7 @@ class TwitterParserTest(unittest.TestCase):
 	targets = ['AnshelPfeffer','blakehounshell','NathanThrall']
 	counter = []
         pos = 0
-	for target in targets
+	for target in targets:
             user = self.tp.get_user(username)
             t = self.tp.get_user_tweets(username)
             mentions = self.tp.get_user_mentions(t, [target[pos]])
@@ -242,7 +242,7 @@ class TwitterParserTest(unittest.TestCase):
 
 	pos = 0
 	count = count_mentions(user)
-	for target in targets
+	for target in targets:
             self.assertTrue(target[pos] in count)
             if target[pos] in count:
                 counter[pos] = count[target[pos]]
