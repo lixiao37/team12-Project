@@ -17,7 +17,7 @@ from article import Article
 from website import Website
 from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
-    
+
 mylookup = TemplateLookup(directories=['.'])
 host = "ds053380.mongolab.com:53380"
 dbName = "twitterparser"
@@ -46,7 +46,7 @@ class Root:
             global parserRun, graph_thread_flag
             global relation_dict, twitter_relation_dict
             logger.info('Started Thread on Relation Graphs')
-            graph_thread_running = 1            
+            graph_thread_running = 1
             runAgain = 1
             while graph_thread_flag:
                 if parserRun == 1:
@@ -72,7 +72,7 @@ class Root:
                     runAgain = 0
                 else:
                     time.sleep(5)
-        
+
         if not graph_thread_running:
             thread.start_new_thread(graph_thread, ())
         username = cherrypy.session['user']
@@ -90,7 +90,7 @@ class Root:
 
         if username is None or password is None:
             return signup_template.render(msg="Enter login information", from_page=from_page)
-        
+
         user_exist = self.check_user_exist(username)
         if user_exist:
             # username exist in the database, can't create
@@ -149,7 +149,7 @@ class Root:
         return log_template.render(logContent=logContent, username=cherrypy.session["user"], log="active")
 
     @cherrypy.expose
-    def modify_data(self, value_name=None, 
+    def modify_data(self, value_name=None,
         list_type=None, mod_type=None, value_url=None):
         user = User.objects(name=cherrypy.session["user"]).first()
         # checks to see if the textbox is empty
@@ -159,7 +159,7 @@ class Root:
             # adding news sources and targets
             if list_type == "#news_source_name":
                 if value_url == "":
-                    return "Fail: The url text box is empty."                
+                    return "Fail: The url text box is empty."
                 if value_name in user.news_sources.keys() \
                 or value_url in user.news_sources.values():
                     return "Fail: This news name or link is already in the source list."
@@ -168,7 +168,7 @@ class Root:
                     user.save()
             elif list_type == "#news_target_name":
                 if value_url == "":
-                    return "Fail: The url text box is empty."                
+                    return "Fail: The url text box is empty."
                 if value_name in user.news_targets.keys() \
                 or value_url in user.news_targets.values():
                     return "Fail: This news name or link is already in the target list."
@@ -192,7 +192,7 @@ class Root:
             # deleting news sources and targets
             if list_type == "#news_source_name":
                 if value_url == "":
-                    return "Fail: The url text box is empty."                
+                    return "Fail: The url text box is empty."
                 if value_name in user.news_sources.keys() \
                 and value_url in user.news_sources.values():
                     del user.news_sources[value_name]
@@ -201,7 +201,7 @@ class Root:
                     return "Fail: This news link is not in the source list"
             elif list_type == "#news_target_name":
                 if value_url == "":
-                    return "Fail: The url text box is empty."                
+                    return "Fail: The url text box is empty."
                 if value_name in user.news_targets.keys() \
                 and value_url in user.news_targets.values():
                     del user.news_targets[value_name]
@@ -221,6 +221,8 @@ class Root:
                     user.save()
                 else:
                     return "Fail: This twitter screen name is not in the target list"
+        global runAgain
+        runAgain = 1
         return "Success!"
 
     # gets the user's list accordingly and returns it to the tracking page
@@ -248,19 +250,19 @@ class Root:
     def tracking_list(self): # This page is http://127.0.0.1:8080/tracking_list
         track_template = Template(filename='track.html', lookup=mylookup)
         return track_template.render(username=cherrypy.session["user"])
-    
+
     @cherrypy.expose
     def get_articles(self):
         show_article_template = Template(filename='get_articles.html')
         articles = Article.objects()
         return show_article_template.render(articles=articles)
-    
+
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_articles(self):
         article_template = Template(filename='display_articles.html', lookup=mylookup)
         return article_template.render(username=cherrypy.session["user"])
-    
+
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_graphs_overview(self):
@@ -287,7 +289,7 @@ class Root:
         graphs = self.generate_detailed_graph(self.relation_dict, "news")
 
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
-        return generate_template.render(username=cherrypy.session["user"], 
+        return generate_template.render(username=cherrypy.session["user"],
             graphs=graphs, section_name="News", graph_type="Bar")
 
     @require() # requires user to be logged in to view page
@@ -299,7 +301,7 @@ class Root:
         graphs = self.generate_completed_pie_graphs(self.relation_dict, "news")
 
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
-        return generate_template.render(username=cherrypy.session["user"], 
+        return generate_template.render(username=cherrypy.session["user"],
             graphs=graphs, section_name="News", graph_type="Pie")
 
     @require() # requires user to be logged in to view page
@@ -311,7 +313,7 @@ class Root:
         graphs = self.generate_detailed_graph(self.twitter_relation_dict, "twitter")
 
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
-        return generate_template.render(username=cherrypy.session["user"], 
+        return generate_template.render(username=cherrypy.session["user"],
             graphs=graphs, section_name="Twitter", graph_type="Bar")
 
     @require() # requires user to be logged in to view page
@@ -323,7 +325,7 @@ class Root:
         graphs = self.generate_completed_pie_graphs(self.twitter_relation_dict, "twitter")
 
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
-        return generate_template.render(username=cherrypy.session["user"], 
+        return generate_template.render(username=cherrypy.session["user"],
             graphs=graphs, section_name="Twitter", graph_type="Pie")
 
     @require() # requires user to be logged in to view page
@@ -346,19 +348,19 @@ class Root:
 
             # generate a combined news detailed graph and add it to total_graphs
             total_graphs += self.generate_detailed_graph(relation_dict, "news")
-            
+
             # generate pie graphs and add it to total_graphs
             total_graphs += self.generate_completed_pie_graphs(relation_dict, "news")
-        
+
         if twitter_relation_dict:
             # generate a combined twitter detailed graph and add it to total_graphs
             total_graphs += self.generate_detailed_graph(twitter_relation_dict, "twitter")
-            
+
             # generate pie graphs and add it to total_graphs
             total_graphs += self.generate_completed_pie_graphs(twitter_relation_dict, "twitter")
 
-        return page_header + total_graphs 
-    
+        return page_header + total_graphs
+
     def generate_pie_graph(self, relation_dict, index, target):
         # generate the whole graph dataset
         sources_counts = []
@@ -375,7 +377,7 @@ class Root:
                 return graph_generator_template.render(target=target, data=data,
                     sources_counts=sources_counts)
         return "<h1>Pie Graph for target " + target + "</h1><br/>Sorry, we can't generate this pie, since the source count is " + str(sources_counts) + " for this target.<br>"
-    
+
     def generate_completed_pie_graphs(self, relation_dict, datatype):
         user = User.objects(name=cherrypy.session["user"]).first()
         if datatype == "news":
@@ -393,12 +395,13 @@ class Root:
                 pie_graphs += self.generate_pie_graph(relation_dict, i, target)
                 i += 1
         return pie_graphs
-    
+
     # generate a detail bar graph from the relation_dict
-    def generate_detailed_graph(self, relation_dict, datatype):
+    def generate_detailed_graph(self, relation_dict, datatype, targets=None):
         user = User.objects(name=cherrypy.session["user"]).first()
         if datatype == "news":
-            targets = user.news_targets.values()
+            if not targets:
+                targets = user.news_targets.values()
         elif datatype == "twitter":
             targets = user.twitter_targets
         targets_str = str(targets).replace("u'","'")
@@ -425,7 +428,7 @@ class Root:
         graph_generator_template = Template(filename='basic_graph_generator.html')
         for source, target_count in relation_dict.iteritems():
             news_targets_str = str(news_targets).replace("u'","'")
-            total_basic_graphs += graph_generator_template.render(source=source, 
+            total_basic_graphs += graph_generator_template.render(source=source,
                 targets=news_targets_str, target_count=target_count)
         return total_basic_graphs
 
@@ -434,7 +437,7 @@ class Root:
         # user = User.objects(name=cherrypy.session["user"]).only('twitter_sources', 'twitter_targets').first()
         # twitter_sources = user.twitter_sources
         # twitter_targets = user.twitter_targets
-        
+
         for twitter_sources_screenname in twitter_sources:
             target_count = [0] * len(twitter_targets)
             i = 0
@@ -443,11 +446,11 @@ class Root:
                 i += 1
             relation_dict[twitter_sources_screenname] = target_count
         return relation_dict
-                    
+
 
     '''generates a dictionary of string/list(int) in the format
         {source : target_count}
-        ie. {s1 : [tc1, tc2, ... tcn], 
+        ie. {s1 : [tc1, tc2, ... tcn],
         s2 : [tc1, tc2, ... tcn], ...
         sn : [tc1, tc2, ... tcn]}
         where sn is the source, tcn is the citation count of each target'''
@@ -459,12 +462,12 @@ class Root:
         # news_targets = user.news_targets
 
         for source_name, source_url in news_sources.iteritems():
-            # create an empty list with a specific size which describe the number 
-            # of target referenced by each source            
+            # create an empty list with a specific size which describe the number
+            # of target referenced by each source
             target_count = [0] * len(news_targets)
             # Find the articles which have a specific source website url
             articles = Article.objects(
-                Q(website=Website.objects(homepage_url=source_url).only('homepage_url').first()) & 
+                Q(website=Website.objects(homepage_url=source_url).only('homepage_url').first()) &
                 Q(citations__exists=True)).only('citations')
             for article in articles:
                 # Count the times that each target in the news_targets is in the
@@ -478,11 +481,35 @@ class Root:
                             i += 1
             relation_dict[source_name] = target_count
         return relation_dict
-    
+
+
+    def generate_relation_dict_beta(self, news_sources, news_targets):
+        relation_dict = {}
+        for source_name in news_sources:
+            # create an empty list with a specific size which describe the number
+            # of target referenced by each source
+            target_count = [0] * len(news_targets)
+            # Find the articles which have a specific source website url
+            articles = Article.objects(
+                Q(website=Website.objects(name=source_name).only('name').first()) &
+                Q(citations__exists=True)).only('citations')
+            for article in articles:
+                # Count the times that each target in the news_targets is in the
+                # citation list for each article and put it in the target_count
+                for citation in article.citations:
+                    if not isinstance( citation, int ):
+                        i = 0
+                        while i < len(news_targets):
+                            if citation.target_name.lower() == news_targets[i].lower():
+                                target_count[i] += 1
+                            i += 1
+            relation_dict[source_name] = target_count
+        return relation_dict
+
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def parse(self):
-        
+
         global parserRun
         if parserRun == 1:
             return "Fail: Parser is already running"
@@ -506,7 +533,7 @@ class Root:
             try:
                 p.run(sources, targets)
             except Exception, e:
-                logger.error('News Parser Failed', exc_info=True)                      
+                logger.error('News Parser Failed', exc_info=True)
             parserRun = 0
 
         user = User.objects(name=cherrypy.session["user"]).first()
@@ -515,12 +542,12 @@ class Root:
         twitter_sources = user.twitter_sources
         twitter_targets = user.twitter_targets
 
-        p = Parser(data=data, logger=logger) 
-        
+        p = Parser(data=data, logger=logger)
+
         t_p = TwitterParser(data=data, logger=logger)
-        t_p.authorize()      
-        
-        thread.start_new_thread( threaded_parser , 
+        t_p.authorize()
+
+        thread.start_new_thread( threaded_parser ,
                         (p, t_p, sources, targets, twitter_sources, twitter_targets, p.logger))
 
         logger.info('Executing Parser Commands')
@@ -534,6 +561,29 @@ class Root:
             return "Yes"
         else:
             return "No"
+
+    @require()
+    @cherrypy.expose
+    def betaGraphs(self, targetlist=None, sourcelist=None):
+        graphs = None
+        if targetlist and sourcelist:
+            if not isinstance(targetlist, list):
+                targetlist = [targetlist]
+            if not isinstance(sourcelist, list):
+                sourcelist = [sourcelist]
+            relation_dict = self.generate_relation_dict_beta(sourcelist, targetlist)
+            graphs = self.generate_detailed_graph(relation_dict, "news", targets=targetlist)
+        beta_graph_template = Template(filename='beta_graphs.html', lookup=mylookup)
+        user = User.objects(name=cherrypy.session["user"]).first()
+        sources = user.news_sources
+        targets = user.news_targets
+        twitter_sources = user.twitter_sources
+        twitter_targets = user.twitter_targets
+        return beta_graph_template.render(username=cherrypy.session["user"],
+                                          beta="active", targetlist=targets,
+                                          sourcelist=sources, graphs=graphs)
+
+
 
 if __name__ == '__main__':
     global logger
@@ -549,7 +599,7 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     # add the handlers to the logger
     logger.addHandler(handler)
-    
+
     data = Database(host=host, dbName=dbName)
     data.connect(username=username, password=username)
 

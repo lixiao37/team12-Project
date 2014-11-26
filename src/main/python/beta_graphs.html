@@ -1,0 +1,41 @@
+<html>
+	<head>
+		<%include file="navbar_fixed.html"/>
+		<script src="http://www.chartjs.org/assets/Chart.js"></script>
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+		<style>
+			h1 { text-align: center }
+			#form_news { text-align: center}
+		</style>
+	</head>
+	<body>
+		% if not graphs:
+			<div align="center">
+				<form class="pure-form pure-form-stacked">
+				    <fieldset>
+				        <legend>News Graph Generator</legend>
+				        <form action="betaGraphs" id="">
+				        <label for="state">Sources</label>
+				        <select multiple name="sourcelist">
+						  % for each in sourcelist:
+						  	<option>${each}</option>
+						  % endfor
+						</select>
+						<label for="state">Targets</label>
+						<select multiple name="targetlist">
+						  % for each in targetlist:
+						  	<option>${each}</option>
+						  % endfor
+						</select>
+				        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+				    </fieldset>
+			    </form>
+			</div>
+		% else:
+			${graphs}
+
+		%endif
+
+
+	</body>
+</html>
