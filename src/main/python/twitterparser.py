@@ -107,7 +107,10 @@ class TwitterParser:
 
     def count_mentions(self, user):
         '''Return the number of mentions for a user, in a dictionary'''
-        tweets = self.get_user_tweets(user)
+        ta = TwitterAccount.objects(screen_name=user).first()
+        if not ta:
+            return {}
+        tweets = ta.tweets
         count_mentions = {}
         for tweet in tweets:
             mentions = tweet.entities["user_mentions"]

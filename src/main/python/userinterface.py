@@ -515,7 +515,8 @@ class Root:
         if parserRun == 1:
             return "Fail: Parser is already running"
 
-        def threaded_parser(p, t_p, sources, targets, twitter_sources, twitter_targets, logger):
+        def threaded_parser(p, t_p, sources, targets, twitter_sources,
+                                                       twitter_targets, logger):
             logger.info("Started Parser Background")
             global parserRun
             parserRun = 1
