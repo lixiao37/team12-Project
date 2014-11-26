@@ -209,13 +209,45 @@ class TwitterParserTest(unittest.TestCase):
 	Test the count_mentions method, where it returns the number of mentions 
 	for a user, in a dictionary
 	'''
-	pass
+	username = 'DaliaHatuqa'
+	target = 'AnshelPfeffer'
+	
+	user = self.tp.get_user(username)
+	t = self.tp.get_user_tweets(username)
+	mentions = self.tp.get_user_mentions(t, [target])
+	men_count = len(mentions)
+	counter = -1
+	
+	count = count_mentions(user)
+	self.assertTrue(target in count)
+        if target in count:
+            counter = count[target]
+        self.assertTrue(men_count == counter)
     
     def test_multi_count_mentions(self):
 	'''
 	Test the count_mentions multiple times
 	'''
-	pass
+	username = 'DaliaHatuqa'
+	targets = ['AnshelPfeffer','blakehounshell','NathanThrall']
+	counter = []
+        pos = 0
+	for target in targets
+            user = self.tp.get_user(username)
+            t = self.tp.get_user_tweets(username)
+            mentions = self.tp.get_user_mentions(t, [target[pos]])
+            men_count = len(mentions)
+            counter.append(men_count)
+            pos += 1
+
+	pos = 0
+	count = count_mentions(user)
+	for target in targets
+            self.assertTrue(target[pos] in count)
+            if target[pos] in count:
+                counter[pos] = count[target[pos]]
+            self.assertTrue(men_count == counter[pos])
+            pos += 1
     
     def test_add_user_tweets(self):
 	'''
