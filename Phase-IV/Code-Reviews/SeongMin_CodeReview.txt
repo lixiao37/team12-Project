@@ -1,36 +1,22 @@
-File Reviewed: parser.py
-File Timestamp: 11/11/2014 5:40 PM
-Sections Reviewed: 1. searchArticle, 2. add_article, 3. add_website, 4. add_citation
+File Reviewed: database.py
+File Timestamp: 11/25/2014 6:31 PM
+Sections Reviewed: 1. add_tweet, 2. add_twitteraccount
 Code-Reviewer: Seong Min Jeong
 Code-Author: Ali Mehdi
 
-1. function searchArticle
-a) Correctness: The function returns a list of urls from Google as intended.
+1. function add_tweet
+a) Correctness: The function adds one tweet at a time given the tweet meta data in a dictionary. However, it does not follow the design pattern. It should be able to add as many tweets depending on the size of the tweet meta data.
 b) Coding style: The coding style is neat and easy to read because of the consistent spacing in chunks of code.
-c) Coding guidelines: Ali followed the pep8 guideline almost thoroughly. In the first for loop, the if statement below is not in 4-space.
-d) Quality of documentation: There is only one comment in the code. Ali should put a small summary of the two for loops and their purpose.
-e) Quality of testing: No test cases done.
+c) Coding guidelines: Ali followed the pep8 guideline almost thoroughly. When creating the tweet object to add to the database, the next two lines are not in 4 spaces.
+d) Quality of documentation: There is only one comment in the code. Ali should put commenting in getting the tweet meta data and the part where he is trying to add the tweet into the database.
+e) Quality of testing: Four test cases were done for this function, two involves adding tweets and the other two adding retweets. The test cases are sufficient enough to show how the function works.
 
-2. function add_article
-a) Correctness: The function puts the article in the database as intended.
+2. function add_twitteraccount
+a) Correctness: The function adds one twitter account at a time given the twitter account meta data in a dictionary. However, it does not follow the design pattern. It should be able to add as many twitter accounts depending on the size of the twitter account meta data.
 b) Coding style: The coding style is neat and easy to read because of the consistent spacing in chunks of code.
-c) Coding guidelines: Ali somewhat followed the pep8 guideline. In the two article objects, the spacing below art is not in 4-space. In the second article object, the end bracket is not lined up with the first character of the word.
-d) Quality of documentation: There is an average amount of documentation in this function. In the two if statements, Ali should explain what happens when the article is already in the database.
-e) Quality of testing: No test cases done.
-
-3. function add_website
-a) Correctness: The function puts the website in the database as intended.
-b) Coding style: The coding style is neat and easy to read because of the consistent spacing in chunks of code.
-c) Coding guidelines: Ali somewhat followed the pep8 guideline. In the two website objects, the spacing below art is not in 4-space. In the first website object, the end bracket is not lined up with the first character of the word.
-d) Quality of documentation: There is an average amount of documentation in this function. In the two if statements, Ali should explain what happens when the website is already in the database.
-e) Quality of testing: No test cases done.
-
-4. function add_citation
-a) Correctness: The function puts the citation in the database as intended.
-b) Coding style: The coding style is neat and easy to read because of the consistent spacing in chunks of code.
-c) Coding guidelines: Ali somewhat followed the pep8 guideline. In the two citation objects, the spacing below art is not in 4-space. In both citation objects, the end bracket is not lined up with the first character of the word.
-d) Quality of documentation: There is an average amount of documentation in this function. In the two if statements, Ali should explain what happens when the citation is already in the database.
-e) Quality of testing: No test cases done.
+c) Coding guidelines: Ali followed the pep8 guideline perfectly in this function.
+d) Quality of documentation: There is no documentation in this function. Ali should have two comments. One for when he is creating the twitter account object to test if it already exists in the database and the other for when he is creating the twitter account object to add into the database.
+e) Quality of testing: Two test cases were done for this function. The test cases are sufficient neough to show how the function works.
 
 Summary:
-For correctness, Ali made his functions work as intended. His coding style is easily readable due to spacing. Ali marginally followed the pep8 guildline, due to missing certain conventions in his code. The quality of Ali's documentation is decent and explains the purpose of a big chunk of code. All he needs to do is add few more lines of commenting and describe what happens when the data is already in the database or when connection to the database fails. Ali did not write any test cases.
+For correctness, Ali did not follow the design pattern and decided to add a single tweet and twitteraccount into the database for each function call. His coding style is easily readable due to spacing. Ali almost perfectly followed the pep8 guildline, due to making a spacing mistake in his code. The quality and quantity of Ali's documentation is somewhat lacking and it needs to be improved upon by explaining the logic behind the codes. Ali wrote a good amount of test cases and they showcase the functions very well.
