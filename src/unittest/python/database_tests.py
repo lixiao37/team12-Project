@@ -18,7 +18,7 @@ class DatabaseTest (unittest.TestCase):
 
 	def tearDown(self):
 		self.data = None
-		
+
 		#reset the database for each test-cases
 		Website.drop_collection()
 		Article.drop_collection()
@@ -28,7 +28,7 @@ class DatabaseTest (unittest.TestCase):
 
 	def test_add_article(self):
 		'''
-		Test the add_article method, that adds article data into the 
+		Test the add_article method, that adds article data into the
 		database
 		'''
 		website = Website(name="CNN", homepage_url="http://www.cnn.com")
@@ -69,7 +69,7 @@ class DatabaseTest (unittest.TestCase):
 
 	def test_add_website(self):
 		'''
-		Test the add_website method, that adds website data into the 
+		Test the add_website method, that adds website data into the
 		database
 		'''
 		website_meta = {}
@@ -99,7 +99,7 @@ class DatabaseTest (unittest.TestCase):
 
 	def test_add_citation(self):
 		'''
-		Test the add_citation method, that adds citation data into the 
+		Test the add_citation method, that adds citation data into the
 		database
 		'''
 		website = Website(name="CNN", homepage_url="http://www.cnn.com")
@@ -139,7 +139,7 @@ class DatabaseTest (unittest.TestCase):
 
 	def test_add_citation_duplicate(self):
 		'''
-		Test the add_citation method, that adds duplicate citation data 
+		Test the add_citation method, that adds duplicate citation data
 		into the database
 		'''
 		website = Website(name="CNN", homepage_url="http://www.cnn.com")
@@ -179,7 +179,7 @@ class DatabaseTest (unittest.TestCase):
 
 		#make sure that there are no duplicate entries in citation
 		self.assertEqual(len(query), 1)
-		
+
 	def test_add_twitteraccount(self):
 		'''
 		Test the add twitter account method, that adds the twitter
@@ -190,16 +190,16 @@ class DatabaseTest (unittest.TestCase):
 		        'screen_name': 'alimehdi1992',
 		        'tweets': []
 		        }
-		
+
 		ta = self.data.add_twitteraccount(twitter_account)
-		
+
 		#check if the data was inputted correctly
 		self.assertEqual(ta.name, 'Mehdi Ali')
 		self.assertEqual(ta.screen_name, 'alimehdi1992')
-		
+
 	def test_add_multi_twitteraccount(self):
 		'''
-		Test the add twitter account method multiple times, that adds 
+		Test the add twitter account method multiple times, that adds
 		the twitter account object into the database
 		'''
 		twitter_account_one = {
@@ -207,35 +207,35 @@ class DatabaseTest (unittest.TestCase):
 	                'screen_name': 'alimehdi1992',
 	                'tweets': []
 	                }
-		
+
 		twitter_account_two = {
 		        'name': 'Dalia Hatuqa',
 		        'screen_name': 'DaliaHatuqa',
 		        'tweets': []
 		        }
-		
+
 		ta_one = self.data.add_twitteraccount(twitter_account_one)
 		ta_two = self.data.add_twitteraccount(twitter_account_two)
-		
+
 		#check if both data were inputted correctly
 		self.assertEqual(ta_one.name, 'Mehdi Ali')
 		self.assertEqual(ta_one.screen_name, 'alimehdi1992')
 		self.assertEqual(ta_two.name, 'Dalia Hatuqa')
-		self.assertEqual(ta_two.screen_name, 'DaliaHatuqa')		
+		self.assertEqual(ta_two.screen_name, 'DaliaHatuqa')
 
 	def test_add_tweet(self):
 		'''
-		Test the add_tweet method, that adds the tweet object into the 
+		Test the add_tweet method, that adds the tweet object into the
 		database
-		'''	
+		'''
 		twitter_account = {
 	                'name': 'Mehdi Ali',
 	                'screen_name': 'alimehdi1992',
 	                'tweets': []
 	                }
-		
+
 		ta = self.data.add_twitteraccount(twitter_account)
-		
+
 		tweet = {
 		        'text': "Can't wait #BreakingBadFinale ...!",
 		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
@@ -243,29 +243,29 @@ class DatabaseTest (unittest.TestCase):
 		        'time_parsed': datetime.datetime.now,
 		        'created_at': datetime.datetime(2013, 9, 29, 23, 49, 37)
 		        }
-		
+
 		t = self.data.add_tweet(tweet)
-		
+
 		#check if the data was inputted correctly
 		self.assertEqual(t.text, "Can't wait #BreakingBadFinale ...!")
 		self.assertEqual(t.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
 		self.assertEqual(t.author, ta)
 		self.assertEqual(t.time_parsed, t.time_parsed)
 		self.assertEqual(t.created_at, datetime.datetime(2013, 9, 29, 23, 49, 37))
-		
+
 	def test_add_multiple_tweets(self):
 		'''
-		Test the add_tweet method multiple times, that adds the tweet 
+		Test the add_tweet method multiple times, that adds the tweet
 		object into the database
-		'''	
+		'''
 		twitter_account = {
 	                'name': 'Mehdi Ali',
 	                'screen_name': 'alimehdi1992',
 	                'tweets': []
 	                }
-		
+
 		ta = self.data.add_twitteraccount(twitter_account)
-		
+
 		tweet_one = {
 		        'text': "Can't wait #BreakingBadFinale ...!",
 		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
@@ -273,7 +273,7 @@ class DatabaseTest (unittest.TestCase):
 		        'time_parsed': datetime.datetime.now,
 		        'created_at': datetime.datetime(2013, 9, 29, 23, 49, 37)
 		        }
-		
+
 		tweet_two = {
 	                'text': 'I love Dropbox because it is very fast, I use it to transfer files between my virtual box and my operating system http://t.co/LZXUBxWnDx',
 	                'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [], u'urls': [{u'url': u'http://t.co/LZXUBxWnDx', u'indices': [114, 136], u'expanded_url': u'http://db.tt/O1n4DIdK', u'display_url': u'db.tt/O1n4DIdK'}]},
@@ -281,23 +281,23 @@ class DatabaseTest (unittest.TestCase):
 	                'time_parsed': datetime.datetime.now,
 	                'created_at': datetime.datetime(2013, 3, 1, 22, 39, 56)
 	                }
-		
+
 		t_one = self.data.add_tweet(tweet_one)
 		t_two = self.data.add_tweet(tweet_two)
-		
+
 		#check if both data were inputted correctly
 		self.assertEqual(t_one.text, "Can't wait #BreakingBadFinale ...!")
 		self.assertEqual(t_one.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
 		self.assertEqual(t_one.author, ta)
 		self.assertEqual(t_one.time_parsed, t_one.time_parsed)
-		self.assertEqual(t_one.created_at, datetime.datetime(2013, 9, 29, 23, 49, 37))	
-		
+		self.assertEqual(t_one.created_at, datetime.datetime(2013, 9, 29, 23, 49, 37))
+
 		self.assertEqual(t_two.text, 'I love Dropbox because it is very fast, I use it to transfer files between my virtual box and my operating system http://t.co/LZXUBxWnDx')
 		self.assertEqual(t_two.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [], u'urls': [{u'url': u'http://t.co/LZXUBxWnDx', u'indices': [114, 136], u'expanded_url': u'http://db.tt/O1n4DIdK', u'display_url': u'db.tt/O1n4DIdK'}]})
 		self.assertEqual(t_two.author, ta)
 		self.assertEqual(t_two.time_parsed, t_two.time_parsed)
 		self.assertEqual(t_two.created_at, datetime.datetime(2013, 3, 1, 22, 39, 56))
-		
+
 	def test_add_retweet(self):
 		'''
 		Test the add_tweet method for adding retweets of a tweet
@@ -315,7 +315,7 @@ class DatabaseTest (unittest.TestCase):
 	                'tweets': []
 	                }
 		ra = self.data.add_twitteraccount(retweet_account)
-		
+
 		tweet = {
 		        'text': "Can't wait #BreakingBadFinale ...!",
 		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
@@ -336,18 +336,18 @@ class DatabaseTest (unittest.TestCase):
 		        'created_at': datetime.datetime(2014, 11, 26, 3, 0, 0)
 		}
 		rt = self.data.add_tweet(retweet)
-		
-		self.assertEqual(rt[retweet].text, "Can't wait #BreakingBadFinale ...!")
-		self.assertEqual(rt[retweet].entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
-		self.assertEqual(rt[retweet].author, ta)
-		self.assertEqual(rt[retweet].retweeted, False)
+
+		self.assertEqual(rt.retweet.text, "Can't wait #BreakingBadFinale ...!")
+		self.assertEqual(rt.retweet.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
+		self.assertEqual(rt.retweet.author, ta)
+		self.assertEqual(rt.retweet.retweeted, None)
 		self.assertEqual(rt.text, "RT @alimehdi1992 Can't wait #BreakingBadFinale ...!")
 		self.assertEqual(rt.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
 		self.assertEqual(rt.author, ra)
 		self.assertEqual(rt.retweeted, True)
 		self.assertEqual(rt.time_parsed, rt.time_parsed)
 		self.assertEqual(rt.created_at, datetime.datetime(2014, 11, 26, 3, 0, 0))
-	
+
 	def test_add_multiple_retweets(self):
 		twitter_account = {
 		        'name': 'Mehdi Ali',
@@ -355,7 +355,7 @@ class DatabaseTest (unittest.TestCase):
 		        'tweets': []
 		}
 		ta = self.data.add_twitteraccount(twitter_account)
-		
+
 		tweet = {
 		        'text': "Can't wait #BreakingBadFinale ...!",
 		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
@@ -364,7 +364,7 @@ class DatabaseTest (unittest.TestCase):
 		        'created_at': datetime.datetime(2013, 9, 29, 23, 49, 37)
 		        }
 		t = self.data.add_tweet(tweet)
-		
+
 		retweet_accounts = []
 		for i in range(3):
 			retweet_account = {
@@ -373,7 +373,7 @@ class DatabaseTest (unittest.TestCase):
 			        'tweets': []
 	                }
 			retweet_accounts.append(self.data.add_twitteraccount(retweet_account))
-		
+
 		retweets = []
 		for i in range(3):
 			retweet = {
@@ -387,19 +387,19 @@ class DatabaseTest (unittest.TestCase):
 			        'created_at': datetime.datetime(2014, 11, 26, 3, i, i)
 			}
 			retweets.append(self.data.add_tweet(retweet))
-		
+
 		for i in range(3):
 			rt = retweets[i]
-			self.assertEqual(rt[retweet].text, "Can't wait #BreakingBadFinale ...!")
-			self.assertEqual(rt[retweet].entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
-			self.assertEqual(rt[retweet].author, ta)
-			self.assertEqual(rt[retweet].retweeted, False)
+			self.assertEqual(rt.retweet.text, "Can't wait #BreakingBadFinale ...!")
+			self.assertEqual(rt.retweet.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
+			self.assertEqual(rt.retweet.author, ta)
+			self.assertEqual(rt.retweet.retweeted, None)
 			self.assertEqual(rt.text, "RT @alimehdi1992 Can't wait #BreakingBadFinale ...!")
 			self.assertEqual(rt.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
-			self.assertEqual(rt.author, retweet_authors[i])
+			self.assertEqual(rt.author, retweet_accounts[i])
 			self.assertEqual(rt.retweeted, True)
 			self.assertEqual(rt.time_parsed, rt.time_parsed)
-			self.assertEqual(rt.created_at, datetime.datetime(2014, 11, 26, 3, i, i))	
-	
+			self.assertEqual(rt.created_at, datetime.datetime(2014, 11, 26, 3, i, i))
+
 if __name__ == '__main__':
 	unittest.main()

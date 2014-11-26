@@ -1,7 +1,7 @@
 import unittest
 
-from parser import *
-from database import *
+from parser import Parser
+from database import Database
 
 class GetCitation(unittest.TestCase):
 
@@ -10,9 +10,9 @@ class GetCitation(unittest.TestCase):
 	dbName = "unittests"
 
 	def setUp(self):
-		self.p = Parser()
 		self.data = Database(host=self.host, dbName=self.dbName, verbose=False)
 		self.data.connect()
+		self.p = Parser(data=self.data)
 
 	def tearDown(self):
 		self.p = None
@@ -56,9 +56,9 @@ class TestGetMetaData(unittest.TestCase):
 	dbName = "unittests"
 
 	def setUp(self):
-		self.p = Parser()
 		self.data = Database(host=self.host, dbName=self.dbName, verbose=False)
 		self.data.connect()
+		self.p = Parser(data=self.data)
 		self.meta_data_source = {}
 		self.meta_data_source["author"] = 'Al Jazeera and agencies'
 		self.meta_data_source["url"] = 'http://www.aljazeera.com/news/middleeast/2014/11/syria-seriously-studying-un-truce-proposal-2014111118514613822.html'
@@ -124,9 +124,9 @@ class TestSearchArticle(unittest.TestCase):
 	dbName = "unittests"
 
 	def setUp(self):
-		self.p = Parser()
 		self.data = Database(host=self.host, dbName=self.dbName, verbose=False)
 		self.data.connect()
+		self.p = Parser(data=self.data)
 
 	def tearDown(self):
 		self.p = None

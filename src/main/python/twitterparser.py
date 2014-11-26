@@ -67,7 +67,11 @@ class TwitterParser:
             return []
         tweets = []
         for page in range(1, pages+1):
-            results = user_object.timeline(page=page)
+            try:
+                results = user_object.timeline(page=page)
+            except tweepy.TweepError:
+                #limit exeeded
+                results = []
             tweets += [r for r in results]
         return list(set(tweets))
 
