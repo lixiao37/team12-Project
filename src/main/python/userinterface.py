@@ -230,10 +230,12 @@ class Root:
         runAgain = 1
         return "Success!"
 
-    # gets the user's list accordingly and returns it to the tracking page
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def get_list(self, list_type = None):
+        '''
+        Gets the user's list accordingly and returns it to the tracking page
+        '''
         user = User.objects(name=cherrypy.session["user"]).first()
         show_list_template = Template(filename='show_list.html')
         show_twitter_list_template = Template(filename='show_twitter_list.html')
@@ -271,10 +273,6 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_graphs_overview(self):
-        # generate a relation list, described in more depth at the fnc
-        # self.relation_dict = self.generate_relation_dict()
-        # self.twitter_relation_dict = self.generate_twitter_relation_dict()
-
         global relation_dict, twitter_relation_dict
         generate_template = Template(filename='generate_graphs_overview.html', lookup=mylookup)
         try:
@@ -288,7 +286,6 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_news_bar(self):
-        # self.relation_dict = self.generate_relation_dict()
         global relation_dict
         self.relation_dict = relation_dict
         graphs = self.generate_detailed_graph(self.relation_dict, "news")
@@ -300,7 +297,6 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_news_pie(self):
-        # self.relation_dict = self.generate_relation_dict()
         global relation_dict
         self.relation_dict = relation_dict
         graphs = self.generate_completed_pie_graphs(self.relation_dict, "news")
@@ -312,7 +308,6 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_twitter_bar(self):
-        # self.twitter_relation_dict = self.generate_twitter_relation_dict()
         global twitter_relation_dict
         self.twitter_relation_dict = twitter_relation_dict
         graphs = self.generate_detailed_graph(self.twitter_relation_dict, "twitter")
@@ -324,7 +319,6 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_twitter_pie(self):
-        # self.twitter_relation_dict = self.generate_twitter_relation_dict()
         global twitter_relation_dict
         self.twitter_relation_dict = twitter_relation_dict
         graphs = self.generate_completed_pie_graphs(self.twitter_relation_dict, "twitter")
@@ -367,6 +361,11 @@ class Root:
         return page_header + total_graphs
 
     def generate_pie_graph(self, relation_dict, index, target):
+        '''
+        Generate a general pie graph from the relation_dict in str type.
+        If there are only two sources and one target in the relation_dict,
+        return an error message.
+        ''' 
         # generate the whole graph dataset
         sources_counts = []
         data = ""
@@ -381,16 +380,25 @@ class Root:
                 graph_generator_template = Template(filename='pie_generator.html')
                 return graph_generator_template.render(target=target, data=data,
                     sources_counts=sources_counts)
+        # error message
         return "<h1>Pie Graph for target " + target + "</h1><br/>Sorry, we can't generate this pie, since the source count is " + str(sources_counts) + " for this target.<br>"
 
     def generate_completed_pie_graphs(self, relation_dict, datatype):
+        '''
+        Generate a complete pie graph from the relation_dict in str type.
+        If the relation_dict has no data, then return an empty string.
+        If traking less than two sources or less than one targets,
+        return an empty string.
+        '''        
         user = User.objects(name=cherrypy.session["user"]).first()
+        # get source and target list based on the datatype
         if datatype == "news":
             sources = user.news_sources.keys()
             targets = user.news_targets.values()
         elif datatype == "twitter":
             sources = user.twitter_sources
             targets = user.twitter_targets
+        # initialize the pie graph
         pie_graphs = ""
         i = 0
         # generate the pie graph only if traking more than two sources and more
@@ -401,15 +409,22 @@ class Root:
                 i += 1
         return pie_graphs
 
-    # generate a detail bar graph from the relation_dict
     def generate_detailed_graph(self, relation_dict, datatype, targets=None):
+        '''
+        Generate a detailed bar graph from the relation_dict in str type.
+        If the relation_dict has no data, then return an empty string.
+        '''
         user = User.objects(name=cherrypy.session["user"]).first()
+        # get source and target list based on the datatype
         if datatype == "news":
+            # if the target list is None, get that list from user
             if not targets:
                 targets = user.news_targets.values()
         elif datatype == "twitter":
             targets = user.twitter_targets
+        # avoid the unicode issue
         targets_str = str(targets).replace("u'","'")
+        # generate spacing parameter to beautify the graph
         total_bar = len(relation_dict.keys()) * len(targets_str.split(","))
         # generate the whole graph dataset
         data = ""
@@ -422,15 +437,19 @@ class Root:
                     sources=relation_dict.keys(), target_counts=relation_dict.values(),
                     value_space=600/(6+total_bar), dataset_space=((600/(6+total_bar))/5),
                     data=data, datatype=datatype)
-        else:
-            return ""
+        return data
 
-    # generate basic bar graphs from the relation_dict
     def generate_basic_graphs(self, relation_dict):
+        '''
+        Generate several basic bar graphs from the relation_dict in str type.
+        Each source has one bar graph.
+        '''
         user = User.objects(name=cherrypy.session["user"]).first()
         news_targets = user.news_targets.values()
+        # initialize the total basic graphs
         total_basic_graphs = ""
         graph_generator_template = Template(filename='basic_graph_generator.html')
+        # add each basic bar graph into total basic graphs
         for source, target_count in relation_dict.iteritems():
             news_targets_str = str(news_targets).replace("u'","'")
             total_basic_graphs += graph_generator_template.render(source=source,
@@ -438,13 +457,18 @@ class Root:
         return total_basic_graphs
 
     def generate_twitter_relation_dict(self, twitter_sources, twitter_targets):
+        '''
+        Generate twitter_relation_dict given the twitter source and twitter
+        target list.
+        '''
+        # initialize the relation dictionary.
         relation_dict = {}
-        # user = User.objects(name=cherrypy.session["user"]).only('twitter_sources', 'twitter_targets').first()
-        # twitter_sources = user.twitter_sources
-        # twitter_targets = user.twitter_targets
-
+        
+        # count target count for each source
         for twitter_sources_screenname in twitter_sources:
+            # initialize the target count
             target_count = [0] * len(twitter_targets)
+            # count each target corresponds to the index of that target
             i = 0
             for twitter_target in twitter_targets:
                 target_count[i] = TwitterParser(data=data).count_ref(twitter_sources_screenname, twitter_target)
@@ -453,18 +477,18 @@ class Root:
         return relation_dict
 
 
-    '''generates a dictionary of string/list(int) in the format
+
+    def generate_relation_dict(self, news_sources, news_targets):
+        '''
+        generates a dictionary of string/list(int) in the format
         {source : target_count}
         ie. {s1 : [tc1, tc2, ... tcn],
         s2 : [tc1, tc2, ... tcn], ...
         sn : [tc1, tc2, ... tcn]}
-        where sn is the source, tcn is the citation count of each target'''
-    def generate_relation_dict(self, news_sources, news_targets):
+        where sn is the source, tcn is the citation count of each target
+        '''
+        # initialize the relation dictionary.
         relation_dict = {}
-        # get the current user's sources and targets
-        # user = User.objects(name=cherrypy.session["user"]).only('news_sources', 'news_targets').first()
-        # news_sources = user.news_sources
-        # news_targets = user.news_targets
 
         for source_name, source_url in news_sources.iteritems():
             # create an empty list with a specific size which describe the number
@@ -514,7 +538,10 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def parse(self):
-
+        '''
+        Parse the whole internet responds to the user souces and targets.
+        The parser runs in backend and will always output log messages.
+        '''
         global parserRun
         if parserRun == 1:
             return "Fail: Parser is already running"
