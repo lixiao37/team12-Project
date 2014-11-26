@@ -1,39 +1,26 @@
 File Reviewed: userinterface.py
-File Timestamp: 17:43 Nov.11 2014
+File Timestamp: 21:09 Nov.25 2014
 Sections Reviewed: 
-	[line 235-267] generate_relation_dict
-	[line 206-221] generate_detailed_graph
+	[line 87-117] signup
 Code-Reviewer: Zhen Jiang
 Code-Author: Chun Cho
 (a) Correctness
-   [line 235-267] generate_relation_dict
-    - Code can run in unexpected cases
-	- Case: no news_sources
-	- Case: no news_targets
-	- Case: article with no citation
-    - Output is the same as the expected one when given the known input
-	- Given the data in database, this function can generate a 
-	  correct relation dictionary
-    [line 206-221] generate_detailed_graph
-    - Always returns a string
-    - The bar graph is colored
-    - The bar graph has a legend and is indeed based on the color of the bar
-    - The data in the bar graph is related to the relation dictionary
-    - The bar graph has a description to describe the details of the parameters
+    - Input-output format follows the design which inputs a username(str),
+      a password(str) and outputs a str of message
+    - The username and password are set to None in default which is needed in design
+    - It is connected to Database which is defined in the class diagram
+    - Conditional statements are correct and doesn't duplicate
 
 (b) Coding Style
     - Variables are named clearly and easy to understand and follow
-    - Loop index variables are more meaningful than i
-	- Only one index variable named i used to set up the index, which is good
-    - Too much indentations in generate_relation_dict [line 248-266]
+    - No indentation issue
 
 (c) Coding Guidelines
-    - Some lines are too long [line 215, 217, 254, 263], which confilts the pep8
-    - Docstring is outside the generate_relation_dict [line 235-240]
+    - Some lines are too long [line 92, 97], which confilts the pep8
+    - No docstring
 
 (d) Quality of Documentation
-    - Complex algorithms are explained and justified but not in detail which 
-      still confused me [line 257-258]
+    - Not enough document in conditional statements [line 91]
     - Code is clearly and adequately documented (both file prologues and module headers)
     - Commenting style is maintained and easy to follow
 
@@ -41,21 +28,12 @@ Code-Author: Chun Cho
     - No testing, since these files are about the UI.
 
 Summary:
- - The correctness was great, the function could handle most of the unexpected cases and
-   the detailed bar graph contained legend, different color as well as the description
-   which were expected in the user story.
- - The coding style was good, variables and loop index were meaningful and easy to follow.
-   The only unexpected thing was the indentations which were too much for the 
-   generate_relation_dict function.
- - The coding guideline was bad. Some lines are too long [line 215, 217, 254, 263],
-   which confilts the pep8 and docstring is outside the generate_relation_dict 
-   [line 235-240].
- - The quality of documentation was good. Commenting style is maintained and easy to follow.
-   Complex algorithms are explained and justified but not in detail which still confused 
-   me [line 257-258].
+ - The correctness was great, no conflicts with the design and no waste of the memory.
+ - The coding style was great, variables were meaningful and easy to follow.
+ - The coding guideline was bad.Some lines are too long [line 92, 97],
+   which confilts the pep8.Also, there is no docstring.
+ - The quality of documentation was good. Commenting style is maintained and easy to follow,
+   but there is lack of document in conditional statements [line 91].
  - Since all the reviewed codes were about the UI, it is hard to test it using the unittest.
- - File reviewed, userinterface.py [line 206-221 235-267] 
- - Timestamp, Nov.11 17:43 2014
-
-   
-
+ - File reviewed, userinterface.py [line 87-117]
+ - Timestamp, 21:09 Nov.25 2014
