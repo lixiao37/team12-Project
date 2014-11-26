@@ -340,14 +340,66 @@ class DatabaseTest (unittest.TestCase):
 		self.assertEqual(rt[retweet].text, "Can't wait #BreakingBadFinale ...!")
 		self.assertEqual(rt[retweet].entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
 		self.assertEqual(rt[retweet].author, ta)
+		self.assertEqual(rt[retweet].retweeted, False)
 		self.assertEqual(rt.text, "RT @alimehdi1992 Can't wait #BreakingBadFinale ...!")
 		self.assertEqual(rt.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
 		self.assertEqual(rt.author, ra)
+		self.assertEqual(rt.retweeted, True)
 		self.assertEqual(rt.time_parsed, rt.time_parsed)
 		self.assertEqual(rt.created_at, datetime.datetime(2014, 11, 26, 3, 0, 0))
 	
 	def test_add_multiple_retweets(self):
-		pass
+		twitter_account = {
+		        'name': 'Mehdi Ali',
+		        'screen_name': 'alimehdi1992',
+		        'tweets': []
+		}
+		ta = self.data.add_twitteraccount(twitter_account)
+		
+		tweet = {
+		        'text': "Can't wait #BreakingBadFinale ...!",
+		        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
+		        'author': ta,
+		        'time_parsed': datetime.datetime.now,
+		        'created_at': datetime.datetime(2013, 9, 29, 23, 49, 37)
+		        }
+		t = self.data.add_tweet(tweet)
+		
+		retweet_accounts = []
+		for i in range(3):
+			retweet_account = {
+			        'name': 'Some Guy' + str(i),
+			        'screen_name': 'someguy'+str(i),
+			        'tweets': []
+	                }
+			retweet_accounts.append(self.data.add_twitteraccount(retweet_account))
+		
+		retweets = []
+		for i in range(3):
+			retweet = {
+			        'text': "RT @alimehdi1992 Can't wait #BreakingBadFinale ...!",
+			        'entities': {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []},
+			        'author': retweet_accounts[i],
+			        'retweet': t,
+			        'retweet_author': ta,
+			        'retweeted': True,
+			        'time_parsed': datetime.datetime.now,
+			        'created_at': datetime.datetime(2014, 11, 26, 3, i, i)
+			}
+			retweets.append(self.data.add_tweet(retweet))
+		
+		for i in range(3):
+			rt = retweets[i]
+			self.assertEqual(rt[retweet].text, "Can't wait #BreakingBadFinale ...!")
+			self.assertEqual(rt[retweet].entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
+			self.assertEqual(rt[retweet].author, ta)
+			self.assertEqual(rt[retweet].retweeted, False)
+			self.assertEqual(rt.text, "RT @alimehdi1992 Can't wait #BreakingBadFinale ...!")
+			self.assertEqual(rt.entities, {u'symbols': [], u'user_mentions': [], u'hashtags': [{u'indices': [11, 29], u'text': u'BreakingBadFinale'}], u'urls': []})
+			self.assertEqual(rt.author, retweet_authors[i])
+			self.assertEqual(rt.retweeted, True)
+			self.assertEqual(rt.time_parsed, rt.time_parsed)
+			self.assertEqual(rt.created_at, datetime.datetime(2014, 11, 26, 3, i, i))	
 	
 if __name__ == '__main__':
 	unittest.main()
