@@ -7,6 +7,11 @@
 		<script src="http://www.chartjs.org/assets/Chart.js"></script>
 
 		% if not data:
+			% if not sources:
+				<div align="center">
+					No sources and targets found
+				</div>
+			% else:
 			<div align="center">
 				<form class="pure-form pure-form-stacked">
 				    <fieldset>
@@ -21,6 +26,7 @@
 				        <button type="submit" class="pure-button pure-button-primary">Submit</button>
 				    </fieldset>
 			    </form>
+			% endif
 		% elif data:
 		<div class="col-md-4 col-md-offset-4">
 			<h3>${source}</h3>

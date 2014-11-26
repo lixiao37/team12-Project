@@ -82,6 +82,8 @@ class Root:
 
     @cherrypy.expose
     def require_login(self): # This page is http://127.0.0.1:8080/require_login
+        global runAgain
+        runAgain = 1
         require_login_template = Template(filename='require_login.html', lookup=mylookup)
         return require_login_template.render(home="active")
 
@@ -586,8 +588,8 @@ class Root:
         twitter_sources = user.twitter_sources
         twitter_targets = user.twitter_targets
         return beta_graph_template.render(username=cherrypy.session["user"],
-                                          beta="active", targetlist=targets,
-                                          sourcelist=sources, graphs=graphs)
+                                              beta="active", targetlist=targets,
+                                              sourcelist=sources, graphs=graphs)
 
     @require()
     @cherrypy.expose
@@ -605,7 +607,9 @@ class Root:
         user = User.objects(name=cherrypy.session["user"]).first()
         sources = list(set(user.twitter_sources + user.twitter_targets))
         return beta_twitter_graphs_template.render(sources=sources,
-                                                   data=mentions, source=source)
+                                                   data=mentions, source=source,
+                                              username=cherrypy.session["user"],
+                                                          beta_twitter="active")
 
 if __name__ == '__main__':
     global logger

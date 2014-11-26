@@ -10,6 +10,11 @@
 	</head>
 	<body>
 		% if not graphs:
+			% if not sourcelist and not targetlist:
+				<div align="center">
+					No sources and targets found
+				</div>
+			% else:
 			<div align="center">
 				<form class="pure-form pure-form-stacked">
 				    <fieldset>
@@ -31,10 +36,11 @@
 				    </fieldset>
 			    </form>
 			</div>
+			% endif
 		% else:
 			${graphs}
 
-		%endif
+		% endif
 
 
 	</body>
