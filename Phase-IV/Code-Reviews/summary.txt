@@ -19,22 +19,15 @@ File Reviewed: parser.py [get_meta_data & get_screenshot]
 File Timestamp: 11/11/2014, 05:38 PM
 
 Zhen:
-- The correctness was great, the function could handle most of the unexpected 
-  cases and the detailed bar graph contained legend, different color as well 
-  as the description which were expected in the user story.
-- The coding style was good, variables and loop index were meaningful and easy 
-  to follow. The only unexpected thing was the indentations which were too much 
-  for the generate_relation_dict function.
-- The coding guideline was bad. 
-  Some lines are too long [line 215, 217, 254, 263], which confilts the pep8 
-  and docstring is outside the   generate_relation_dict [line 235-240].
-- The quality of documentation was good. Commenting style is maintained and easy
-  to follow. Complex algorithms are explained and justified but not in detail 
-  which still confused me [line 257-258].
-- Since all the reviewed codes were about the UI, it is hard to test it using 
-  the unittest.
-- File reviewed, userinterface.py [line 206-221 235-267] 
-- Timestamp, Nov.11 17:43 2014
+ - The correctness was great, no conflicts with the design and no waste of the memory.
+ - The coding style was great, variables were meaningful and easy to follow.
+ - The coding guideline was bad.Some lines are too long [line 92, 97],
+   which confilts the pep8.Also, there is no docstring.
+ - The quality of documentation was good. Commenting style is maintained and easy to follow,
+   but there is lack of document in conditional statements [line 91].
+ - Since all the reviewed codes were about the UI, it is hard to test it using the unittest.
+ - File reviewed, userinterface.py [line 87-117]
+ - Timestamp, 21:09 Nov.25 2014
 
 Chun:
 - The code returns a string as required and produces the correct output
