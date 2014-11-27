@@ -267,14 +267,24 @@ class Root:
         return track_template.render(username=cherrypy.session["user"])
 
     @cherrypy.expose
-    def get_articles(self):
+    def get_articles(self, number=None):
         global username
+
         show_article_template = Template(filename='get_articles.html')
         sources = User.objects(name=username).first().news_sources
+        targets = User.objects(name=username).first().news_targets
+        articles = []
 
-        # articles = Article.objects(website=Website.objects(name=sources)  ).only('title', 'url')
-        articles = [Article.objects(website=Website.objects(name=s).first()).only('title', 'url') for s in sources]
-        return show_article_template.render(articles=articles)
+        for s in sources:
+            articles += Article.objects(website=Website.objects(name=s).first()).only('title', 'url').all()
+        for t in targets:
+            articles += Article.objects(website=Website.objects(name=t).first()).only('title', 'url').all()
+
+        print number
+        if not number:
+            number = len(articles) / 2
+        print number
+        return show_article_template.render(articles=articles[ :int(number)])
 
     @require() # requires user to be logged in to view page
     @cherrypy.expose
@@ -308,7 +318,7 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_news_pie(self):
-        global relation_dict
+        global relation_dict, parserRun
         self.relation_dict = relation_dict
         try:
             graphs = self.generate_completed_pie_graphs(self.relation_dict, "news")
@@ -316,7 +326,7 @@ class Root:
             graphs = None
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
         return generate_template.render(username=cherrypy.session["user"],
-            graphs=graphs, section_name="News", graph_type="Pie")
+            graphs=graphs, section_name="News", graph_type="Pie", parserRun=parserRun)
 
     @require() # requires user to be logged in to view page
     @cherrypy.expose

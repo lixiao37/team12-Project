@@ -9,17 +9,15 @@
 			<th>Title</th>
 			<th>Download as WARC</th>
 		</tr>
-		% for eachQuery in articles:
-			% for each in eachQuery[:50]:
-				<tr>
-				% if each.title:
-					<td>${count}</td>
-					<td><a href="/show_article?url=${each.url}">${each.title}</a></td>
-					<td><a href="/downloadWarc?url=${each.url}">Download</a></td>
-					<% count += 1 %>
-				% endif
-				</tr>
-			% endfor
+		% for each in articles:
+			<tr>
+			% if each.title:
+				<td>${count}</td>
+				<td><a href="/show_article?url=${each.url}">${each.title}</a></td>
+				<td><a href="/downloadWarc?url=${each.url}">Download</a></td>
+				<% count += 1 %>
+			% endif
+			</tr>
 		% endfor
 	% endif
 </table>

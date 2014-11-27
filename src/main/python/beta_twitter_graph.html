@@ -19,7 +19,7 @@
 				        <b>Note:</b> This will generate a pie-chart of top 10 people who got cited by the following source
 				        <form action="betaGraphs" id="">
 				        <label for="state">Sources</label>
-				        <select multiple name="source">
+				        <select multiple name="source" required>
 						  % for each in sources:
 						  	<option>${each}</option>
 						  % endfor
