@@ -30,9 +30,9 @@
 			    </form>
 			% endif
 		% elif data:
-		<div class="col-md-4 col-md-offset-4">
-			<h3>${source}</h3>
-			<canvas id="myChart" width="500%" height="500%"></canvas>
+		<div class="col-md-4 col-md-offset-3">
+			<h2>${source}</h2>
+			<canvas id="myChart" width="750%" height="500%"></canvas>
 			<script type="text/javascript">
 				function getRandomColor() {
 				    var letters = '0123456789ABCDEF'.split('');
@@ -45,7 +45,7 @@
 				var ctx = document.getElementById("myChart").getContext("2d");
 				var data = {
 					labels: [
-						% for each in sorted(data):
+						% for each in sorted(data)[-20: ]:
 							"${each}",
 						% endfor
 						],
@@ -58,7 +58,7 @@
 				            pointHighlightFill: getRandomColor(),
 				            pointHighlightStroke: getRandomColor(),
 				            data: [
-				            	% for each in sorted(data):
+				            	% for each in sorted(data)[-20:]:
 				            		${data[each]} ,
 				            	% endfor
 				            ]
