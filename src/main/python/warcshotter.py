@@ -3,7 +3,7 @@
 import warc
 import tempfile
 from urllib2 import HTTPHandler, HTTPSHandler, HTTPError, build_opener
-from httplib import HTTPConnection, HTTPSConnection
+from httplib import HTTPConnection, HTTPSConnection, BadStatusLine
 from sys import argv
 from datetime import datetime
 from urlparse import urlparse, urljoin
@@ -78,6 +78,8 @@ def download(url):
     except HTTPError, error:
         request = error
         response = request.read()
+    except BadStatusLine, error:
+        return warc.WARCRecord(payload="")
 
     resp_status = "HTTP/1.1 %s %s\r\n" % (request.getcode(), request.msg)
     payload = resp_status + str(request.info()) + '\r\n' + response
@@ -146,5 +148,6 @@ def get_warc(url):
 
 
 if __name__ == "__main__":
-    print get_warc("https://mathlab.utsc.utoronto.ca/courses/cscd27f14/rosselet/index.shtml")
+    url = "http://www.cnn.com/2014/07/28/world/gaza-cease-fire-analysis/"
+    print get_warc(url)
 

@@ -22,17 +22,17 @@ from citation import Citation
 from authenticator import AuthController, require, member_of, name_is
 
 mylookup = TemplateLookup(directories=['.'])
-host = "ds053380.mongolab.com:53380"
-dbName = "twitterparser"
+host = "ds051980.mongolab.com:51980"
+dbName = "online"
 username = "admin"
 password = "admin"
 
 #check for parser running
-global parserRun, graph_thread_flag, graph_thread_running, user, logger
+global parserRun, graph_thread_flag, graph_thread_running, user, logger, curr_user
 graph_thread_running = 0
 graph_thread_flag = 1
 parserRun = 0
-username = None
+curr_user = None
 
 
 class Root:
@@ -51,13 +51,15 @@ class Root:
             logger.info('Started Thread on Relation Graphs')
             graph_thread_running = 1
             runAgain = 1
+            old_user = username
             while graph_thread_flag:
                 if parserRun == 1:
                     #wait for one minute for the parser to finish
                     logger.info('Pause Relation Dict')
                     runAgain = 1
                     while parserRun:
-                        time.sleep(5)
+                        time.sleep(1)
+                    curr_user = username
                 elif runAgain == 1:
                     logger.info('Running Relation Dict on {0}'.format(username))
                     #data has changed, generate the relation again
@@ -73,8 +75,14 @@ class Root:
                         logger.info('Not Enough Data to Process For Graphs')
                     logger.info('Finish Updated Relation Dict')
                     runAgain = 0
+                    curr_user = username
+                elif old_user != curr_user:
+                    logger.info('User changed, re-run the relation dict')
+                    old_user = curr_user
+                    runAgain = 1
                 else:
-                    time.sleep(5)
+                    curr_user = username
+                    time.sleep(1)
 
         if not graph_thread_running:
             thread.start_new_thread(graph_thread, ())
@@ -260,8 +268,12 @@ class Root:
 
     @cherrypy.expose
     def get_articles(self):
+        global username
         show_article_template = Template(filename='get_articles.html')
-        articles = Article.objects().only('title', 'url')
+        sources = User.objects(name=username).first().news_sources
+
+        # articles = Article.objects(website=Website.objects(name=sources)  ).only('title', 'url')
+        articles = [Article.objects(website=Website.objects(name=s).first()).only('title', 'url') for s in sources]
         return show_article_template.render(articles=articles)
 
     @require() # requires user to be logged in to view page
@@ -286,21 +298,22 @@ class Root:
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_news_bar(self):
-        global relation_dict
+        global relation_dict, parserRun
         self.relation_dict = relation_dict
         graphs = self.generate_detailed_graph(self.relation_dict, "news")
-
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
         return generate_template.render(username=cherrypy.session["user"],
-            graphs=graphs, section_name="News", graph_type="Bar")
+            graphs=graphs, section_name="News", graph_type="Bar", parserRun=parserRun)
 
     @require() # requires user to be logged in to view page
     @cherrypy.expose
     def display_news_pie(self):
         global relation_dict
         self.relation_dict = relation_dict
-        graphs = self.generate_completed_pie_graphs(self.relation_dict, "news")
-
+        try:
+            graphs = self.generate_completed_pie_graphs(self.relation_dict, "news")
+        except IndexError:
+            graphs = None
         generate_template = Template(filename='display_graphs.html', lookup=mylookup)
         return generate_template.render(username=cherrypy.session["user"],
             graphs=graphs, section_name="News", graph_type="Pie")
@@ -365,8 +378,9 @@ class Root:
         Generate a general pie graph from the relation_dict in str type.
         If there are only two sources and one target in the relation_dict,
         return an error message.
-        ''' 
+        '''
         # generate the whole graph dataset
+        index = len(User.objects(name=username).first().news_targets) -1
         sources_counts = []
         data = ""
         for source in relation_dict:
@@ -389,7 +403,7 @@ class Root:
         If the relation_dict has no data, then return an empty string.
         If traking less than two sources or less than one targets,
         return an empty string.
-        '''        
+        '''
         user = User.objects(name=cherrypy.session["user"]).first()
         # get source and target list based on the datatype
         if datatype == "news":
@@ -420,6 +434,8 @@ class Root:
             # if the target list is None, get that list from user
             if not targets:
                 targets = user.news_targets.values()
+                if not targets:
+                    return ""
         elif datatype == "twitter":
             targets = user.twitter_targets
         # avoid the unicode issue
@@ -430,9 +446,13 @@ class Root:
         data = ""
         if relation_dict:
             for source in relation_dict:
-                data+= '{fillColor : randomColor(),strokeColor : "rgba(151,187,205,0.8)",data: ' + str(relation_dict.get(source)) + ',label: "' + source + '"},'
+                relation_data = relation_dict.get(source)
+                if relation_data == [0]:
+                    return ""
+                data+= '{fillColor : randomColor(),strokeColor : "rgba(151,187,205,0.8)",data: ' + str(relation_data) + ',label: "' + source + '"},'
             data = data[0:-1]
             graph_generator_template = Template(filename='detailed_graph_generator.html')
+
             return graph_generator_template.render(targets=targets_str,
                     sources=relation_dict.keys(), target_counts=relation_dict.values(),
                     value_space=600/(6+total_bar), dataset_space=((600/(6+total_bar))/5),
@@ -463,7 +483,7 @@ class Root:
         '''
         # initialize the relation dictionary.
         relation_dict = {}
-        
+
         # count target count for each source
         for twitter_sources_screenname in twitter_sources:
             # initialize the target count
