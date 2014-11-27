@@ -1,5 +1,5 @@
 File Reviewed: userinterface.py
-File Timestamp: November 26, 2014
+File Timestamp: November 26, 2014 6:00 pm
 Sections Reviewed: 
     functions:
 	generate_twitter_relation_dict [line 438-451]
@@ -41,13 +41,11 @@ Description of feature:
     - No testing was done because this feature is part of the user interface
 
 Summary:
-    - The code returns a string as required and produces the correct output
-      visually in the UI (shows pie graphs)
+    - The correctness checks out / is good
     - The code's styling is good/consistent and follows the conventions that
       we have agreed on as a group
-    - The code needs more comments to describe the confusing parts,
-      someone who did not work with this file will be confused when
-      they are reading the code
+    - The code needs comments to describe its functionality in different
+      parts of the code
     - The functions needs doc strings to describe what parameters are being
-      passed in, what the funciton does and what it returns
+      passed in, what the function does and what it returns
 
