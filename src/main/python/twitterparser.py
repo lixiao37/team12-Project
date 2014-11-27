@@ -227,6 +227,22 @@ class TwitterParser:
 
         return total
 
+    def count_tweets_day(self, user):
+        count_map = {}
+        ta = TwitterAccount.objects(screen_name=user).first()
+        if not ta:
+            return {}
+        tweets = ta.tweets
+        for each in tweets:
+            if not count_map.get(each.created_at.date()):
+                count_map[each.created_at.date()] = 1
+                continue
+            count_map[each.created_at.date()] += 1
+
+        print count_map
+        return count_map
+
+
     def run(self, handlers):
         '''Run the twitter_parser'''
         if self.logger:
@@ -240,17 +256,17 @@ class TwitterParser:
 
 
 if __name__ == '__main__':
-    pass
-    # host = "ds053380.mongolab.com:53380"
-    # dbName = "twitterparser"
+    host = "ds053380.mongolab.com:53380"
+    dbName = "twitterparser"
     # people = ["DaliaHatuqa", "DanielSeidemann", "galberger"]
 
-    # data = Database(host=host, dbName=dbName)
-    # data.connect(username="admin", password="admin")
+    data = Database(host=host, dbName=dbName)
+    data.connect(username="admin", password="admin")
 
-    # twitter = TwitterParser(data=data)
-    # twitter.authorize()
+    twitter = TwitterParser(data=data)
+    twitter.authorize()
     # twitter.run(people)
+    print twitter.count_tweets_day('DaliaHatuqa')
 
 
 

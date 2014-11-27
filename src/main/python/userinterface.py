@@ -282,7 +282,7 @@ class Root:
 
         print number
         if not number:
-            number = len(articles) / 2
+            number = len(articles)
         print number
         return show_article_template.render(articles=articles[ :int(number)])
 
@@ -332,6 +332,7 @@ class Root:
     @cherrypy.expose
     def display_twitter_bar(self):
         global twitter_relation_dict
+
         self.twitter_relation_dict = twitter_relation_dict
         graphs = self.generate_detailed_graph(self.twitter_relation_dict, "twitter")
 
@@ -447,6 +448,9 @@ class Root:
                 if not targets:
                     return ""
         elif datatype == "twitter":
+            targets = user.twitter_targets
+            if not targets:
+                return "No Targets Found, Please refer to your tracking page!"
             targets = user.twitter_targets
         # avoid the unicode issue
         targets_str = str(targets).replace("u'","'")
@@ -689,6 +693,27 @@ class Root:
                        'attachment; filename={0}.warc'.format(int(time.time()))
         binary = warcshotter.get_warc(url)
         return binary
+
+    @require()
+    @cherrypy.expose
+    def twitter_analysis_graph(self, source=None):
+        graph_template = \
+                   Template(filename="twitter_analysis_graph.html", lookup=mylookup)
+        count_map = {}
+        if source:
+            twitter_parser = TwitterParser(data=data)
+            twitter_parser.authorize()
+            count_map = twitter_parser.count_tweets_day(source)
+            # mentions = twitter_parser.count_mentions(source)
+            # mentions = dict(sorted(mentions.iteritems(),
+                                                     # key=operator.itemgetter(1),
+                                         # reverse=True)[:min(len(mentions), 10)])
+        user = User.objects(name=cherrypy.session["user"]).first()
+        sources = list(set(user.twitter_sources + user.twitter_targets))
+        return graph_template.render(sources=sources, data=count_map, source=source,
+                                              username=cherrypy.session["user"],
+                                                          twitter_analysis="active")
+
 
 
 if __name__ == '__main__':
