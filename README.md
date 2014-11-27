@@ -26,7 +26,7 @@ Run the following commands:
 
 	- $ sudo pip install -r requirements.txt
 	- $ sudo sh dryscrape.sh
-The first script will install all python dependencies. 
+The first script will install all python dependencies.
 And the second script will install **dryscrape**, which is a python module for HTTP requests.
 
 ***Note: The dryscrape module uses X11, if the build fails with the error "Cant Connect To X11", then you should run the build using the following command:***
@@ -68,10 +68,14 @@ Note: You have to login using the username "guest" and leave the password blank.
 	will store all meta data associated with each articles.
 
 ###### citation.py
-	- This python file contains the schema for the Citation collection. 
-	
+	- This python file contains the schema for the Citation collection.
+
 ###### website.py
 	- This python file contains the schema for the Website collection.
+
+###### twitter.py
+	- This python file contains the schema for twitter-parsing. It contains two collections,
+	namely, TwitterAccount(stores twitter handlers) and Tweet(stores tweets of TwitterAccount)
 
 ###### userinterface.py
 	- This file contains the User Interface for our system.

@@ -38,10 +38,6 @@ class MyHTTPSHandler(HTTPSHandler):
 
 class MyHTMLParser(HTMLParser):
     def handle_starttag(self,tag, attrs):
-        if DEBUG:
-            if tag in ["link", "img", "script", "iframe", "embed"]:
-                #print "%s - %r" % (tag, attrs)
-                pass
         if tag == 'link':
             for attr in attrs:
                 if "href" in attr[0]:
@@ -113,7 +109,7 @@ def get_warc(url):
 
     filename = "%s-%s.warc" % (urlparse(targeturl).netloc,
                                datetime.utcnow().strftime("%Y%m%d-%H%M"))
-    # print "Starting snapshot of %s, writing to %s" % (targeturl, filename)
+
     wf = warc.open(temp.name, "w")
 
     warcinfo_record = mkwarcinfo(filename)
@@ -145,9 +141,3 @@ def get_warc(url):
     temp.close()
 
     return binary
-
-
-if __name__ == "__main__":
-    url = "http://www.cnn.com/2014/07/28/world/gaza-cease-fire-analysis/"
-    print get_warc(url)
-

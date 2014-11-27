@@ -280,10 +280,9 @@ class Root:
         for t in targets:
             articles += Article.objects(website=Website.objects(name=t).first()).only('title', 'url').all()
 
-        print number
         if not number:
             number = len(articles)
-        print number
+
         return show_article_template.render(articles=articles[ :int(number)])
 
     @require() # requires user to be logged in to view page
