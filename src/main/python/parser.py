@@ -5,6 +5,7 @@ from user import *
 from citation import *
 from requests.exceptions import ConnectionError
 from database import Database
+import logging
 import requests
 import re
 import dryscrape
@@ -12,29 +13,40 @@ import tempfile
 import sys
 
 class Parser(object):
-    '''Generic Parser Class'''
+    '''
+    News Website Parser that parses the news articles.
+    '''
 
     conn = None
     session = None
-    verbose = True
     host = "ds039020.mongolab.com:39020"
     dbName = "parser"
-    #base_url = ""
+    data = None
     google_url = "http://www.google.ca"
-
+    log = 'beta.log'
+    logger = None
     #{0}:keyword, {1}:website, {2}:sort by month or year or day
-    search_meta = "http://www.google.ca/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
+    search_meta = \
+          "http://www.google.ca/#q=%22{0}%22+site:{1}&tbas=0&tbs=qdr:{2},sbd:1"
     username = "admin"
     password = "admin"
 
     #different names for author's meta data
-    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate", 'datePublished']
+    date_names = ["LastModifiedDate", "lastmod", "OriginalPublicationDate",
+                                                                'datePublished']
     title_names = ['Headline', 'title', 'og:title']
 
-    def __init__(self, host=None, dbName=None, verbose=True):
+    def __init__(self, log=None, data=None, logger=logger):
         '''Initialize a session to connect to the database'''
+        if log:
+            self.log = log
+        if not data:
+            raise Exception("No Database Connection Found")
+        if logger:
+            self.logger = logger
+        self.data = data
+
         self.session = dryscrape.Session()
-        self.verbose = verbose
 
     def searchArticle(self, q, site, since="y"):
         '''
@@ -79,7 +91,6 @@ class Parser(object):
         Return a dictionary of citations extracted from the given html,
         and using the parameters, target_url and target_name
         '''
-
         cited = {}
         numCited = 0
         #Compile a list of urls that contains the given target url
@@ -115,21 +126,21 @@ class Parser(object):
 
     def add_citations(self, cited, target_url, target_name, article):
         '''Some Docstring'''
-        website = data.add_website(
+        website = self.data.add_website(
                               {"name": target_name, "homepage_url": target_url})
 
         for i in cited:
             each_citation = cited[i]
             if each_citation["href"]:
                 article_meta = self.get_meta_data(each_citation["href"])
-                target_article = data.add_article(article_meta, website)
-                cite = data.add_citation(
+                target_article = self.data.add_article(article_meta, website)
+                cite = self.data.add_citation(
                     {"text": each_citation["text"],
                      "article": article,
                      "target_article": target_article,
                      "target_name": target_name})
             else:
-                cite = data.add_citation(
+                cite = self.data.add_citation(
                     {"text": each_citation["text"],
                      "article": article,
                      "target_name": target_name})
@@ -145,6 +156,11 @@ class Parser(object):
             r = requests.get(url, timeout=60)
         except ConnectionError:
             return self.get_meta_data(url)
+
+        # if the page does not exists
+        if r.status_code == 404:
+            self.logger.warn('404 Error on url: {0}'.format(url))
+            return {}
 
         #get the content of the url
         content = r.content
@@ -173,65 +189,90 @@ class Parser(object):
 
         #Special case to find the title of the target website
         if not meta.get('title') and soup.find(itemprop="headline"):
-            meta['title'] = soup.find(itemprop="headline").text.encode("utf-8").strip()
+            meta['title'] = soup.find(itemprop="headline")\
+                                                   .text.encode("utf-8").strip()
+
+        #special case for haaretz
+        if not meta.get('title') and soup.find('hgroup'):
+            hgroup = soup.find("hgroup")
+            if hgroup.find('h1'):
+                meta["title"] = hgroup.find('h1').text
+
+        #special case for ynetnews
+        if not meta.get('title') and soup.find('h1') and soup.find('h1', class_='text20b'):
+            meta['title'] = soup.find('h1', class_='text20b').text
+
+        #last resort, if cant find the title
+        if not meta.get('title') and soup.find('title'):
+            meta['title'] = soup.find('title').text
+
+        #finall leave it blank
+        if not meta.get('title'):
+            meta['title'] = ''
 
         #Special case to find the author of the target website
         if not meta.get('author'):
             #This case is for human author
             if soup.find(rel="author"):
-                meta['author'] = soup.find(rel="author").text.encode("utf-8").strip()
-            #This case if for non-human author (i.e. organization, another web site
-            #source)
+                meta['author'] = soup.find(rel="author")\
+                                                   .text.encode("utf-8").strip()
+            # This case if for non-human author (i.e. organization, another web
+            # site source)
             elif soup.find(itemprop="author"):
                 hold = soup.find(itemprop="author").findChildren()
-                meta['author'] = hold[len(hold)-1].text.encode("utf-8").strip()
-
-        #puts empty string as title and author if not found
-        if not meta.get('title'):
-            meta["title"] = ""
+                if hold:
+                    meta['author'] = hold[len(hold)-1]\
+                                                   .text.encode("utf-8").strip()
 
         if not meta.get('author'):
             meta["author"] = ""
 
         return meta
 
-    def get_screenshot_binary(self, url):
-        '''
-        Takes a screenshot of the article and return a binary representation
-        of it.
-        '''
-
-        # visit the url
-        self.session.visit(url)
-
-        # define a temporary jpg file to be read as binary
-        temp = tempfile.NamedTemporaryFile(mode='rb', suffix = '.jpg')
-
-        # save the temporary file of the web page
-        self.session.render(temp.name)
-
-        binary = temp.read()
-
-        # temporary file is removed
-        temp.close()
-        return binary
+    def run(self, sources, targets):
+        '''Run the website parser using the parameters'''
+        if self.logger:
+            self.logger.info('Started Website Parsing')
+        for s_name, s in sources.viewitems():
+            website = self.data.add_website({"name": s_name, "homepage_url": s})
+            for t_name, t in targets.viewitems():
+                articles = self.searchArticle(t_name, s)
+                for each in articles:
+                    #check if the article is the source itself
+                    if each == s:
+                        continue
+                    article_meta = self.get_meta_data(each)
+                    if not article_meta:
+                        continue
+                    article = self.data.add_article(article_meta, website)
+                    if not article:
+                        continue
+                    citations = self.get_citation(
+                                            article_meta.get('html'), t, t_name)
+                    self.add_citations(citations, t, t_name, article)
+        if self.logger:
+            self.logger.info("Done Parsing Websites")
+        return True
 
 
 if __name__ == '__main__':
-    sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
-                    'CNN': 'www.cnn.com' }
-    targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
-    data = Database()
-    data.connect()
-    parse = Parser()
-    for s_name, s in sources.viewitems():
-        website = data.add_website({"name": s_name, "homepage_url": s})
-        for t_name, t in targets.viewitems():
-            articles = parse.searchArticle(t_name, s)
-            for a in articles:
-                article_meta = parse.get_meta_data(a)
-                article = data.add_article(article_meta, website)
-                citations = parse.get_citation(article_meta.get('html'), t, t_name)
-                parse.add_citations(citations, t, t_name, article)
+    pass
+    # host = "ds053380.mongolab.com:53380"
+    # dbName = "twitterparser"
+    # data = Database(host=host, dbName=dbName)
+    # data.connect()
+    # # sources = { "Al Jazeera": "www.aljazeera.com", "BBC": "www.bbc.com",
+    #                 # 'CNN': 'www.cnn.com' }
+    # # targets = { "Haaretz": "www.haaretz.com", "Ahram":"www.english.ahram.org.eg"}
+
+    # sources = {'Globe and Mail' : 'www.theglobeandmail.com'}
+    # targets = {'Haaretz' : 'www.haaretz.com'}
+
+    # url = "http://www.ynetnews.com/articles/0,7340,L-4595629,00.html"
+
+    # parse = Parser(data=data)
+    # print parse.get_meta_data(url)["title"]
+    # # parse.run(sources, targets)
+
 
 

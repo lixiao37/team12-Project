@@ -1,0 +1,43 @@
+File Reviewed: parser.py
+File Timestamp: Nov 25 04:15 AM
+Sections Reviewed: Parser Class
+Code-Reviewer: Ali Mehdi(aka Muhammad Mehdi)
+Code-Author: Alan Chan
+
+(a) Correctness
+    - The over-all correctness of Parser was acurate. It followed the sequence
+    diagram of a Facade Design Pattern. Hence, Parser wrapped smaller api's into
+    a useful api's. I liked the run method which ran the entire Parser class.
+    Few issues found, firstly, the Parser is not generic to all parsers. It can
+    only be used with News Websites. It needs to be a generic parser, which can
+    branch into smaller parsers, e.g. twitterparser, newsparser etc.
+
+(b) Coding Style
+    - I liked the coding style. Different sections of the code were separated,
+    so that the reader can easily distinguish the different parts of the code.
+
+(c) Coding Guidelines
+    - The code lacked consistency with pep8 standards. When I ran pep8 against 
+    the Parser class, there were many issues, e.g. naming conventions, 
+
+(d) Quality of Documentation
+    - The level of documentation was good. All methods had docstrings. More sub-
+    comments can help in understanding the inner parts of the functions. 
+
+(e) Quality of Testing
+    - The test-cases were not very thorough. Only two test-cases were created 
+    per methods. There are some functions that need more test-cases, that handle
+    unstable inputs.
+
+Summary:
+ - The overall correctness was correct. The design pattern(Facada) was 
+   implemented properly and it was consistent. However, the Parser class itself
+   needs to be a generic class. This will allow further enhancements using the
+   Parser class. Coding style was great, very good use of blank spaces, the 
+   reader can easily see different parts of the code. Pep8 was not followed, 
+   hence it was causing issues when I was running pep8 against the file. Testing
+   needs to be done extensively. So far, there are only around ten test-cases,
+   however there needs to be more. Since Parser will server as an essential part
+   of the application, it needs to be stable.
+   File reviewed, parser.py. Timestamp, Nov. 25 09:40 PM.
+

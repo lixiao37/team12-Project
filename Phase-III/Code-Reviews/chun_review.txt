@@ -1,0 +1,58 @@
+File Reviewed: userinterface.py
+File Timestamp: November 11, 2014
+Sections Reviewed: 
+    functions:
+        generate_pie_graph [line 175-190]
+        generate_completed_pie_graphs [line 192-204]
+Code-Reviewer: Chun Cho
+Code-Author: Zhen Jiang
+Description of feature:
+    - This feature is part of the user interface which
+        gets data from the database and generates html code with
+        pie graphs for the user to see
+(a) Correctness
+    - Function always returns a string as required,
+      even if there is no graph generated
+    - Given non empty data for the pie graph, 
+      function generates html code for pie graphs and returns it
+      as a string as required
+    - Visual Correctness (How it looks in the user interface)
+        - Pie Graph's data is correct
+        - Pie Graph's colors are different
+        - Pie Graph's sizes are proportional
+        - Legend shows up correctly with the right numbers
+        - The number of pie graphs that show up are correct
+        - Sentence that describes the graph is correct
+          (correct source name and target name / count)
+(b) Coding Style
+    - Some lines of the code are way too long,
+      eg. function generate_pie_graph - line 190 has 176 characters
+      and function generate_pie_graph - line 180 has 124 characters
+      Needs a line break to split the lines
+    - Indentation is consistent
+    - Variable and function names make sense (correctly describe what they are)
+(c) Coding Guidelines
+    - Functions are named correctly according to the guidelines agreed upon
+    - Variables defined in the functions are named correctly and 
+      consistently with an underscore to seperate words. eg news_sources
+(d) Quality of Documentation
+    - There are comments for different parts of the functions
+        - Comments are helpful, but there aren't enough made
+          to describe confusing sections of the code
+        - Comments are only made when it is necessary
+        - Comments are consistently written
+    - There are NO doc strings for both the functions
+(e) Quality of Testing
+    - No testing was done because this feature is part of the user interface
+
+Summary:
+    - The code returns a string as required and produces the correct output
+      visually in the UI (shows pie graphs)
+    - The code's styling is good/consistent and follows the conventions that
+      we have agreed on as a group
+    - The code needs more comments to describe the confusing parts,
+      someone who did not work with this file will be confused when
+      they are reading the code
+    - The functions needs doc strings to describe what parameters are being
+      passed in, what the funciton does and what it returns
+

@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<%include file="navbar_fixed.html"/>
+		<script src="http://www.chartjs.org/assets/Chart.js"></script>
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+		<style>
+			h1 { text-align: center }
+			#form_news { text-align: center}
+		</style>
+	</head>
+	<body>
+		% if not graphs:
+			% if not sourcelist and not targetlist:
+				<div align="center">
+					No sources and targets found
+				</div>
+			% else:
+			<div align="center">
+				<form class="pure-form pure-form-stacked">
+				    <fieldset>
+				        <legend>News Graph Generator</legend>
+				        <b>Note: </b>This will generate bar-graph based on the following relationship of source and target
+				        <form action="betaGraphs" id="">
+				        <label for="state">Sources</label>
+				        <select multiple name="sourcelist" required>
+						  % for each in sourcelist:
+						  	<option>${each}</option>
+						  % endfor
+						</select>
+						<label for="state">Targets</label>
+						<select multiple name="targetlist" required>
+						  % for each in targetlist:
+						  	<option>${each}</option>
+						  % endfor
+						</select>
+				        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+				    </fieldset>
+			    </form>
+			</div>
+			% endif
+		% else:
+			${graphs}
+
+		% endif
+
+
+	</body>
+</html>

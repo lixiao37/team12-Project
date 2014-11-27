@@ -1,0 +1,59 @@
+Seong-min:
+For correctness, Ali made his functions work as intended. His coding style 
+is easily readable due to spacing. Ali marginally followed the pep8 guildline, 
+due to missing certain conventions in his code. The quality of Ali's 
+documentation is decent and explains the purpose of a big chunk of code. All he 
+needs to do is add few more lines of commenting and describe what happens when 
+the data is already in the database or when connection to the database fails. 
+Ali did not write any test cases.
+File Reviewed: parser.py [searchArticle, add_article, add_website & add_citation]
+File Timestamp: 11/11/2014 5:40 PM
+
+Alan:
+Code is present functions correctly and output was of expected format.
+Code is easy for both other users to read and understand.
+Code follows PEP8 coding conventions, minor format issues in get_screenshot.
+Code comments and docstring provide descriptive detail to function flow.
+No tests were available to test functions on.
+File Reviewed: parser.py [get_meta_data & get_screenshot]
+File Timestamp: 11/11/2014, 05:38 PM
+
+Zhen:
+- The correctness was great, the function could handle most of the unexpected 
+  cases and the detailed bar graph contained legend, different color as well 
+  as the description which were expected in the user story.
+- The coding style was good, variables and loop index were meaningful and easy 
+  to follow. The only unexpected thing was the indentations which were too much 
+  for the generate_relation_dict function.
+- The coding guideline was bad. 
+  Some lines are too long [line 215, 217, 254, 263], which confilts the pep8 
+  and docstring is outside the   generate_relation_dict [line 235-240].
+- The quality of documentation was good. Commenting style is maintained and easy
+  to follow. Complex algorithms are explained and justified but not in detail 
+  which still confused me [line 257-258].
+- Since all the reviewed codes were about the UI, it is hard to test it using 
+  the unittest.
+- File reviewed, userinterface.py [line 206-221 235-267] 
+- Timestamp, Nov.11 17:43 2014
+
+Chun:
+- The code returns a string as required and produces the correct output
+  visually in the UI (shows pie graphs)
+- The code's styling is good/consistent and follows the conventions that
+  we have agreed on as a group
+- The code needs more comments to describe the confusing parts,
+  someone who did not work with this file will be confused when
+  they are reading the code
+- The functions needs doc strings to describe what parameters are being
+  passed in, what the funciton does and what it returns
+- File Reviewed: userinterface.py [line 175-190 192-204]
+- File Timestamp: November 11, 2014
+
+Ali:
+- The overall correctness was correct. Except, the "extract_citation" needs 
+  to be split into smaller functions, so that testing is done more
+  more efficiently. The coding style was great, it was consistent with the
+  pep8 coding styles. The code however needs more documentation and comments.
+  There were no test-cases done, so the author needs to work more on that,
+  since testing is an essential part of the development.
+  File reviewed, parser.py. Timestamp, Nov. 11 05:38 PM.

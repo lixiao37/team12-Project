@@ -1,25 +1,47 @@
 from mongoengine import *
 from website import Website
 from article import Article
+from twitter import Tweet
+from twitter import TwitterAccount
 from user import User
 from citation import Citation
+import logging
 
 
 class Database(object):
-
+    '''
+    Database api, this will help connect to the Database.
+    All data needs to be added in the database using this API.
+    '''
     conn = None
     verbose = True
-    host = "ds039020.mongolab.com:39020"
-    dbName = "parser"
+    host = "ds053380.mongolab.com:53380"
+    dbName = "twitterparser"
     username = "admin"
     password = "admin"
+    log = "beta.log"
+    logger = None
 
-    def __init__(self, host=None, dbName=None, verbose=True):
+    def __init__(self, host=None, dbName=None, verbose=True, log=None):
         self.verbose = verbose
         if host:
             self.host = host
         if dbName:
             self.dbName = dbName
+        if log:
+            self.log = log
+
+        #create a logger
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        # create a file handler
+        handler = logging.FileHandler(self.log)
+        handler.setLevel(logging.INFO)
+        # create a logging format
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        # add the handlers to the logger
+        self.logger.addHandler(handler)
 
     def connect(self, username=None, password=None):
         '''Connect to the database'''
@@ -31,7 +53,8 @@ class Database(object):
         self.conn = connect(self.dbName, host=self.host, username=self.username,
                             password=self.password)
         if self.isConnect() and self.verbose:
-            print "Connected to the \"{0}\" Database!".format(self.dbName)
+            self.logger.info('Connected to the \"{0}\" Database!' \
+                                                           .format(self.dbName))
 
     def isConnect(self):
         '''Check if connection exists with the database'''
@@ -52,8 +75,6 @@ class Database(object):
                     ).first()
 
         if art:
-            if self.verbose:
-                print "Article already exists and has not been updated"
             return art
 
         #This article object is used to add to the database
@@ -65,7 +86,15 @@ class Database(object):
                 url=article_meta.get("url"),
                 website=website
                     )
-        status = art.save()
+        try:
+            status = art.save()
+        except NotUniqueError:
+            self.logger.warn('Article is not unique, url: {0}'.format(art.url))
+            return None
+        except ValidationError:
+            self.logger.warn('Article Save/Validation Failed, url: {0}' \
+                                               .format(article_meta.get("url")))
+            return None
 
         if status:
             return art
@@ -89,7 +118,11 @@ class Database(object):
                 name=website_meta.get("name"),
                 homepage_url=website_meta.get("homepage_url")
                 )
-        status = web.save()
+        try:
+            status = web.save()
+        except ValidationError:
+            self.logger.warn('Save/Validate Website Failed! url: {0}'\
+                                      .format(website_meta.get("homepage_url")))
 
         if status:
             return web
@@ -104,7 +137,6 @@ class Database(object):
         3. The target name does not exist in the text but a different name that
         links to the target url is in the text
         '''
-
         #Create a citation object to check if it exists in the database
         cite = Citation.objects(
                     text=citation_meta.get('text'),
@@ -114,7 +146,8 @@ class Database(object):
                 ).first()
 
         if cite:
-            print "Citation already exists!"
+            # self.logger.info('Citation exists, id: {0}, article: {1}' \
+            #                                  .format(cite.id, cite.article.url))
             return cite
 
         #This citation object is used to add to the database
@@ -133,5 +166,48 @@ class Database(object):
             return cite
         else:
             return None
+
+    def add_tweet(self, tweet_meta):
+        '''Add the tweet into the database'''
+        text = tweet_meta.get('text')
+        author = tweet_meta.get('author')
+        created_at = tweet_meta.get('created_at')
+        entities = tweet_meta.get('entities')
+        retweet = tweet_meta.get('retweet')
+        retweet_author = tweet_meta.get('retweet_author')
+        retweeted = tweet_meta.get('retweeted')
+
+        #check if tweet already exists
+        tw = Tweet.objects(text=text, author=author, created_at=created_at) \
+                                                                        .first()
+        if tw:
+            # self.logger.info('Tweet Already Exists, id: {0}'.format(tw.id))
+            return tw
+
+        tw = Tweet(text=text, entities=entities, author=author,
+                   retweeted=retweeted, retweet_author=retweet_author,
+                   retweet=retweet, created_at=created_at)
+        tw.save()
+        author.tweets.append(tw)
+        author.save()
+
+        return tw
+
+    def add_twitteraccount(self, twitteraccount_meta):
+        '''Add twitter user acccount in the database'''
+        name = twitteraccount_meta.get('name')
+        screen_name = twitteraccount_meta.get('screen_name')
+
+        ta = TwitterAccount.objects(screen_name=screen_name).first()
+        if ta:
+            # self.logger.info('TwitterAccount Already Exists, id: {0}' \
+                                                                 # .format(ta.id))
+            return ta
+
+        ta = TwitterAccount(name=name, screen_name=screen_name)
+        ta.save()
+
+        return ta
+
 
 

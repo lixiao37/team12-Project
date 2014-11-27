@@ -1,0 +1,39 @@
+File Reviewed: userinterface.py
+File Timestamp: 21:09 Nov.25 2014
+Sections Reviewed: 
+	[line 87-117] signup
+Code-Reviewer: Zhen Jiang
+Code-Author: Chun Cho
+(a) Correctness
+    - Input-output format follows the design which inputs a username(str),
+      a password(str) and outputs a str of message
+    - The username and password are set to None in default which is needed in design
+    - It is connected to Database which is defined in the class diagram
+    - Conditional statements are correct and doesn't duplicate
+
+(b) Coding Style
+    - Variables are named clearly and easy to understand and follow
+    - No indentation issue
+
+(c) Coding Guidelines
+    - Some lines are too long [line 92, 97], which confilts the pep8
+    - No docstring
+
+(d) Quality of Documentation
+    - Not enough document in conditional statements [line 91]
+    - Code is clearly and adequately documented (both file prologues and module headers)
+    - Commenting style is maintained and easy to follow
+
+(e) Quality of Testing
+    - No testing, since these files are about the UI.
+
+Summary:
+ - The correctness was great, no conflicts with the design and no waste of the memory.
+ - The coding style was great, variables were meaningful and easy to follow.
+ - The coding guideline was bad.Some lines are too long [line 92, 97],
+   which confilts the pep8.Also, there is no docstring.
+ - The quality of documentation was good. Commenting style is maintained and easy to follow,
+   but there is lack of document in conditional statements [line 91].
+ - Since all the reviewed codes were about the UI, it is hard to test it using the unittest.
+ - File reviewed, userinterface.py [line 87-117]
+ - Timestamp, 21:09 Nov.25 2014

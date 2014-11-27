@@ -1,0 +1,47 @@
+File Reviewed: parser.py
+File Timestamp: 11/11/2014
+Sections Reviewed: 1.get_meta_data 
+		   2.get_screenshot
+Code-Reviewer: Alan Chan
+Code-Author: Max Jeong
+
+(a) Correctness:
+	get_meta_data:
+		- extracts metadata from website correctly
+		- however, article metadata format must be very specific
+	get_screenshot:
+		- correctly generates screenshot of article at state of screenshot generation
+		- due to format of output, difficult to test for errors generation
+(b) Coding Style:
+	get_meta_data:
+		- code is easy to read and follow, has comments where necessary
+		- variable names match use program
+	get_screenshot:
+		- code is easy to read and follow, has comments where necessary
+		- variable names match use in function
+(c) Coding Guidelines:
+	get_meta_data:
+		- follows rules of PEP8 formatting style
+		- lines of code easy to understand
+	get_screenshot:
+		- follows rules of PEP8 formatting style
+		- code should not be separated by excessive blank lines 
+(d) Quality of Documentation:
+	get_meta_data:
+		- comments explain function flow in necessary detail
+		- docstring provide good description of function
+	get_screenshot:
+		- comments explain function flow in necessary detail
+		- docstring provide good description of function
+(e) Quality of Testing:
+	get_meta_data:
+		- No tests available
+	get_screenshot:
+		- No tests available
+
+Summary:
+Code is present functions correctly and output was of expected format.
+Code is easy for both other users to read and understand.
+Code follows PEP8 coding conventions, minor format issues in get_screenshot.
+Code comments and docstring provide descriptive detail to function flow.
+No tests were available to test functions on.

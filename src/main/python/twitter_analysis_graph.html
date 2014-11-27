@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<%include file="navbar_fixed.html"/>
+	</head>
+
+	<body>
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+		<script src="http://www.chartjs.org/assets/Chart.js"></script>
+
+		% if not data:
+			% if not sources:
+				<div align="center">
+					No sources and targets found
+				</div>
+			% else:
+			<div align="center">
+				<form class="pure-form pure-form-stacked">
+				    <fieldset>
+				        <legend>Twitter Graph Generator</legend>
+				        <b>Note:</b> This will generate a line graph of the number of tweets by the following user overtime!
+				        <form action="betaGraphs" id="">
+				        <label for="state">Sources</label>
+				        <select multiple name="source" required>
+						  % for each in sources:
+						  	<option>${each}</option>
+						  % endfor
+						</select>
+				        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+				    </fieldset>
+			    </form>
+			% endif
+		% elif data:
+		<div class="col-md-4 col-md-offset-3">
+			<h2>${source}</h2>
+			<canvas id="myChart" width="750%" height="500%"></canvas>
+			<script type="text/javascript">
+				function getRandomColor() {
+				    var letters = '0123456789ABCDEF'.split('');
+				    var color = '#';
+				    for (var i = 0; i < 6; i++ ) {
+				        color += letters[Math.floor(Math.random() * 16)];
+				    }
+				    return color;
+				}
+				var ctx = document.getElementById("myChart").getContext("2d");
+				var data = {
+					labels: [
+						% for each in sorted(data)[-20: ]:
+							"${each}",
+						% endfor
+						],
+					datasets: [
+						{
+				            fillColor: "rgba(151,187,205,0.2)",
+				            strokeColor: getRandomColor(),
+				            pointColor: getRandomColor(),
+				            pointStrokeColor: getRandomColor(),
+				            pointHighlightFill: getRandomColor(),
+				            pointHighlightStroke: getRandomColor(),
+				            data: [
+				            	% for each in sorted(data)[-20:]:
+				            		${data[each]} ,
+				            	% endfor
+				            ]
+				        },
+					]
+				};
+				var myLineChart = new Chart(ctx).Line(data, {});
+			</script>
+			<ul>
+				<li>X-Axis: Time</li>
+				<li>Y-Axis: Number of Tweets</li>
+			</ul>
+			% endif
+		</div>
+	</body>
+
+
+
+
+</html>

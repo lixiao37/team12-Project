@@ -1,0 +1,22 @@
+File Reviewed: database.py
+File Timestamp: 11/25/2014 6:31 PM
+Sections Reviewed: 1. add_tweet, 2. add_twitteraccount
+Code-Reviewer: Seong Min Jeong
+Code-Author: Ali Mehdi
+
+1. function add_tweet
+a) Correctness: The function adds one tweet at a time given the tweet meta data in a dictionary. However, it does not follow the design pattern. It should be able to add as many tweets depending on the size of the tweet meta data.
+b) Coding style: The coding style is neat and easy to read because of the consistent spacing in chunks of code.
+c) Coding guidelines: Ali followed the pep8 guideline almost thoroughly. When creating the tweet object to add to the database, the next two lines are not in 4 spaces.
+d) Quality of documentation: There is only one comment in the code. Ali should put commenting in getting the tweet meta data and the part where he is trying to add the tweet into the database.
+e) Quality of testing: Four test cases were done for this function, two involves adding tweets and the other two adding retweets. The test cases are sufficient enough to show how the function works.
+
+2. function add_twitteraccount
+a) Correctness: The function adds one twitter account at a time given the twitter account meta data in a dictionary. However, it does not follow the design pattern. It should be able to add as many twitter accounts depending on the size of the twitter account meta data.
+b) Coding style: The coding style is neat and easy to read because of the consistent spacing in chunks of code.
+c) Coding guidelines: Ali followed the pep8 guideline perfectly in this function.
+d) Quality of documentation: There is no documentation in this function. Ali should have two comments. One for when he is creating the twitter account object to test if it already exists in the database and the other for when he is creating the twitter account object to add into the database.
+e) Quality of testing: Two test cases were done for this function. The test cases are sufficient neough to show how the function works.
+
+Summary:
+For correctness, Ali did not follow the design pattern and decided to add a single tweet and twitteraccount into the database for each function call. His coding style is easily readable due to spacing. Ali almost perfectly followed the pep8 guildline, due to making a spacing mistake in his code. The quality and quantity of Ali's documentation is somewhat lacking and it needs to be improved upon by explaining the logic behind the codes. Ali wrote a good amount of test cases and they showcase the functions very well.

@@ -1,0 +1,51 @@
+File Reviewed: userinterface.py
+File Timestamp: November 26, 2014 6:00 pm
+Sections Reviewed: 
+    functions:
+	generate_twitter_relation_dict [line 438-451]
+Code-Reviewer: Chun Cho
+Code-Author: Zhen Jiang
+Description of feature:
+    - This feature is part of the user interface which
+        gets data from the database and generates a
+        dictionary which will store the sources as keys 
+	and target counts for that source as values
+(a) Correctness
+    - Indexes are properly initialized for loops
+    - Loop termination condition is correct, it ends when
+      it finishes looping all of the sources
+    - The dictionary and lists are within bound, properly used
+    - There are no unused variables defined
+    - Return statement returns the correct type as required,
+      it never a non-dictionary type object
+(b) Coding Style
+    - Some lines of the code are way too long,
+      eg. function generate_pie_graph - line 448 has 113 characters
+      Needs a line break to split the lines
+    - Indentation is consistent
+    - Variable and function names make sense (correctly describe what they are)
+(c) Coding Guidelines
+    - Functions are named correctly according to the guidelines agreed upon
+    - Variables defined in the functions are named correctly and 
+      consistently with an underscore to separate words. eg relation_dict
+(d) Quality of Documentation
+    - There are NO comments at all for this function
+        - Although I understand the code due to my understanding
+	  of the program overall, an outsider would be confused
+	  as there are no comments to describe anything.
+	- Even though documentation is missing, the variable
+	  names are straight forward and help with 
+	  understanding the function.
+    - There are NO doc string for the function
+(e) Quality of Testing
+    - No testing was done because this feature is part of the user interface
+
+Summary:
+    - The correctness checks out / is good
+    - The code's styling is good/consistent and follows the conventions that
+      we have agreed on as a group
+    - The code needs comments to describe its functionality in different
+      parts of the code
+    - The functions needs doc strings to describe what parameters are being
+      passed in, what the function does and what it returns
+

@@ -1,0 +1,47 @@
+Seong-min:
+For correctness, Ali did not follow the design pattern and decided to add a single tweet and twitteraccount into the database for each function call. His coding style is easily readable due to spacing. Ali almost perfectly followed the pep8 guildline, due to making a spacing mistake in his code. The quality and quantity of Ali's documentation is somewhat lacking and it needs to be improved upon by explaining the logic behind the codes. Ali wrote a good amount of test cases and they showcase the functions very well.
+File Reviewed: database.py [add_tweet, add_twitteraccount]
+File Timestamp: 11/25/2014, 6:31 PM
+
+Alan:
+Overall the function is of good quality.
+However lack of commenting could cause difficulty in analysis.
+Coding format and style conforms to pep8 and is easy to read.
+Tests examine function in detail but lack cases of abnormal situations.
+File Reviewed: twitterparser.py [get_user_tweets]
+File Timestamp: 11/25/2014, 05:38 PM
+
+Zhen:
+ - The correctness was great, no conflicts with the design and no waste of the memory.
+ - The coding style was great, variables were meaningful and easy to follow.
+ - The coding guideline was bad.Some lines are too long [line 92, 97],
+   which confilts the pep8.Also, there is no docstring.
+ - The quality of documentation was good. Commenting style is maintained and easy to follow,
+   but there is lack of document in conditional statements [line 91].
+ - Since all the reviewed codes were about the UI, it is hard to test it using the unittest.
+File reviewed: userinterface.py [signup(line 87-117)]
+File Timestamp: 11/25/2014, 21:09
+
+Chun:
+ - The correctness checks out / is good
+ - The code's styling is good/consistent and follows the conventions that
+   we have agreed on as a group
+ - The code needs comments to describe its functionality in different
+   parts of the code
+ - The functions needs doc strings to describe what parameters are being
+   passed in, what the function does and what it returns
+File Reviewed: userinterface.py [generate_twitter_relation_dict(line 438-451)]
+File Timestamp: 11/25/2014, 06:00 pm 
+
+Ali:
+- The overall correctness was correct. The design pattern(Facada) was 
+   implemented properly and it was consistent. However, the Parser class itself
+   needs to be a generic class. This will allow further enhancements using the
+   Parser class. Coding style was great, very good use of blank spaces, the 
+   reader can easily see different parts of the code. Pep8 was not followed, 
+   hence it was causing issues when I was running pep8 against the file. Testing
+   needs to be done extensively. So far, there are only around ten test-cases,
+   however there needs to be more. Since Parser will server as an essential part
+   of the application, it needs to be stable.
+File reviewed: parser.py. [Parser Class]
+Timestamp: 11/25/2014, 09:40 PM.

@@ -4,6 +4,9 @@
 #ignore the cached files
 *~
 
+#ignore the log file
+beta.log
+
 #ignore the compiled project files
 target
 
@@ -18,3 +21,6 @@ target
 
 #ignore the IDE files
 *.idea
+
+#ignore virtualenv
+env

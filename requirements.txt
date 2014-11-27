@@ -4,4 +4,5 @@ mongoengine
 beautifulsoup4
 mako
 requests
-
+tweepy
+warc

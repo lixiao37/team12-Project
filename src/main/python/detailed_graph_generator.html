@@ -2,26 +2,22 @@
 	source - string
 	targets - list of str
 	target_count - list of int-->
-<head>
-<script src="http://www.chartjs.org/assets/Chart.js"></script>
-</head>
-<h1>Detailed Graph</h1>
 <!--area to display the graph-->
 <div style="width: 50%">
-	<canvas id="detailed_graph" height="450" width="600"></canvas>
-</div>
-<div id="legend"></div>
+	<canvas id="${datatype}_detailed_graph" height="450" width="600"></canvas>
+</div><br>
+<p class="lead">Legend</p>
+<div id="${datatype}_legend"></div>
 </br>
 
-x-axis are targets<br>
-y-axis are number of cites<br>
-each bar per target represents a source and are ordered as following: <br>
-% for source in sources:
-	Bar ${loop.index + 1}: ${source}<br>
-% endfor
-
-target count is ${target_counts}<br>
-
+<p class="lead">Description</p>
+<p>x-axis are the user's targets<br>
+	y-axis are number of cites<br>
+	Each bar per target represents a source and are ordered as following: <br>
+	% for source in sources:
+		Bar ${loop.index + 1}: ${source}<br>
+	% endfor
+</p>
 <!--script to produce the graph according to 
 	the parameters passed in from python-->
 <script>
@@ -39,7 +35,7 @@ target count is ${target_counts}<br>
 			${data}
 		]
 	}
-	var ctx = document.getElementById("detailed_graph").getContext("2d");
+	var ctx = document.getElementById("${datatype}_detailed_graph").getContext("2d");
 	var myBar = new Chart(ctx).Bar(barChartData, {
 		responsive : true,
 		barValueSpacing : ${value_space},
@@ -50,5 +46,5 @@ target count is ${target_counts}<br>
 	legend += "<li><div style=\"background-color:" + barChartData["datasets"][i]["fillColor"] + "; height: 20px; width: 20px;\"></div>" + barChartData["datasets"][i]["label"] + "</li>"
 	}
 	legend += "</ul>"
-	document.getElementById("legend").innerHTML = legend;
+	document.getElementById("${datatype}_legend").innerHTML = legend;
 </script>

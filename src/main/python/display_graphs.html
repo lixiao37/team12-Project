@@ -1,0 +1,19 @@
+<html>
+    <%include file="navbar_fixed.html"/>
+    <%include file="navbar_side.html"/>
+    <head>
+      <script src="http://www.chartjs.org/assets/Chart.js"></script>
+    </head>
+    <body>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">${section_name} ${graph_type} Graphs</h1>
+          % if graphs:
+            ${graphs}
+          % elif parserRun:
+            The parser is running, please wait till the parser is done.
+          % else:
+            Unfortunately, there are no graphs available right now. Check your tracking page, and try again later!
+          % endif
+        </div>
+    </body>
+</html>

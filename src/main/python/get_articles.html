@@ -1,0 +1,23 @@
+<table class="table table-condensed">
+
+	<% count = 1 %>
+	% if not articles:
+		<div align="center">Sorry, no articles found</div>
+	% elif articles:
+		<tr>
+			<th>#</th>
+			<th>Title</th>
+			<th>Download as WARC</th>
+		</tr>
+		% for each in articles:
+			<tr>
+			% if each.title:
+				<td>${count}</td>
+				<td><a href="/show_article?url=${each.url}">${each.title}</a></td>
+				<td><a href="/downloadWarc?url=${each.url}">Download</a></td>
+				<% count += 1 %>
+			% endif
+			</tr>
+		% endfor
+	% endif
+</table>

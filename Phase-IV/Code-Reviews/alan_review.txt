@@ -1,0 +1,29 @@
+File Reviewed: twitterparser.py
+File Timestamp: 11/25/2014
+Section Reviewed: get_user_tweets
+Code-Reviewer: Alan Chan
+Code-Author: Max Jeong
+
+Correctness:
+	-obtains tweets from input and puts it into list as expected
+
+Coding Style:
+	-code is of proper format and easy to understand
+
+Coding Guidelines:
+	-Follows conventions of pep8
+
+Quality of Documentation:
+	-Has a function descripter
+	-docstring may need to be expanded
+	-lacks any sort of comments
+
+Quality of Testing:
+	-tests examine the functionality of function
+	-tests do not examine function outside scope of use 
+
+Summary:
+Overall the function is of good quality.
+However lack of commenting could cause difficulty in analysis.
+Coding format and style conforms to pep8 and is easy to read.
+Tests examine function in detail but lack cases of abnormal situations.
